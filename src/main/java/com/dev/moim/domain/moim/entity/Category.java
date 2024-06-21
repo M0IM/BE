@@ -1,6 +1,6 @@
 package com.dev.moim.domain.moim.entity;
 
-import com.dev.moim.domain.moim.enums.CategoryType;
+import com.dev.moim.domain.moim.entity.enums.CategoryType;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.enums.Role;
+import com.dev.moim.domain.moim.entity.enums.Role;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
