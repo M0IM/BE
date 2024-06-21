@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,7 +27,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Moim {
+public class Moim extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,7 @@ public class Moim {
     private String introduction;
 
     @Enumerated(EnumType.STRING)
-    private MoimType moimType;
+    private UserMoim.MoimType moimType;
 
     @Column(name = "moim_image")
     private String moimImage;

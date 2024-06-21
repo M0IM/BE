@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.entity;
+package com.dev.moim.domain.moim.enums;
 
 public enum CategoryType {
     GROUP, POST

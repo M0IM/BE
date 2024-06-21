@@ -1,6 +1,8 @@
 package com.dev.moim.domain.chatting.entity;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.chatting.entity.enums.AlarmStatus;
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,7 +30,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "user_chatting_room")
-public class UserChattingRoom {
+public class UserChattingRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_chatting_room_id")

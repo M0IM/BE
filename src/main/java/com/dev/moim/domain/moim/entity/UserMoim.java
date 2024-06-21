@@ -1,6 +1,8 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.enums.Role;
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,7 +27,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserMoim {
+public class UserMoim extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,4 +61,8 @@ public class UserMoim {
 
     @OneToMany(mappedBy = "userMoim")
     private List<Comment> commentList = new ArrayList<>();
+
+    public enum MoimType {
+        COMMON, THUNDER
+    }
 }

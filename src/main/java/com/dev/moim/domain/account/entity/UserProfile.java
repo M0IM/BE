@@ -1,6 +1,8 @@
 package com.dev.moim.domain.account.entity;
 
+import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,7 +29,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "user_profile")
-public class UserProfile {
+public class UserProfile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_profile_id")

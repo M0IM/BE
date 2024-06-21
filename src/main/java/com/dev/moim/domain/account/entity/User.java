@@ -1,7 +1,11 @@
 package com.dev.moim.domain.account.entity;
 
+import com.dev.moim.domain.account.entity.enums.Provider;
+import com.dev.moim.domain.account.entity.enums.UserRank;
+import com.dev.moim.domain.account.entity.enums.UserStatus;
 import com.dev.moim.domain.chatting.entity.UserChattingRoom;
 import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,7 +28,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

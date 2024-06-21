@@ -1,4 +1,4 @@
-package com.dev.moim.domain.account.entity;
+package com.dev.moim.domain.account.entity.enums;
 
 public enum Provider {
     KAKAO, NAVER, GOOGLE, LOCAL

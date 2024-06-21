@@ -1,5 +1,6 @@
 package com.dev.moim.domain.account.entity;
 
+import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class SNS {
+public class SNS extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +29,7 @@ public class SNS {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    private SNSType SNSType;
+    private com.dev.moim.domain.account.entity.enums.SNSType SNSType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
