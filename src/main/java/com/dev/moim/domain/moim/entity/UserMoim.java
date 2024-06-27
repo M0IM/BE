@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.entity.enums.Role;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,7 +64,7 @@ public class UserMoim extends BaseEntity {
     @OneToMany(mappedBy = "userMoim")
     private List<Comment> commentList = new ArrayList<>();
 
-    public enum MoimType {
-        COMMON, THUNDER
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    private UserProfile userProfile;
 }

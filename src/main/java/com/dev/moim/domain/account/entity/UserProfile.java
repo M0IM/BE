@@ -2,6 +2,7 @@ package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,5 +54,5 @@ public class UserProfile extends BaseEntity {
     private User user;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private Moim moim;
+    private UserMoim userMoim;
 }
