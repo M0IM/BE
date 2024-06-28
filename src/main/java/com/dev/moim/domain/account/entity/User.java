@@ -45,6 +45,10 @@ public class User extends BaseEntity {
 
     private LocalDateTime inactive_date;
 
+    private String deviceId;
+
+    private Long writerId;
+
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 

@@ -50,7 +50,7 @@ public class UserMoim extends BaseEntity {
     private List<Calendar> calendarList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userMoim")
-    private List<GroupAlarm> groupAlarmList = new ArrayList<>();
+    private List<MoimAlarm> moimAlarmList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userMoim")
     private List<ExitReason> exitReasonList = new ArrayList<>();

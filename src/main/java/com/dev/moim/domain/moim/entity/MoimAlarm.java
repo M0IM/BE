@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "group_alarm")
-public class GroupAlarm extends BaseEntity {
+public class MoimAlarm extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +30,8 @@ public class GroupAlarm extends BaseEntity {
     private Long id;
 
     private String content;
+
+    private Boolean isAlarm;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_group_id")
