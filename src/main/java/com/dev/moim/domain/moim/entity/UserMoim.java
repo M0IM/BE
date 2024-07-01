@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.Role;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Entity;
@@ -38,6 +39,9 @@ public class UserMoim extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private JoinStatus joinStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -63,6 +67,9 @@ public class UserMoim extends BaseEntity {
 
     @OneToMany(mappedBy = "userMoim")
     private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userMoim")
+    private List<Announcement> announcementList = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
