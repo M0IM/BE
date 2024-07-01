@@ -4,15 +4,13 @@ on:
   push:
     branches:
       - develop
-  pull_request:
-    branches:
-      - develop
 
 env:
-  DOCKER_IMAGE_NAME: moim
+  DOCKER_IMAGE_NAME: developerjamey/moim
   EC2_HOST: ${{ secrets.EC2_URL }}
-  EC2_SSH_USER: ec2-user
+  EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+  CONTAINER_NAME: moim_container
 
 jobs:
   build-and-push-docker:
@@ -62,6 +60,7 @@ jobs:
         with:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_SSH_USER }}
+          port: 22
           key: ${{ env.PRIVATE_KEY }}
           script: |
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
@@ -72,4 +71,4 @@ jobs:
             fi
             
             sudo docker pull ${{ env.DOCKER_HUB }}
-            sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_HUB }}
+            sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}
