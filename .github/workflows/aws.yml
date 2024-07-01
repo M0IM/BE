@@ -9,7 +9,7 @@ on:
       - develop
 
 env:
-  DOCKER_IMAGE_NAME: moim
+  DOCKER_IMAGE_NAME: developerjamey/moim
   EC2_HOST: ${{ secrets.EC2_URL }}
   EC2_SSH_USER: ec2-user
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
