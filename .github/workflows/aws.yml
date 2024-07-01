@@ -11,7 +11,7 @@ on:
 env:
   DOCKER_IMAGE_NAME: developerjamey/moim
   EC2_HOST: ${{ secrets.EC2_URL }}
-  EC2_SSH_USER: ec2-user
+  EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 
 jobs:
