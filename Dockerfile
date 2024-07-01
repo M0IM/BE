@@ -1,8 +1,11 @@
 FROM amazoncorretto:17
-ARG JAR_FILE=build/libs/*.jar
 
+# 타임존 설정
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-COPY ${JAR_FILE} my-project.jar
+# 빌드 아티팩트 복사
+ARG JAR_FILE=build/libs/my-project.jar
+COPY ${JAR_FILE} app.jar
 
-ENTRYPOINT ["java","-jar","/my-project.jar"]
+# 엔트리포인트 설정
+ENTRYPOINT ["java","-jar","/app.jar"]
