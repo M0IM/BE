@@ -73,4 +73,4 @@ jobs:
             fi
             
             sudo docker pull ${{ env.DOCKER_HUB }}
-            sudo docker run --name ${{ env.DOCKER_IMAGE_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_HUB }}
+            sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}
