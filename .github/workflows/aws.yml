@@ -13,6 +13,7 @@ env:
   EC2_HOST: ${{ secrets.EC2_URL }}
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+  CONTAINER_NAME: moim_container
 
 jobs:
   build-and-push-docker:
