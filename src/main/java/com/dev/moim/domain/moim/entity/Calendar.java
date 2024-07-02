@@ -45,6 +45,9 @@ public class Calendar extends BaseEntity {
     // 비용
     private String cost;
 
+    // 참여 인원
+    private int participant;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_group_id")
     private UserMoim userMoim;

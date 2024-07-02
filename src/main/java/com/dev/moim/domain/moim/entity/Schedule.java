@@ -29,7 +29,7 @@ public class Schedule extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    private String title;
 
     @Column(name = "start_time")
     private LocalDateTime startTime;
@@ -37,8 +37,11 @@ public class Schedule extends BaseEntity {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "alert_time")
-    private LocalDateTime alertTime;
+    @Column(name = "notification")
+    private boolean notification;
+
+    @Column(name = "notification_time")
+    private LocalDateTime notificationTime;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
