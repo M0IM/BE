@@ -48,7 +48,7 @@ public class AuthController {
 
     @PostMapping("/signOut")
     @Operation(summary="로그아웃", description="로그아웃 후, 기존 유효한 토큰 무효화" )
-    public BaseResponse<?> singOut(
+    public BaseResponse<?> signOut(
             @RequestHeader("Authorization") String accessToken
     ) {
         return BaseResponse.onSuccess(null);
