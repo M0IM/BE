@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.moim.*;
+import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,10 +20,10 @@ public class MoimCalendarController {
             @ApiResponse(responseCode = "NOT_FOUND", description = "모임 정보를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "BAD_REQUEST", description = "해당 회원은 일정을 추가할 권한이 없습니다.")
     })
-    public CalenderCreateResponse createCalender(
+    public BaseResponse<CalenderCreateResponse> createCalender(
             @RequestBody CalenderCreateRequest request
     ) {
-        return null;
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/update")

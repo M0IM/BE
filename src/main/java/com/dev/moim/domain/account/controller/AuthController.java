@@ -1,6 +1,7 @@
 package com.dev.moim.domain.account.controller;
 
 import com.dev.moim.domain.account.dto.*;
+import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,8 +19,8 @@ public class AuthController {
             @ApiResponse(responseCode = "CREATED", description = "회원 가입 성공"),
             @ApiResponse(responseCode = "BAD_REQUEST", description = "회원 가입 실패")
     })
-    public SignUpResponse signUp(@RequestBody SignUpRequest request) {
-        return null;
+    public BaseResponse<SignUpResponse> signUp(@RequestBody SignUpRequest request) {
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/signIn")
@@ -28,8 +29,9 @@ public class AuthController {
             @ApiResponse(responseCode = "CREATED", description = "로그인 성공"),
             @ApiResponse(responseCode = "BAD_REQUEST", description = "로그인 실패")
     })
-    public TokenResponse signIn(@RequestBody SignInRequest request) {
-        return null;
+    public BaseResponse<TokenResponse> signIn(@RequestBody SignInRequest request) {
+
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/reissueToken")
@@ -38,40 +40,41 @@ public class AuthController {
             @ApiResponse(responseCode = "CREATED", description = "토큰 재발급 성공"),
             @ApiResponse(responseCode = "BAD_REQUEST", description = "토큰 재발급 실패")
     })
-    public ReissueTokenResponse reissueToken(
+    public BaseResponse<ReissueTokenResponse> reissueToken(
             @RequestHeader("Authorization") String refreshToken
     ) {
-        return null;
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/signOut")
     @Operation(summary="로그아웃", description="로그아웃 후, 기존 유효한 토큰 무효화" )
-    public void singOut(
+    public BaseResponse<?> singOut(
             @RequestHeader("Authorization") String accessToken
     ) {
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/oauth/kakao")
     @Operation(summary="카카오 로그인", description="카카오 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public TokenResponse kakaoSingIn(
+    public BaseResponse<TokenResponse> kakaoSignIn(
             @RequestBody AuthRequest request
     ) {
-        return null;
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/oauth/google")
     @Operation(summary="구글 로그인", description="구글 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public TokenResponse googleSingIn(
+    public BaseResponse<TokenResponse> googleSignIn(
             @RequestBody AuthRequest request
     ) {
-        return null;
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/oauth/apple")
     @Operation(summary="애플 로그인", description="애플 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public TokenResponse appleSingIn(
+    public BaseResponse<TokenResponse> appleSignIn(
             @RequestBody AppleAuthRequest request
     ) {
-        return null;
+        return BaseResponse.onSuccess(null);
     }
 }
