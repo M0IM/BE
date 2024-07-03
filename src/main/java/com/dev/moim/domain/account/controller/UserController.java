@@ -2,9 +2,10 @@ package com.dev.moim.domain.account.controller;
 
 import com.dev.moim.domain.account.dto.UserRequestDTO;
 import com.dev.moim.domain.account.dto.UserResponseDTO;
-import com.dev.moim.global.common.ApiResponse;
+import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,19 +19,19 @@ public class UserController {
 
     @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/users/reviews")
-    public ApiResponse<String> postMemberReview(@RequestBody UserRequestDTO.PostReviewDTO postReviewDTO) {
-        return ApiResponse.onSuccess(null);
+    public BaseResponse<String> postMemberReview(@RequestBody UserRequestDTO.PostReviewDTO postReviewDTO) {
+        return BaseResponse.onSuccess(null);
     }
 
     @Operation(summary = "멤버 후기 상세보기 API", description = "멤버 후기를 조회 합니다. _by 제이미_")
     @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/users/{userId}/reviews")
-    public ApiResponse<UserResponseDTO.ReviewListDTO> getMemberReview(@PathVariable Long userId) {
-        return ApiResponse.onSuccess(null);
+    public BaseResponse<UserResponseDTO.ReviewListDTO> getMemberReview(@PathVariable Long userId) {
+        return BaseResponse.onSuccess(null);
     }
 }
