@@ -6,6 +6,7 @@ public record SignUpRequest(
         String nickname,
         String email,
         String password,
+        String role,
         String gender,
         int age,
         LocalDate birth,
