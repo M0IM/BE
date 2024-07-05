@@ -1,4 +1,4 @@
-package com.dev.moim.domain.account.dto;
+package com.dev.moim.domain.user.dto;
 
 import java.util.List;
 

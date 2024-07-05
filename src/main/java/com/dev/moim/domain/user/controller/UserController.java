@@ -1,17 +1,23 @@
 package com.dev.moim.domain.user.controller;
 
+import com.dev.moim.domain.user.dto.CreateReviewDTO;
+import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailGetResponse;
 import com.dev.moim.domain.user.dto.ProfileListGetResponse;
 import com.dev.moim.domain.user.dto.ProfileResponse;
 import com.dev.moim.domain.user.dto.ProfileUpdateRequest;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/v1/users")
+@Tag(name = "유저 관련 컨트롤러")
 public class UserController {
 
     @GetMapping("")
@@ -41,6 +47,24 @@ public class UserController {
     public BaseResponse<?> updateProfile(
             @RequestBody ProfileUpdateRequest request
     ) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/users/reviews")
+    public BaseResponse<String> postMemberReview(@io.swagger.v3.oas.annotations.parameters.RequestBody CreateReviewDTO createReviewDTO) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "멤버 후기 상세보기 API", description = "멤버 후기를 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/users/{userId}/reviews")
+    public BaseResponse<ReviewListDTO> getMemberReview(@PathVariable Long userId) {
         return BaseResponse.onSuccess(null);
     }
 }
