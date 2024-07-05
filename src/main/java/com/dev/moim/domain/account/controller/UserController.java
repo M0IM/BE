@@ -1,7 +1,7 @@
 package com.dev.moim.domain.account.controller;
 
-import com.dev.moim.domain.account.dto.UserRequestDTO;
-import com.dev.moim.domain.account.dto.UserResponseDTO;
+import com.dev.moim.domain.account.dto.CreateReviewDTO;
+import com.dev.moim.domain.account.dto.ReviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -22,7 +22,7 @@ public class UserController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/users/reviews")
-    public BaseResponse<String> postMemberReview(@RequestBody UserRequestDTO.PostReviewDTO postReviewDTO) {
+    public BaseResponse<String> postMemberReview(@RequestBody CreateReviewDTO createReviewDTO) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -31,7 +31,7 @@ public class UserController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/users/{userId}/reviews")
-    public BaseResponse<UserResponseDTO.ReviewListDTO> getMemberReview(@PathVariable Long userId) {
+    public BaseResponse<ReviewListDTO> getMemberReview(@PathVariable Long userId) {
         return BaseResponse.onSuccess(null);
     }
 }

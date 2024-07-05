@@ -1,7 +1,9 @@
 package com.dev.moim.domain.moim.controller;
 
-import com.dev.moim.domain.moim.dto.MoimRequestDTO;
-import com.dev.moim.domain.moim.dto.MoimResponseDTO;
+import com.dev.moim.domain.moim.dto.CreateMoimPostDTO;
+import com.dev.moim.domain.moim.dto.CreateMoimPostResultDTO;
+import com.dev.moim.domain.moim.dto.MoimPostDetailDTO;
+import com.dev.moim.domain.moim.dto.MoimPostPreviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,7 +26,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/posts")
-    public BaseResponse<MoimResponseDTO.MoimPostPreviewListDTO> getMoimPostList(@PathVariable Long moimId) {
+    public BaseResponse<MoimPostPreviewListDTO> getMoimPostList(@PathVariable Long moimId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -33,7 +35,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/posts/{postId}")
-    public BaseResponse<MoimResponseDTO.MoimPostDetailDTO> getMoimPost(@PathVariable Long moimId, @PathVariable Long postId) {
+    public BaseResponse<MoimPostDetailDTO> getMoimPost(@PathVariable Long moimId, @PathVariable Long postId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -42,7 +44,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/posts")
-    public BaseResponse<MoimResponseDTO.CreateMoimPostResultDTO> createMoimPost(@RequestBody MoimRequestDTO.CreateMoimPostDTO createMoimPostDTO) {
+    public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@RequestBody CreateMoimPostDTO createMoimPostDTO) {
         return BaseResponse.onSuccess(null);
     }
 

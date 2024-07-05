@@ -1,8 +1,12 @@
 package com.dev.moim.domain.moim.controller;
 
-import com.dev.moim.domain.account.dto.UserResponseDTO;
-import com.dev.moim.domain.moim.dto.MoimRequestDTO;
-import com.dev.moim.domain.moim.dto.MoimResponseDTO;
+import com.dev.moim.domain.account.dto.UserPreviewListDTO;
+import com.dev.moim.domain.moim.dto.CreateMoimDTO;
+import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
+import com.dev.moim.domain.moim.dto.MoimDetailDTO;
+import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
+import com.dev.moim.domain.moim.dto.UpdateMoimDTO;
+import com.dev.moim.domain.moim.dto.WithMoimDTO;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +32,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims")
-    public BaseResponse<MoimResponseDTO.CreateMoimResultDTO> createMoim(@RequestBody MoimRequestDTO.CreateMoimDTO createMoimDTO) {
+    public BaseResponse<CreateMoimResultDTO> createMoim(@RequestBody CreateMoimDTO createMoimDTO) {
 
         return BaseResponse.onSuccess(null);
     }
@@ -42,7 +46,7 @@ public class MoimController {
             @Parameter(name = "keyword", description = "선택한 카테 고리 혹은 검색어", example = "all")
     })
     @GetMapping("/moims")
-    public BaseResponse<MoimResponseDTO.MoimPreviewListDTO> findMoim(@RequestParam(name = "type") String type, @RequestParam(name = "keyword") String keyword) {
+    public BaseResponse<MoimPreviewListDTO> findMoim(@RequestParam(name = "type") String type, @RequestParam(name = "keyword") String keyword) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -51,7 +55,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/active")
-    public BaseResponse<MoimResponseDTO.MoimPreviewListDTO> activeMoim() {
+    public BaseResponse<MoimPreviewListDTO> activeMoim() {
         return BaseResponse.onSuccess(null);
     }
 
@@ -60,7 +64,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}")
-    public BaseResponse<MoimResponseDTO.MoimDetailDTO> getMoimDetail(@PathVariable Long moimId) {
+    public BaseResponse<MoimDetailDTO> getMoimDetail(@PathVariable Long moimId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -69,7 +73,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/members")
-    public BaseResponse<UserResponseDTO.UserPreviewListDTO> getMoimMembers(@PathVariable Long moimId) {
+    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable Long moimId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -78,7 +82,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping ("/moims/withdraw")
-    public BaseResponse<String> withDrawMoim(@RequestBody MoimRequestDTO.WithMoimDTO withMoimDTO) {
+    public BaseResponse<String> withDrawMoim(@RequestBody WithMoimDTO withMoimDTO) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -87,7 +91,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping ("/moims/{moimId}/status")
-    public BaseResponse<MoimResponseDTO.MoimPreviewListDTO> confirmStatusMoim(@PathVariable Long moimId) {
+    public BaseResponse<MoimPreviewListDTO> confirmStatusMoim(@PathVariable Long moimId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -96,7 +100,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping ("/moims/{moimId}")
-    public BaseResponse<String> modifyMoimInfo(@RequestBody MoimRequestDTO.UpdateMoimDTO updateMoimDTO) {
+    public BaseResponse<String> modifyMoimInfo(@RequestBody UpdateMoimDTO updateMoimDTO) {
         return BaseResponse.onSuccess(null);
     }
 }
