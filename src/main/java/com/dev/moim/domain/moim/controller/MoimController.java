@@ -1,6 +1,6 @@
 package com.dev.moim.domain.moim.controller;
 
-import com.dev.moim.domain.account.dto.UserPreviewListDTO;
+import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
