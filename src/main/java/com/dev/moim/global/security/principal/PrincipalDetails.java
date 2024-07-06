@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.principal;
 
 import com.dev.moim.domain.account.entity.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +15,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
-    private final User user;
+    private final String email;
+    private final String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -24,10 +26,10 @@ public class PrincipalDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {return user.getPassword();}
+    public String getUsername() {return this.email;}
 
     @Override
-    public String getUsername() {return user.getEmail();}
+    public String getPassword() {return this.password;}
 
     @Override
     public boolean isAccountNonExpired() {return true;}

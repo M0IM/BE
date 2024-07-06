@@ -1,7 +1,6 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
-import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
@@ -55,4 +54,9 @@ public class UserProfile extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     private UserMoim userMoim;
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getUserProfileList().add(this);
+    }
 }
