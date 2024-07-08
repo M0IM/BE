@@ -2,12 +2,12 @@ package com.dev.moim.domain.account.dto;
 
 import com.dev.moim.domain.account.entity.User;
 
-public record SignUpResponse(
+public record JoinResponse(
         String email,
         String password
 ) {
-    public static SignUpResponse of(User user) {
-        return new SignUpResponse(
+    public static JoinResponse of(User user) {
+        return new JoinResponse(
                 user.getEmail(),
                 user.getPassword()
         );

@@ -9,11 +9,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     @Override
@@ -23,8 +25,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            log.info("** JwtExceptionFilter **");
             filterChain.doFilter(request, response);
         } catch (AuthException e) {
+
             response.setContentType("application/json; charset=UTF-8");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
 

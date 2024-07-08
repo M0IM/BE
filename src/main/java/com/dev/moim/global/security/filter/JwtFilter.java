@@ -3,13 +3,14 @@ package com.dev.moim.global.security.filter;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,14 +20,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtProvider;
     private final PrincipalDetailsService principalDetailsService;
-
-    // TODO: shouldNotFilter
 
     @Override
     public void doFilterInternal(
@@ -37,8 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String accessToken = getJwtFromRequest(request);
 
+        log.info("** JwtFilter **");
+
         if (accessToken == null) {
             filterChain.doFilter(request, response);
+            log.info("if 내부 진입");
             return;
         }
 

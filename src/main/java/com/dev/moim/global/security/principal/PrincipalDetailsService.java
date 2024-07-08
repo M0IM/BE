@@ -21,6 +21,6 @@ public class PrincipalDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthException(USER_NOT_FOUND));
-        return new PrincipalDetails(user.getEmail(), user.getPassword());
+        return new PrincipalDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole().toString());
     }
 }

@@ -20,21 +20,21 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signUp")
+    @PostMapping("/join")
     @Operation(summary="회원 가입 API", description="회원 가입 성공 시, 자동 로그인을 위해 유저 계정 정보 반환" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "CREATED", description = "회원 가입 성공"),
     })
-    public BaseResponse<SignUpResponse> signUp(@RequestBody SignUpRequest request) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<JoinResponse> join(@RequestBody JoinRequest request) {
+        return BaseResponse.onSuccess(authService.join(request));
     }
 
-    @PostMapping("/signIn")
+    @PostMapping("/login")
     @Operation(summary="로그인 API", description="로그인 성공 시, token 정보 반환" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "로그인 성공"),
     })
-    public BaseResponse<TokenResponse> logIn(@RequestBody @Valid LogInRequest request) {
+    public BaseResponse<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
 
         return BaseResponse.onSuccess(null);
     }

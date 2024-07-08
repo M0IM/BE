@@ -1,6 +1,5 @@
 package com.dev.moim.global.security.principal;
 
-import com.dev.moim.domain.account.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,20 +8,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@Getter
 @RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
+    private final Long id;
     private final String email;
     private final String password;
+    private final String authority;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<String> roles = new ArrayList<>();
-        roles.add("ROLE_USER");
-        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        Collection<GrantedAuthority> collections = new ArrayList<>();
+        collections.add(new SimpleGrantedAuthority(authority));
+
+        return collections;
     }
 
     @Override

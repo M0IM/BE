@@ -1,4 +1,4 @@
-package com.dev.moim.global.security.provider;
+package com.dev.moim.global.security.util;
 
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -15,13 +15,13 @@ import java.util.Date;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Component
-public class JwtProvider {
+public class JwtUtil {
 
     private final SecretKey secretKey;
     private final Long accessTokenValidityMilliseconds;
     private final Long refreshTokenValidityMilliseconds;
 
-    public JwtProvider(
+    public JwtUtil(
             @Value("${spring.jwt.secret}") final String secretKey,
             @Value("${spring.jwt.access-token-validity}") final Long accessTokenValidityMilliseconds,
             @Value("${spring.jwt.refresh-token-validity}") final Long refreshTokenValidityMilliseconds) {
@@ -43,6 +43,7 @@ public class JwtProvider {
         ZonedDateTime tokenValidity = issuedAt.plusSeconds(validityMilliseconds / 1000);
 
         return Jwts.builder()
+                .setSubject(principalDetails.getId().toString())
                 .claim("email", principalDetails.getUsername())
                 .claim("role", principalDetails.getAuthorities())
                 .setIssuedAt(Date.from(issuedAt.toInstant()))

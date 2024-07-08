@@ -1,19 +1,19 @@
 package com.dev.moim.global.security.filter;
 
-import com.dev.moim.domain.account.dto.LogInRequest;
+import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,17 +26,20 @@ import java.io.IOException;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
+@Slf4j
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtProvider;
 
     @Override
     public Authentication attemptAuthentication(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response) throws AuthenticationException {
-        LogInRequest logInRequest = readBody(request);
+        log.info("** LoginFilter **");
+
+        LoginRequest logInRequest = readBody(request);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(logInRequest.email(), logInRequest.password());
@@ -44,12 +47,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     }
 
-    private LogInRequest readBody(HttpServletRequest request) {
-        LogInRequest loginRequestDto = null;
+    private LoginRequest readBody(HttpServletRequest request) {
+        LoginRequest loginRequestDto = null;
         ObjectMapper om = new ObjectMapper();
 
         try {
-            loginRequestDto = om.readValue(request.getInputStream(), LogInRequest.class);
+            loginRequestDto = om.readValue(request.getInputStream(), LoginRequest.class);
         } catch (IOException e) {
             throw new AuthException(_BAD_REQUEST);
         }
@@ -66,22 +69,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-//        String token = jwtProvider.createAccessToken(principalDetails);
-//
-//        response.addHeader("Authorization", "Bearer " + token);
-//
-//        response.setContentType("application/json; charset=UTF-8");
-//        response.setStatus(HttpStatus.OK.value());
-//
-
         TokenResponse tokenResponse = new TokenResponse(
                 jwtProvider.createAccessToken(principalDetails),
                 jwtProvider.createRefreshToken(principalDetails));
 
-        BaseResponse<Object> errorResponse = BaseResponse.onSuccess(tokenResponse);
+        log.info("tokenResponse = {}", tokenResponse);
+
+        BaseResponse<Object> successResponse = BaseResponse.onSuccess(tokenResponse);
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), errorResponse);
+        String jsonResponse = mapper.writeValueAsString(successResponse);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        response.getWriter().write(jsonResponse);
     }
 
     @Override

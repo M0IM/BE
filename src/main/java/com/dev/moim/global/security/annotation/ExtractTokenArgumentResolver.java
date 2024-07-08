@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.annotation;
 
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.util.JwtUtil;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -13,23 +14,25 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class ExtractTokenArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType().equals(String.class);
     }
 
+    // extract 어노테이션일때만 적용되도록 추가
+
     @Override
     public Object resolveArgument(
-            MethodParameter parameter,
+            @Nonnull MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory)
             throws Exception {
 
         String refreshToken = webRequest.getHeader("Authorization");
-        jwtProvider.isTokenValid(refreshToken);
+        jwtUtil.isTokenValid(refreshToken);
         return refreshToken;
     }
 }

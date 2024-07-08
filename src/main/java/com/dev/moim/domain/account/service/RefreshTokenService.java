@@ -5,7 +5,8 @@ import com.dev.moim.domain.account.entity.RefreshToken;
 import com.dev.moim.domain.account.repository.RefreshTokenRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.principal.PrincipalDetailsService;
+import com.dev.moim.global.security.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,13 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
+    private final PrincipalDetailsService principalDetailsService;
 
     public boolean validateRefreshToken(String refreshToken) {
         RefreshToken savedrefreshToken =
                 refreshTokenRepository
-                        .findByEmail(jwtProvider.getEmail(refreshToken))
+                        .findByEmail(jwtUtil.getEmail(refreshToken))
                         .orElseThrow(() -> new AuthException(NOT_CONTAIN_TOKEN));
 
         return savedrefreshToken.getToken().equals(refreshToken);
@@ -34,14 +36,11 @@ public class RefreshTokenService {
         try {
             validateRefreshToken(refreshToken);
 
-            PrincipalDetails principalDetails = new PrincipalDetails(
-                    jwtProvider.getEmail(refreshToken),
-                    null
-            );
+            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
 
             return new ReissueTokenResponse(
-                    jwtProvider.createAccessToken(principalDetails),
-                    jwtProvider.createRefreshToken(principalDetails)
+                    jwtUtil.createAccessToken(principalDetails),
+                    jwtUtil.createRefreshToken(principalDetails)
             );
         } catch (IllegalArgumentException e) {
             throw new AuthException(AUTH_INVALID_TOKEN);
@@ -54,7 +53,7 @@ public class RefreshTokenService {
     public void saveToken(String refreshToken) {
         RefreshToken newRefreshToken =
                 RefreshToken.builder()
-                        .email(jwtProvider.getEmail(refreshToken))
+                        .email(jwtUtil.getEmail(refreshToken))
                         .token(refreshToken)
                         .build();
 

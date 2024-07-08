@@ -1,19 +1,21 @@
 package com.dev.moim.domain.account.service;
 
 import com.dev.moim.domain.account.dto.ReissueTokenResponse;
-import com.dev.moim.domain.account.dto.SignUpRequest;
-import com.dev.moim.domain.account.dto.SignUpResponse;
+import com.dev.moim.domain.account.dto.JoinRequest;
+import com.dev.moim.domain.account.dto.JoinResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.EMAIL_DUPLICATION;
 import static com.dev.moim.global.common.code.status.ErrorStatus.NOT_EQUAL_TOKEN;
@@ -23,13 +25,13 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.NOT_EQUAL_TOKEN
 @Service
 public class AuthService {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtProvider;
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public SignUpResponse signUp(SignUpRequest request) {
+    public JoinResponse join(JoinRequest request) {
 
         if(userRepository.existsByEmail(request.email())){
             throw new AuthException(EMAIL_DUPLICATION);
@@ -39,6 +41,7 @@ public class AuthService {
                 .nickname(request.nickname())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .userProfileList(new ArrayList<>())
                 .build();
 
         UserProfile userProfile = UserProfile.builder()
@@ -48,13 +51,11 @@ public class AuthService {
                 .residence(request.residence())
                 .build();
 
-        userProfile.setUser(user);
+        user.addUserProfile(userProfile);
 
         userRepository.save(user);
 
-        log.info("userId = {}", user.getId());
-
-        return SignUpResponse.of(user);
+        return JoinResponse.of(user);
     }
 
     @Transactional

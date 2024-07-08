@@ -7,7 +7,7 @@ import com.dev.moim.global.security.filter.JwtExceptionFilter;
 import com.dev.moim.global.security.filter.JwtFilter;
 import com.dev.moim.global.security.filter.LoginFilter;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
-import com.dev.moim.global.security.provider.JwtProvider;
+import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,16 +40,14 @@ public class SecurityConfig {
 
     private final String[] allowUrls = {
             "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/v3/api-docs/**",
-            "/swagger",
-            "/swagger-ui.html",
-            "/api-docs", "/api-docs/**",
-            "/api/v1/**"
+            "/v3/**",
+            "/api-docs/**",
+            "/api/v1/auth/join/**",
+            "/api/v1/auth/reissueToken/**"
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtProvider jwtProvider) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors
                 .configurationSource(CorsConfig.apiConfigurationSource()));
@@ -57,24 +55,28 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        http.headers(
-                headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+        http.headers(headers -> headers
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
-        http.sessionManagement(
-                sessionManagement -> sessionManagement.sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
+        http.sessionManagement(sessionManagement -> sessionManagement
+                .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
 
-        http.exceptionHandling(
-                configurer -> configurer
+        http.exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler));
 
-        http.authorizeHttpRequests((requests) -> requests
+        http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(allowUrls).permitAll()
-                .anyRequest().authenticated());
+                .requestMatchers("/**").authenticated()
+                .anyRequest().permitAll());
 
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtProvider),
-                UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtProvider, principalDetailsService), UsernamePasswordAuthenticationFilter.class);
+        LoginFilter loginFilter = new LoginFilter(
+                authenticationManager(authenticationConfiguration), jwtUtil
+        );
+        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+
+        http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService), LoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         return http.build();

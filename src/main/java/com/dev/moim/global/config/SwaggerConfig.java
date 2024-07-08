@@ -17,9 +17,8 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI moimAPI() {
-        Info info = new Info().title("Moim API").description("Moim API 명세").version("1.0.0");
+        Info info = new Info().title("Moim API").description("Moim API 명세").version("0.0.1");
 
-        String jwtSchemeName = "JWT TOKEN";
         SecurityScheme securityScheme = new SecurityScheme()
                 .type(Type.HTTP).scheme("bearer").bearerFormat("JWT")
                 .in(SecurityScheme.In.HEADER).name("Authorization");
