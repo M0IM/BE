@@ -1,20 +1,20 @@
 package com.dev.moim.domain.account.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
-@Entity
+@RedisHash(value = "token")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@DynamicInsert
 public class RefreshToken {
 
     @Id
     private String email;
     private String token;
+    @TimeToLive
     private Long expiration;
 }

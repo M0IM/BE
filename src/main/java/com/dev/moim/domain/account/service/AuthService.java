@@ -8,7 +8,10 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.security.principal.PrincipalDetails;
+import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,18 +20,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.EMAIL_DUPLICATION;
-import static com.dev.moim.global.common.code.status.ErrorStatus.NOT_EQUAL_TOKEN;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthService {
 
-    private final JwtUtil jwtProvider;
+    private final PrincipalDetailsService principalDetailsService;
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public JoinResponse join(JoinRequest request) {
@@ -58,15 +61,25 @@ public class AuthService {
         return JoinResponse.of(user);
     }
 
-    @Transactional
     public ReissueTokenResponse reissueToken(String refreshToken) {
-        jwtProvider.isTokenValid(refreshToken);
+        try {
+            if (!jwtUtil.isTokenValid(refreshToken)) {
+                throw new AuthException(AUTH_INVALID_TOKEN);
+            }
 
-        if (!refreshTokenService.validateRefreshToken(refreshToken)) {
-            throw new AuthException(NOT_EQUAL_TOKEN);
+            refreshTokenService.validateRefreshToken(refreshToken);
+
+            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
+
+            return new ReissueTokenResponse(
+                    jwtUtil.createAccessToken(principalDetails),
+                    jwtUtil.createRefreshToken(principalDetails)
+            );
+        } catch (IllegalArgumentException e) {
+            throw new AuthException(AUTH_INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new AuthException(AUTH_EXPIRED_TOKEN);
         }
-
-        return refreshTokenService.reissueToken(refreshToken);
     }
 
     public void logout(String email) {

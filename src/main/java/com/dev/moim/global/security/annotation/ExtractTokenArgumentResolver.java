@@ -1,5 +1,6 @@
 package com.dev.moim.global.security.annotation;
 
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import static com.dev.moim.global.common.code.status.ErrorStatus.MISSING_AUTHORIZATION_HEADER;
+
 @Component
 @RequiredArgsConstructor
 public class ExtractTokenArgumentResolver implements HandlerMethodArgumentResolver {
@@ -18,10 +21,8 @@ public class ExtractTokenArgumentResolver implements HandlerMethodArgumentResolv
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(String.class);
+        return parameter.getParameterType().equals(String.class) && parameter.hasParameterAnnotation(ExtractToken.class);
     }
-
-    // extract 어노테이션일때만 적용되도록 추가
 
     @Override
     public Object resolveArgument(
@@ -32,6 +33,9 @@ public class ExtractTokenArgumentResolver implements HandlerMethodArgumentResolv
             throws Exception {
 
         String refreshToken = webRequest.getHeader("Authorization");
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new AuthException(MISSING_AUTHORIZATION_HEADER);
+        }
         jwtUtil.isTokenValid(refreshToken);
         return refreshToken;
     }

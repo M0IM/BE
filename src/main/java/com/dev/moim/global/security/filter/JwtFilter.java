@@ -25,7 +25,7 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtProvider;
+    private final JwtUtil jwtUtil;
     private final PrincipalDetailsService principalDetailsService;
 
     @Override
@@ -41,12 +41,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (accessToken == null) {
             filterChain.doFilter(request, response);
-            log.info("if 내부 진입");
             return;
         }
 
-        if(jwtProvider.isTokenValid(accessToken)) {
-            String email = jwtProvider.getEmail(accessToken);
+        if(jwtUtil.isTokenValid(accessToken)) {
+            String email = jwtUtil.getEmail(accessToken);
             UserDetails userDetails = principalDetailsService.loadUserByUsername(email);
 
             if (userDetails != null) {

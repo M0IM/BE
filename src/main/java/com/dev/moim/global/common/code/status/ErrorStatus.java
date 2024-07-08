@@ -36,7 +36,7 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "AUTH_012", "올바르지 않은 gender 입력값 입니다."),
     USER_AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_013", "인증이 필요한 사용자입니다."),
     USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
-
+    MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
 
     // User 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_004", "존재하지 않는 사용자입니다."),

@@ -3,6 +3,7 @@ package com.dev.moim.global.security.annotation;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.GeneralException;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,9 +30,9 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(
-            MethodParameter parameter,
+            @Nonnull  MethodParameter parameter,
             ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
+            @Nonnull NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory)
             throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
