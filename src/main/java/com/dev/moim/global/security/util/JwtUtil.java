@@ -4,7 +4,6 @@ import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,6 @@ import java.util.Date;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
-@Getter
 @Component
 public class JwtUtil {
 
