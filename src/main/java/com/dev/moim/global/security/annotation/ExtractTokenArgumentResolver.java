@@ -32,10 +32,12 @@ public class ExtractTokenArgumentResolver implements HandlerMethodArgumentResolv
             WebDataBinderFactory binderFactory)
             throws Exception {
 
-        String refreshToken = webRequest.getHeader("Authorization");
-        if (refreshToken == null || refreshToken.isEmpty()) {
+        String authorizationHeader = webRequest.getHeader("Authorization");
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new AuthException(MISSING_AUTHORIZATION_HEADER);
         }
+
+        String refreshToken = authorizationHeader.substring(7);
         jwtUtil.isTokenValid(refreshToken);
         return refreshToken;
     }

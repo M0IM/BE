@@ -1,11 +1,12 @@
 package com.dev.moim.domain.account.service;
 
-import com.dev.moim.domain.account.dto.ReissueTokenResponse;
 import com.dev.moim.domain.account.dto.JoinRequest;
 import com.dev.moim.domain.account.dto.JoinResponse;
+import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
+import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
+import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
@@ -36,14 +39,18 @@ public class AuthService {
     @Transactional
     public JoinResponse join(JoinRequest request) {
 
-        if(userRepository.existsByEmail(request.email())){
-            throw new AuthException(EMAIL_DUPLICATION);
-        }
+        validateEmailDuplication(request.email());
+
+        Role role = Optional.ofNullable(request.role())
+                .filter(roleStr -> !roleStr.isEmpty())
+                .map(Role::valueOf)
+                .orElse(ROLE_USER);
 
         User user = User.builder()
                 .nickname(request.nickname())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .role(role)
                 .userProfileList(new ArrayList<>())
                 .build();
 
@@ -61,20 +68,29 @@ public class AuthService {
         return JoinResponse.of(user);
     }
 
-    public ReissueTokenResponse reissueToken(String refreshToken) {
+    private void validateEmailDuplication(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AuthException(EMAIL_DUPLICATION);
+        }
+    }
+
+    public TokenResponse reissueToken(String refreshToken) {
         try {
             if (!jwtUtil.isTokenValid(refreshToken)) {
                 throw new AuthException(AUTH_INVALID_TOKEN);
             }
 
             refreshTokenService.validateRefreshToken(refreshToken);
+            refreshTokenService.deleteToken(refreshToken);
 
             PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
 
-            return new ReissueTokenResponse(
-                    jwtUtil.createAccessToken(principalDetails),
-                    jwtUtil.createRefreshToken(principalDetails)
-            );
+            String newAccess = jwtUtil.createAccessToken(principalDetails);
+            String newRefresh = jwtUtil.createRefreshToken(principalDetails);
+
+            refreshTokenService.saveToken(principalDetails.getEmail(), newRefresh, jwtUtil.getRefreshTokenExpiryDate(newRefresh));
+
+            return new TokenResponse(newAccess, newRefresh);
         } catch (IllegalArgumentException e) {
             throw new AuthException(AUTH_INVALID_TOKEN);
         } catch (ExpiredJwtException e) {

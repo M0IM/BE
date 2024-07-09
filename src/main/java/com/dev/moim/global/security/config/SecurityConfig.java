@@ -1,5 +1,6 @@
 package com.dev.moim.global.security.config;
 
+import com.dev.moim.domain.account.service.RefreshTokenService;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -71,7 +73,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll());
 
         LoginFilter loginFilter = new LoginFilter(
-                authenticationManager(authenticationConfiguration), jwtUtil
+                authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService
         );
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 

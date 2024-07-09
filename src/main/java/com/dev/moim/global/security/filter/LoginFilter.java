@@ -2,10 +2,12 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.domain.account.service.RefreshTokenService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
+import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +34,8 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtProvider;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public Authentication attemptAuthentication(
@@ -69,21 +73,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        TokenResponse tokenResponse = new TokenResponse(
-                jwtProvider.createAccessToken(principalDetails),
-                jwtProvider.createRefreshToken(principalDetails));
+        String accessToken = jwtUtil.createAccessToken(principalDetails);
+        String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        log.info("tokenResponse = {}", tokenResponse);
+        refreshTokenService.saveToken(principalDetails.getEmail(), refreshToken, jwtUtil.getRefreshTokenExpiryDate(refreshToken));
 
-        BaseResponse<Object> successResponse = BaseResponse.onSuccess(tokenResponse);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonResponse = mapper.writeValueAsString(successResponse);
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        response.getWriter().write(jsonResponse);
+        HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
     }
 
     @Override
@@ -100,6 +95,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         } else {
             errorStatus = AUTHENTICATION_FAILED;
         }
-        throw new AuthException(errorStatus);
+        BaseResponse<Object> errorResponse = BaseResponse.onFailure(
+                errorStatus.getCode(),
+                errorStatus.getMessage(),
+                null);
+
+        HttpResponseUtil.setErrorResponse(response, HttpStatus.UNAUTHORIZED, errorResponse);
     }
 }

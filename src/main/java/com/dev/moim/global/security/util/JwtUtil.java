@@ -4,6 +4,7 @@ import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
+@Getter
 @Component
 public class JwtUtil {
 
@@ -54,6 +56,20 @@ public class JwtUtil {
 
     public String getEmail(String token) {
         return getClaims(token).getBody().get("email", String.class);
+    }
+
+    public Long getRefreshTokenExpiryDate(String refreshToken) throws AuthException {
+        try {
+            Jws<Claims> claims = getClaims(refreshToken);
+            return claims.getBody().getExpiration().getTime();
+        } catch (ExpiredJwtException e) {
+            throw new AuthException(AUTH_EXPIRED_TOKEN);
+        } catch (SecurityException
+                 | MalformedJwtException
+                 | UnsupportedJwtException
+                 | IllegalArgumentException e) {
+            throw new AuthException(AUTH_INVALID_TOKEN);
+        }
     }
 
     public boolean isTokenValid(String token) throws AuthException {

@@ -15,8 +15,8 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @Transactional(readOnly = true)
 public class RefreshTokenService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public void validateRefreshToken(String refreshToken) {
         RefreshToken savedRefreshToken = refreshTokenRepository
@@ -41,12 +41,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void deleteToken(String email) {
-        RefreshToken refreshToken =
-                refreshTokenRepository
-                        .findByEmail(email)
-                        .orElseThrow(() -> new AuthException(NOT_CONTAIN_TOKEN));
-
-        refreshTokenRepository.delete(refreshToken);
+    public void deleteToken(String refreshToken) {
+        refreshTokenRepository.deleteRefreshTokenByToken(refreshToken);
     }
 }

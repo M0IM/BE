@@ -1,10 +1,8 @@
 package com.dev.moim.domain.account.controller;
 
 import com.dev.moim.domain.account.dto.*;
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.service.AuthService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.security.annotation.ExtractToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,7 +21,7 @@ public class AuthController {
     @PostMapping("/join")
     @Operation(summary="회원 가입 API", description="회원 가입 성공 시, 자동 로그인을 위해 유저 계정 정보 반환" )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "CREATED", description = "회원 가입 성공"),
+            @ApiResponse(responseCode = "COMMON201", description = "회원 가입 성공"),
     })
     public BaseResponse<JoinResponse> join(@RequestBody JoinRequest request) {
         return BaseResponse.onSuccess(authService.join(request));
@@ -44,14 +42,14 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "토큰 재발급 성공"),
     })
-    public BaseResponse<ReissueTokenResponse> reissueToken(@ExtractToken String refreshToken) {
+    public BaseResponse<TokenResponse> reissueToken(@ExtractToken String refreshToken) {
         return BaseResponse.onSuccess(authService.reissueToken(refreshToken));
     }
 
     @PostMapping("/signOut")
     @Operation(summary="로그아웃 API", description="로그아웃 후, 기존 유효한 토큰 무효화" )
-    public BaseResponse<?> signOut(@AuthUser User user) {
-        authService.logout(user.getEmail());
+    public BaseResponse<?> signOut(@ExtractToken String refreshToken) {
+        authService.logout(refreshToken);
         return BaseResponse.onSuccess("로그아웃 성공");
     }
 
