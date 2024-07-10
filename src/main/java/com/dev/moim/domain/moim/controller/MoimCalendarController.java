@@ -1,16 +1,18 @@
 package com.dev.moim.domain.moim.controller;
 
-import com.dev.moim.domain.moim.*;
+import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/calenders")
+@Tag(name = "모임 캘린더 관련 컨트롤러")
 public class MoimCalendarController {
 
     @PostMapping("/post")

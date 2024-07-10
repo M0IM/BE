@@ -1,6 +1,6 @@
 package com.dev.moim.global.security.config;
 
-import com.dev.moim.domain.account.service.RefreshTokenService;
+import com.dev.moim.global.redis.service.RefreshTokenService;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
@@ -45,7 +45,7 @@ public class SecurityConfig {
             "/v3/**",
             "/api-docs/**",
             "/api/v1/auth/join/**",
-            "/api/v1/auth/reissueToken/**"
+            "/api/v1/auth/reissueToken/**",
     };
 
     @Bean

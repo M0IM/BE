@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim;
+package com.dev.moim.domain.moim.dto;
 
 public record CalenderCreateResponse(
         Long calenderId

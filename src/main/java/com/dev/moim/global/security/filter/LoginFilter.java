@@ -2,7 +2,7 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
-import com.dev.moim.domain.account.service.RefreshTokenService;
+import com.dev.moim.global.redis.service.RefreshTokenService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
@@ -76,7 +76,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        refreshTokenService.saveToken(principalDetails.getEmail(), refreshToken, jwtUtil.getTokenExpirationMillis(refreshToken));
+        refreshTokenService.saveToken(principalDetails.getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
         HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
     }

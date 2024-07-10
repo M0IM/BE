@@ -1,4 +1,4 @@
-package com.dev.moim.domain.account.entity;
+package com.dev.moim.global.redis.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

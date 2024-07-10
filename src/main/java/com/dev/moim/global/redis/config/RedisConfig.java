@@ -1,4 +1,4 @@
-package com.dev.moim.global.config;
+package com.dev.moim.global.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

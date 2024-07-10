@@ -1,7 +1,7 @@
-package com.dev.moim.domain.account.service;
+package com.dev.moim.global.redis.service;
 
-import com.dev.moim.domain.account.entity.RefreshToken;
-import com.dev.moim.domain.account.repository.RefreshTokenRepository;
+import com.dev.moim.global.redis.entity.RefreshToken;
+import com.dev.moim.global.redis.repository.RefreshTokenRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +31,13 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void saveToken(String email, String refreshToken, Long validityMilliseconds) {
+    public void saveToken(String email, String refreshToken, Long validitySeconds) {
+
         RefreshToken newRefreshToken =
                 RefreshToken.builder()
                         .email(email)
                         .token(refreshToken)
-                        .expiration(validityMilliseconds/1000)
+                        .expiration(validitySeconds)
                         .build();
 
         refreshTokenRepository.save(newRefreshToken);

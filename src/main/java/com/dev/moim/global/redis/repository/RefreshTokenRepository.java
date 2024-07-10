@@ -1,6 +1,6 @@
-package com.dev.moim.domain.account.repository;
+package com.dev.moim.global.redis.repository;
 
-import com.dev.moim.domain.account.entity.RefreshToken;
+import com.dev.moim.global.redis.entity.RefreshToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

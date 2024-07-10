@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim;
+package com.dev.moim.domain.moim.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

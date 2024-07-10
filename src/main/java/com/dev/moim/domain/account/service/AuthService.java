@@ -9,6 +9,7 @@ import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.redis.service.RefreshTokenService;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
@@ -88,7 +89,7 @@ public class AuthService {
             String newAccess = jwtUtil.createAccessToken(principalDetails);
             String newRefresh = jwtUtil.createRefreshToken(principalDetails);
 
-            refreshTokenService.saveToken(principalDetails.getEmail(), newRefresh, jwtUtil.getTokenExpirationMillis(newRefresh));
+            refreshTokenService.saveToken(principalDetails.getEmail(), newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
             return new TokenResponse(newAccess, newRefresh);
         } catch (IllegalArgumentException e) {
