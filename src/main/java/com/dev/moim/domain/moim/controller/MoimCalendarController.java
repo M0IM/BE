@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/calender")
+@RequestMapping("/api/v1/calenders")
 public class MoimCalendarController {
 
     @PostMapping("/post")

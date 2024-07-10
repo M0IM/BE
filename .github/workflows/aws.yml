@@ -30,7 +30,7 @@ jobs:
       - name: Create directory for application.yml
         run: mkdir -p ./src/main/resources
 
-      - name: Set up deploy.yml
+      - name: Set up application.yml
         run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
 
       - name: Grant execute permission for gradlew
@@ -64,11 +64,18 @@ jobs:
           key: ${{ env.PRIVATE_KEY }}
           script: |
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
-            
+
             if [ ! -z "$CONTAINER_ID" ]; then
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID
             fi
-            
-            sudo docker pull ${{ env.DOCKER_HUB }}
+
+            IMAGE_ID=$(sudo docker images -q ${{ env.DOCKER_IMAGE_NAME }})
+
+            if [ ! -z "$IMAGE_ID" ]; then
+              sudo docker rmi $IMAGE_ID
+            fi
+
+            sudo docker pull ${{ env.DOCKER_IMAGE_NAME }}
+
             sudo docker run --name ${{ env.CONTAINER_NAME }} -d -p 80:8080 -e TZ=Asia/Seoul ${{ env.DOCKER_IMAGE_NAME }}
