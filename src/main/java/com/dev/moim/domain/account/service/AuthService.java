@@ -88,7 +88,7 @@ public class AuthService {
             String newAccess = jwtUtil.createAccessToken(principalDetails);
             String newRefresh = jwtUtil.createRefreshToken(principalDetails);
 
-            refreshTokenService.saveToken(principalDetails.getEmail(), newRefresh, jwtUtil.getRefreshTokenExpiryDate(newRefresh));
+            refreshTokenService.saveToken(principalDetails.getEmail(), newRefresh, jwtUtil.getTokenExpirationMillis(newRefresh));
 
             return new TokenResponse(newAccess, newRefresh);
         } catch (IllegalArgumentException e) {

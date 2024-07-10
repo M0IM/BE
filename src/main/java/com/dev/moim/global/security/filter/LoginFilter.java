@@ -76,7 +76,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        refreshTokenService.saveToken(principalDetails.getEmail(), refreshToken, jwtUtil.getRefreshTokenExpiryDate(refreshToken));
+        refreshTokenService.saveToken(principalDetails.getEmail(), refreshToken, jwtUtil.getTokenExpirationMillis(refreshToken));
 
         HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
     }
