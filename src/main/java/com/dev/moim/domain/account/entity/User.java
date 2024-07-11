@@ -1,33 +1,33 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Provider;
+import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.entity.enums.UserRank;
 import com.dev.moim.domain.account.entity.enums.UserStatus;
 import com.dev.moim.domain.chatting.entity.UserChattingRoom;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicInsert
 public class User extends BaseEntity {
 
     @Id
@@ -50,12 +50,16 @@ public class User extends BaseEntity {
     private Long writerId;
 
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("ROLE_USER")
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
     @Enumerated(EnumType.STRING)
     private UserRank userRank;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProfile> userProfileList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
@@ -69,4 +73,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviewList = new ArrayList<>();
+
+    public void addUserProfile(UserProfile userProfile) {
+        userProfileList.add(userProfile);
+        userProfile.setUser(this);
+    }
 }

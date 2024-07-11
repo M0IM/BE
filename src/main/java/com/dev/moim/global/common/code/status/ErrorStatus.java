@@ -30,6 +30,13 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_REQUEST_INFO(HttpStatus.UNAUTHORIZED, "AUTH_006", "카카오 정보 불러오기에 실패하였습니다."),
     NOT_EQUAL_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_007", "리프레시 토큰이 다릅니다."),
     NOT_CONTAIN_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_008", "해당하는 토큰이 저장되어있지 않습니다."),
+    BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AUTH_009", "비밀번호를 잘못 입력했습니다."),
+    AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_010", "인증에 실패했습니다."),
+    EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "AUTH_011", "이미 가입한 메일 입니다."),
+    INVALID_GENDER(HttpStatus.BAD_REQUEST, "AUTH_012", "올바르지 않은 gender 입력값 입니다."),
+    USER_AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_013", "인증이 필요한 사용자입니다."),
+    USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
+    MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
 
     // User 관련
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_004", "존재하지 않는 사용자입니다."),
