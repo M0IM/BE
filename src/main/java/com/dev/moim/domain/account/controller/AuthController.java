@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.service.AuthService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.ExtractToken;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,11 +41,11 @@ public class AuthController {
     }
 
     @PostMapping("/reissueToken")
-    @Operation(summary="토큰 재발급 API", description="AccessToken의 유효 기간이 만료된 경우, Authorization 헤더에 RefreshToken을 담아서 요청을 보내면 AccessToken과 RefreshToken 재발급." )
+    @Operation(summary="토큰 재발급 API", description="AccessToken의 유효 기간이 만료된 경우, Authorization 헤더에 RefreshToken을 담아서 요청을 보내면 AccessToken과 RefreshToken 재발급.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "토큰 재발급 성공"),
     })
-    public BaseResponse<TokenResponse> reissueToken(@ExtractToken String refreshToken) {
+    public BaseResponse<TokenResponse> reissueToken(@ExtractToken @Parameter(name = "refreshToken", hidden = true) String refreshToken) {
         return BaseResponse.onSuccess(authService.reissueToken(refreshToken));
     }
 
