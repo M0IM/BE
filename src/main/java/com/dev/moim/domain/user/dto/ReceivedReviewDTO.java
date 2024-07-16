@@ -1,6 +1,6 @@
 package com.dev.moim.domain.user.dto;
 
-public record receivedReview(
+public record ReceivedReviewDTO(
         Long reviewId,
         String content
 ) {

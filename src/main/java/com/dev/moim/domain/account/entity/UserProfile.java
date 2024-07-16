@@ -1,6 +1,7 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
+import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.Column;
@@ -35,6 +36,10 @@ public class UserProfile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_profile_id")
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'SUB'")
+    private ProfileType profileType;
 
     private String name;
 
