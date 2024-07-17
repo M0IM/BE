@@ -25,7 +25,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Calendar extends BaseEntity {
+public class Plan extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +48,6 @@ public class Calendar extends BaseEntity {
     @JoinColumn(name = "user_group_id")
     private UserMoim userMoim;
 
-    @OneToMany(mappedBy = "calendar")
+    @OneToMany(mappedBy = "plan")
     private List<Schedule> scheduleList = new ArrayList<>();
 }

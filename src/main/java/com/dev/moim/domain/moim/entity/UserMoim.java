@@ -51,7 +51,7 @@ public class UserMoim extends BaseEntity {
     private Moim moim;
 
     @OneToMany(mappedBy = "userMoim")
-    private List<Calendar> calendarList = new ArrayList<>();
+    private List<Plan> planList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userMoim")
     private List<MoimAlarm> moimAlarmList = new ArrayList<>();

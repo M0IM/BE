@@ -42,5 +42,5 @@ public class Schedule extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id")
-    private Calendar calendar;
+    private Plan plan;
 }

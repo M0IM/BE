@@ -38,7 +38,7 @@ public class MoimCalendarController {
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다.")
     })
     @PostMapping("/{moimId}/calender")
-    public BaseResponse<Long> createCalender(
+    public BaseResponse<Long> createPlan(
             @PathVariable Long moimId,
             @RequestBody PlanCreateDTO request
     ) {
@@ -94,7 +94,7 @@ public class MoimCalendarController {
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다.")
     })
     @PutMapping("/{moimId}/plan/{planId}")
-    public BaseResponse<?> updateCalender(
+    public BaseResponse<?> updatePlan(
             @PathVariable Long moimId,
             @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
