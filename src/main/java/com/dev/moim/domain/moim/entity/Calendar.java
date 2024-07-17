@@ -36,13 +36,12 @@ public class Calendar extends BaseEntity {
 
     private String title;
 
-    // 일정 날짜
     private LocalDate date;
     
-    // 활동 지역
-    private String location;
+    private String locationAddress;
 
-    // 비용
+    private String locationDetail;
+
     private String cost;
 
     @ManyToOne(fetch = FetchType.LAZY)
