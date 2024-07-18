@@ -60,7 +60,7 @@ public class AuthController {
     public BaseResponse<TokenResponse> kakaoSignIn(
             @RequestBody SocialLoginRequest request
     ) {
-        return BaseResponse.onSuccess(authService.kakaoLogin(request));
+        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/oauth/google")

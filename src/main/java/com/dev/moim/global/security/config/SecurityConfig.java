@@ -1,12 +1,15 @@
 package com.dev.moim.global.security.config;
 
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.redis.service.RefreshTokenService;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
+import com.dev.moim.global.security.feign.request.KakaoFeign;
 import com.dev.moim.global.security.filter.JwtExceptionFilter;
 import com.dev.moim.global.security.filter.JwtFilter;
 import com.dev.moim.global.security.filter.LoginFilter;
+import com.dev.moim.global.security.filter.OAuth2LoginFilter;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,8 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RefreshTokenService refreshTokenService;
+    private final KakaoFeign kakaoFeign;
+    private final UserRepository userRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -46,7 +51,6 @@ public class SecurityConfig {
             "/api-docs/**",
             "/api/v1/auth/join/**",
             "/api/v1/auth/reissueToken/**",
-            "/api/v1/auth/oauth/kakao/**"
     };
 
     @Bean
@@ -78,7 +82,13 @@ public class SecurityConfig {
         );
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
+        OAuth2LoginFilter customOAuth2LoginFilter = new OAuth2LoginFilter(
+                kakaoFeign, userRepository, jwtUtil, refreshTokenService
+        );
+        customOAuth2LoginFilter.setFilterProcessesUrl("/api/v1/auth/oauth/kakao");
+
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(customOAuth2LoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService), LoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 

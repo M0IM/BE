@@ -2,7 +2,6 @@ package com.dev.moim.domain.account.service;
 
 import com.dev.moim.domain.account.dto.JoinRequest;
 import com.dev.moim.domain.account.dto.JoinResponse;
-import com.dev.moim.domain.account.dto.SocialLoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
@@ -11,7 +10,6 @@ import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.service.RefreshTokenService;
-import com.dev.moim.global.security.feign.dto.KakaoUserInfo;
 import com.dev.moim.global.security.feign.request.KakaoFeign;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.dev.moim.domain.account.entity.enums.Provider.KAKAO;
 import static com.dev.moim.domain.account.entity.enums.Provider.LOCAL;
 import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
@@ -80,48 +77,6 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new AuthException(EMAIL_DUPLICATION);
         }
-    }
-
-    public TokenResponse kakaoLogin(SocialLoginRequest request) {
-
-        log.info("kakaoToken = {}", request.oAuthToken());
-
-        KakaoUserInfo kakaoUserInfo = kakaoFeign.getUserInfo("Bearer " + request.oAuthToken());
-
-        log.info("id = {}", kakaoUserInfo.getId());
-        log.info("emailNeedsAgreement = {}", kakaoUserInfo.getKakaoAccount().isEmailNeedsAgreement());
-        log.info("email = {}", kakaoUserInfo.getKakaoAccount().getEmail());
-        log.info("nickname = {}", kakaoUserInfo.getKakaoAccount().getProfile().getNickname());
-        log.info("thumbnailImageUrl = {}", kakaoUserInfo.getKakaoAccount().getProfile().getThumbnailImageUrl());
-
-        User user = userRepository.findByProviderIdAndProvider(kakaoUserInfo.getId(), KAKAO)
-                .orElseGet(() -> createNewKakaoUser(kakaoUserInfo));
-
-        PrincipalDetails principalDetails = new PrincipalDetails(user);
-
-        String accessToken = jwtUtil.createAccessToken(principalDetails);
-        String refreshToken = jwtUtil.createRefreshToken(principalDetails);
-
-        refreshTokenService.saveToken(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
-
-        return new TokenResponse(accessToken, refreshToken);
-    }
-
-    private User createNewKakaoUser(KakaoUserInfo kakaoUserInfo) {
-        User user = User.builder()
-                .email(kakaoUserInfo.getKakaoAccount().getEmail())
-                .nickname(kakaoUserInfo.getKakaoAccount().getProfile().getNickname())
-                .role(ROLE_USER)
-                .provider(KAKAO)
-                .userProfileList(new ArrayList<>())
-                .build();
-
-        UserProfile userProfile = UserProfile.builder()
-                .build();
-
-        user.addUserProfile(userProfile);
-
-        return userRepository.save(user);
     }
 
     public TokenResponse reissueToken(String refreshToken) {
