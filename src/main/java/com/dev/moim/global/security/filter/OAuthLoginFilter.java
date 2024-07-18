@@ -1,14 +1,14 @@
 package com.dev.moim.global.security.filter;
 
-import com.dev.moim.domain.account.dto.SocialLoginRequest;
+import com.dev.moim.domain.account.dto.OAuthLoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.service.RefreshTokenService;
-import com.dev.moim.global.security.feign.dto.KakaoUserInfo;
-import com.dev.moim.global.security.feign.request.KakaoFeign;
+import com.dev.moim.global.security.feign.dto.OAuthUserInfo;
 import com.dev.moim.global.security.principal.PrincipalDetails;
+import com.dev.moim.global.security.service.OAuthLoginService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,23 +26,20 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
+import java.util.Map;
 
-import static com.dev.moim.domain.account.entity.enums.Provider.KAKAO;
-import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus._BAD_REQUEST;
 
 @Slf4j
-public class OAuth2LoginFilter extends AbstractAuthenticationProcessingFilter {
+public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final KakaoFeign kakaoFeign;
-    private final UserRepository userRepository;
+    private final Map<Provider, OAuthLoginService> oAuthLoginServiceMap;
     private final JwtUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
 
-    public OAuth2LoginFilter(KakaoFeign kakaoFeign, UserRepository userRepository, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
-        super(new AntPathRequestMatcher("/api/v1/auth/oauth/kakao"));
-        this.kakaoFeign = kakaoFeign;
-        this.userRepository = userRepository;
+    public OAuthLoginFilter(Map<Provider, OAuthLoginService> oAuthLoginServiceMap, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+        super(new AntPathRequestMatcher("/api/v1/auth/oauth"));
+        this.oAuthLoginServiceMap = oAuthLoginServiceMap;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService;
     }
@@ -52,16 +49,18 @@ public class OAuth2LoginFilter extends AbstractAuthenticationProcessingFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response) throws IOException, ServletException {
 
-        log.info("** OAuth2LoginFilter **");
+        log.info("** OAuthLoginFilter **");
 
-        SocialLoginRequest socialLoginRequest = readBody(request);
+        OAuthLoginRequest oAuthLoginRequest = readBody(request);
 
-        log.info("oAuthToken = {}", socialLoginRequest.oAuthToken());
+        log.info("oAuthToken = {}", oAuthLoginRequest.oAuthToken());
+        log.info("provider = {}", oAuthLoginRequest.provider());
 
-        KakaoUserInfo kakaoUserInfo = kakaoFeign.getUserInfo("Bearer " + socialLoginRequest.oAuthToken());
+        OAuthLoginService oAuthLoginService = oAuthLoginServiceMap.get(oAuthLoginRequest.provider());
 
-        User user = userRepository.findByProviderIdAndProvider(kakaoUserInfo.getId(), KAKAO)
-                .orElseGet(() -> createNewKakaoUser(kakaoUserInfo));
+        OAuthUserInfo oAuthUserInfo = oAuthLoginService.getUserInfo(oAuthLoginRequest.oAuthToken());
+
+        User user = oAuthLoginService.findOrCreateUser(oAuthUserInfo);
 
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 
@@ -75,27 +74,17 @@ public class OAuth2LoginFilter extends AbstractAuthenticationProcessingFilter {
         return null;
     }
 
-    private SocialLoginRequest readBody(HttpServletRequest request) {
-        SocialLoginRequest requestDTO = null;
+    private OAuthLoginRequest readBody(HttpServletRequest request) {
+        OAuthLoginRequest requestDTO = null;
         ObjectMapper om = new ObjectMapper();
 
         try {
-            requestDTO = om.readValue(request.getInputStream(), SocialLoginRequest.class);
+            requestDTO = om.readValue(request.getInputStream(), OAuthLoginRequest.class);
         } catch (IOException e) {
             throw new AuthException(_BAD_REQUEST);
         }
 
         return requestDTO;
-    }
-
-    private User createNewKakaoUser(KakaoUserInfo kakaoUserInfo) {
-        User user = User.builder()
-                .email(kakaoUserInfo.getKakaoAccount().getEmail())
-                .nickname(kakaoUserInfo.getKakaoAccount().getProfile().getNickname())
-                .role(ROLE_USER)
-                .provider(KAKAO)
-                .build();
-        return userRepository.save(user);
     }
 
     @Override

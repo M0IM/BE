@@ -55,26 +55,10 @@ public class AuthController {
         return BaseResponse.onSuccess("로그아웃 성공");
     }
 
-    @PostMapping("/oauth/kakao")
-    @Operation(summary="카카오 로그인 API", description="카카오 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public BaseResponse<TokenResponse> kakaoSignIn(
-            @RequestBody SocialLoginRequest request
-    ) {
-        return BaseResponse.onSuccess(null);
-    }
-
-    @PostMapping("/oauth/google")
-    @Operation(summary="구글 로그인 API", description="구글 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public BaseResponse<TokenResponse> googleSignIn(
-            @RequestBody AuthRequest request
-    ) {
-        return BaseResponse.onSuccess(null);
-    }
-
-    @PostMapping("/oauth/apple")
-    @Operation(summary="애플 로그인 API", description="애플 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
-    public BaseResponse<TokenResponse> appleSignIn(
-            @RequestBody AppleAuthRequest request
+    @PostMapping("/oAuth")
+    @Operation(summary="소셜 로그인 API", description="현재는 카카오 로그인만 가능합니다." )
+    public BaseResponse<TokenResponse> oAuthLogin(
+            @RequestBody OAuthLoginRequest request
     ) {
         return BaseResponse.onSuccess(null);
     }

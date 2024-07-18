@@ -6,11 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-public class KakaoUserInfo {
+public class KakaoUserInfo extends OAuthUserInfo {
 
-    private Long id;
+    @JsonProperty("id")
+    private Long providerId;
 
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
@@ -39,5 +39,11 @@ public class KakaoUserInfo {
 
             private String birthday;
         }
+    }
+
+    public KakaoUserInfo(Long providerId, KakaoAccount kakaoAccount) {
+        super(providerId, kakaoAccount.getEmail(), kakaoAccount.getProfile().getNickname());
+        this.providerId = providerId;
+        this.kakaoAccount = kakaoAccount;
     }
 }
