@@ -46,6 +46,7 @@ public class SecurityConfig {
             "/api-docs/**",
             "/api/v1/auth/join/**",
             "/api/v1/auth/reissueToken/**",
+            "/api/v1/auth/oauth/kakao/**"
     };
 
     @Bean

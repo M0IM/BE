@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
-
 @Entity
 @Getter
 @Builder
@@ -42,6 +40,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
+
+    private Long providerId;
 
     private LocalDateTime inactive_date;
 

@@ -47,7 +47,7 @@ public class JwtUtil {
         Instant expirationTime = issuedAt.plusSeconds(validitySeconds);
 
         return Jwts.builder()
-                .setSubject(principalDetails.getId().toString())
+                .setSubject(principalDetails.user().getId().toString())
                 .claim("email", principalDetails.getUsername())
                 .claim("role", principalDetails.getAuthorities())
                 .setIssuedAt(Date.from(issuedAt))

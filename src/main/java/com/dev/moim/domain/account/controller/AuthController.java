@@ -58,9 +58,9 @@ public class AuthController {
     @PostMapping("/oauth/kakao")
     @Operation(summary="카카오 로그인 API", description="카카오 accessToken을 이용하여 유저 정보 받아 저장하고 앱의 토큰 반환" )
     public BaseResponse<TokenResponse> kakaoSignIn(
-            @RequestBody AuthRequest request
+            @RequestBody SocialLoginRequest request
     ) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(authService.kakaoLogin(request));
     }
 
     @PostMapping("/oauth/google")
