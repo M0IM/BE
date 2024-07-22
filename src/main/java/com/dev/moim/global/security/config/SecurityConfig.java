@@ -1,5 +1,6 @@
 package com.dev.moim.global.security.config;
 
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.global.redis.service.RefreshTokenService;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
@@ -7,7 +8,9 @@ import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
 import com.dev.moim.global.security.filter.JwtExceptionFilter;
 import com.dev.moim.global.security.filter.JwtFilter;
 import com.dev.moim.global.security.filter.LoginFilter;
+import com.dev.moim.global.security.filter.OAuthLoginFilter;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
+import com.dev.moim.global.security.service.OAuthLoginService;
 import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Map;
+
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
@@ -34,6 +39,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RefreshTokenService refreshTokenService;
+    private final Map<Provider, OAuthLoginService> oAuthLoginServiceMap;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -77,7 +83,12 @@ public class SecurityConfig {
         );
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
+        OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
+                oAuthLoginServiceMap, jwtUtil, refreshTokenService
+        );
+
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService), LoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
