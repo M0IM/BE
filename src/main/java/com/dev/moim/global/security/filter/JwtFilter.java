@@ -2,6 +2,7 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.redis.service.LogoutAccessTokenService;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -27,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final PrincipalDetailsService principalDetailsService;
+    private final LogoutAccessTokenService logoutAccessTokenService;
 
     @Override
     public void doFilterInternal(
@@ -40,6 +42,11 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("** JwtFilter **");
 
         if (accessToken == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (logoutAccessTokenService.isTokenExist(accessToken)) {
             filterChain.doFilter(request, response);
             return;
         }

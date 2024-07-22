@@ -21,9 +21,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public void validateRefreshToken(String refreshToken) {
-        RefreshToken savedRefreshToken = refreshTokenRepository
-                        .findByEmail(jwtUtil.getEmail(refreshToken))
-                        .orElseThrow(() -> new AuthException(NOT_CONTAIN_TOKEN));
+        RefreshToken savedRefreshToken = findTokenByEmail(jwtUtil.getEmail(refreshToken));
 
         if (!savedRefreshToken.getToken().equals(refreshToken)) {
             throw new AuthException(NOT_EQUAL_TOKEN);
@@ -43,8 +41,15 @@ public class RefreshTokenService {
         refreshTokenRepository.save(newRefreshToken);
     }
 
+    public RefreshToken findTokenByEmail(String email) {
+        return refreshTokenRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new AuthException(NOT_CONTAIN_TOKEN));
+    }
+
     @Transactional
-    public void deleteToken(String refreshToken) {
-        refreshTokenRepository.deleteRefreshTokenByToken(refreshToken);
+    public void deleteToken(String email) {
+        log.info("email = {}", email);
+        refreshTokenRepository.deleteRefreshTokenByEmail(email);
     }
 }

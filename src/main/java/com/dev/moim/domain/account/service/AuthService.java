@@ -38,7 +38,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final KakaoFeign kakaoFeign;
 
     @Transactional
     public JoinResponse join(JoinRequest request) {
@@ -81,12 +80,17 @@ public class AuthService {
 
     public TokenResponse reissueToken(String refreshToken) {
         try {
+
+            log.info("refreshToken = {}", refreshToken);
+
             if (!jwtUtil.isTokenValid(refreshToken)) {
                 throw new AuthException(AUTH_INVALID_TOKEN);
             }
 
             refreshTokenService.validateRefreshToken(refreshToken);
-            refreshTokenService.deleteToken(refreshToken);
+
+            log.info("email = {}", jwtUtil.getEmail(refreshToken));
+            refreshTokenService.deleteToken(jwtUtil.getEmail(refreshToken));
 
             PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
 
@@ -101,9 +105,5 @@ public class AuthService {
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
         }
-    }
-
-    public void logout(String email) {
-        refreshTokenService.deleteToken(email);
     }
 }

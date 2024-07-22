@@ -31,7 +31,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
-public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;

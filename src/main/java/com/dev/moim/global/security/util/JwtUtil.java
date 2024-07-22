@@ -4,10 +4,12 @@ import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +26,7 @@ public class JwtUtil {
     private final SecretKey secretKey;
     private final Long accessTokenValiditySec;
     private final Long refreshTokenValiditySec;
+    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     public JwtUtil(
             @Value("${spring.jwt.secret}") final String secretKey,
@@ -60,6 +63,10 @@ public class JwtUtil {
         return getClaims(token).getBody().get("email", String.class);
     }
 
+    public Long getExpiration(String token) {
+        return getClaims(token).getBody().getExpiration().getTime();
+    }
+
     public boolean isTokenValid(String token) throws AuthException {
         try {
             Jws<Claims> claims = getClaims(token);
@@ -78,5 +85,14 @@ public class JwtUtil {
 
     private Jws<Claims> getClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

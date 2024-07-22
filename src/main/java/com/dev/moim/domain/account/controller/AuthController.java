@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.service.AuthService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.ExtractToken;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,14 +45,15 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "토큰 재발급 성공"),
     })
-    public BaseResponse<TokenResponse> reissueToken(@ExtractToken String refreshToken) {
+    public BaseResponse<TokenResponse> reissueToken(@ExtractToken @Parameter(name = "refreshToken", hidden = true) String refreshToken) {
         return BaseResponse.onSuccess(authService.reissueToken(refreshToken));
     }
 
-    @PostMapping("/signOut")
+    @PostMapping("/logout")
     @Operation(summary="로그아웃 API", description="로그아웃 후, 기존 유효한 토큰 무효화" )
-    public BaseResponse<?> signOut(@ExtractToken String refreshToken) {
-        authService.logout(refreshToken);
+    public BaseResponse<?> signOut(
+            @ExtractToken @Parameter(name = "accessToken", hidden = true) String accessToken
+    ) {
         return BaseResponse.onSuccess("로그아웃 성공");
     }
 
