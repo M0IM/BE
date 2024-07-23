@@ -5,7 +5,7 @@ import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.global.error.handler.AuthException;
-import com.dev.moim.global.redis.service.RefreshTokenService;
+import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.feign.dto.OAuthUserInfo;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.service.OAuthLoginService;
@@ -35,13 +35,13 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final Map<Provider, OAuthLoginService> oAuthLoginServiceMap;
     private final JwtUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
+    private final RedisUtil redisUtil;
 
-    public OAuthLoginFilter(Map<Provider, OAuthLoginService> oAuthLoginServiceMap, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+    public OAuthLoginFilter(Map<Provider, OAuthLoginService> oAuthLoginServiceMap, JwtUtil jwtUtil, RedisUtil redisUtil) {
         super(new AntPathRequestMatcher("/api/v1/auth/oauth"));
         this.oAuthLoginServiceMap = oAuthLoginServiceMap;
         this.jwtUtil = jwtUtil;
-        this.refreshTokenService = refreshTokenService;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        refreshTokenService.saveToken(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        redisUtil.setValue(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
         HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
 
