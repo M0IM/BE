@@ -46,8 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (redisUtil.getValue(accessToken) == null) {
+        if (redisUtil.getValue(accessToken) != null) {
             filterChain.doFilter(request, response);
+            log.info("logout accessToken");
             return;
         }
 
