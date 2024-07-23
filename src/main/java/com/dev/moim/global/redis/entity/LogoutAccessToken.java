@@ -5,16 +5,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-@RedisHash(value = "refreshToken")
+@RedisHash(value = "logoutAccessToken")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class RefreshToken {
+public class LogoutAccessToken {
 
     @Id
-    private String email;
-    private String token;
+    private String accessToken;
     @TimeToLive
     private Long expiration;
 }

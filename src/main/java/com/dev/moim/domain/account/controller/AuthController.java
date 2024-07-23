@@ -49,10 +49,11 @@ public class AuthController {
         return BaseResponse.onSuccess(authService.reissueToken(refreshToken));
     }
 
-    @PostMapping("/signOut")
+    @PostMapping("/logout")
     @Operation(summary="로그아웃 API", description="로그아웃 후, 기존 유효한 토큰 무효화" )
-    public BaseResponse<?> signOut(@ExtractToken String refreshToken) {
-        authService.logout(refreshToken);
+    public BaseResponse<?> signOut(
+            @ExtractToken @Parameter(name = "accessToken", hidden = true) String accessToken
+    ) {
         return BaseResponse.onSuccess("로그아웃 성공");
     }
 

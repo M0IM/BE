@@ -86,7 +86,8 @@ public class AuthService {
             }
 
             refreshTokenService.validateRefreshToken(refreshToken);
-            refreshTokenService.deleteToken(refreshToken);
+            log.info("email = {}", jwtUtil.getEmail(refreshToken));
+            refreshTokenService.deleteToken(jwtUtil.getEmail(refreshToken));
 
             PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
 
