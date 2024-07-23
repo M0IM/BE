@@ -1,8 +1,7 @@
 package com.dev.moim.global.security.filter;
 
 import com.dev.moim.global.error.handler.AuthException;
-import com.dev.moim.global.redis.service.LogoutAccessTokenService;
-import com.dev.moim.global.redis.service.RefreshTokenService;
+import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +19,8 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.AUTH_EXPIRED_TO
 @Slf4j
 public class CustomLogoutHandler implements LogoutHandler {
 
-    private final LogoutAccessTokenService logoutAccessTokenService;
-    private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -32,15 +30,11 @@ public class CustomLogoutHandler implements LogoutHandler {
         try {
             String accessToken = jwtUtil.resolveToken(request);
 
-            log.info("accessToken = {}", accessToken);
-
             Long now = new Date().getTime();
             Long expiration = jwtUtil.getExpiration(accessToken) - now;
-            logoutAccessTokenService.saveToken(accessToken, expiration);
+            redisUtil.setValue(accessToken, "logout", expiration);
 
-            String email = jwtUtil.getEmail(accessToken);
-            log.info("email = {}", email);
-            refreshTokenService.deleteToken(email);
+            redisUtil.deleteValue(jwtUtil.getEmail(accessToken));
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
         }

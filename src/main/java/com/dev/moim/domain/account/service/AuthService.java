@@ -9,8 +9,7 @@ import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
-import com.dev.moim.global.redis.service.RefreshTokenService;
-import com.dev.moim.global.security.feign.request.KakaoFeign;
+import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
@@ -31,14 +30,14 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final PrincipalDetailsService principalDetailsService;
-    private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final KakaoFeign kakaoFeign;
+    private final RedisUtil redisUtil;
 
     @Transactional
     public JoinResponse join(JoinRequest request) {
@@ -79,22 +78,22 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public TokenResponse reissueToken(String refreshToken) {
         try {
             if (!jwtUtil.isTokenValid(refreshToken)) {
                 throw new AuthException(AUTH_INVALID_TOKEN);
             }
 
-            refreshTokenService.validateRefreshToken(refreshToken);
-            log.info("email = {}", jwtUtil.getEmail(refreshToken));
-            refreshTokenService.deleteToken(jwtUtil.getEmail(refreshToken));
+            String email = jwtUtil.getEmail(refreshToken);
+            redisUtil.deleteValue(email);
 
-            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(jwtUtil.getEmail(refreshToken));
+            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(email);
 
             String newAccess = jwtUtil.createAccessToken(principalDetails);
             String newRefresh = jwtUtil.createRefreshToken(principalDetails);
 
-            refreshTokenService.saveToken(principalDetails.user().getEmail(), newRefresh, jwtUtil.getRefreshTokenValiditySec());
+            redisUtil.setValue(email, newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
             return new TokenResponse(newAccess, newRefresh);
         } catch (IllegalArgumentException e) {
@@ -102,9 +101,5 @@ public class AuthService {
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
         }
-    }
-
-    public void logout(String email) {
-        refreshTokenService.deleteToken(email);
     }
 }
