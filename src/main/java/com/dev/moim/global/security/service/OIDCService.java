@@ -6,6 +6,7 @@ import com.dev.moim.global.error.GeneralException;
 import com.dev.moim.global.security.feign.config.OauthProperties;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyDTO;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyListDTO;
+import com.dev.moim.global.security.feign.request.GoogleFeign;
 import com.dev.moim.global.security.feign.request.KakaoFeign;
 import com.dev.moim.global.security.util.JwtOIDCUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.OAUTH_PROVIDER_
 public class OIDCService {
 
     private final KakaoFeign kakaoFeign;
+    private final GoogleFeign googleFeign;
     private final JwtOIDCUtil jwtOIDCUtil;
     private final OauthProperties oauthProperties;
 
@@ -29,6 +31,8 @@ public class OIDCService {
 
         if (provider.equals(KAKAO)) {
             oidcPublicKeyList = kakaoFeign.getKakaoOIDCOpenKeys();
+        } else if (provider.equals(GOOGLE)) {
+            oidcPublicKeyList = googleFeign.getGoogleOIDCOpenKeys();
         } else {
             throw new GeneralException(OAUTH_PROVIDER_NOT_FOUND);
         }
