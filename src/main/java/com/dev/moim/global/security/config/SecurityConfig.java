@@ -1,20 +1,19 @@
 package com.dev.moim.global.security.config;
 
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.global.redis.service.RefreshTokenService;
+import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
-import com.dev.moim.global.security.filter.JwtExceptionFilter;
-import com.dev.moim.global.security.filter.JwtFilter;
-import com.dev.moim.global.security.filter.LoginFilter;
-import com.dev.moim.global.security.filter.OAuthLoginFilter;
+import com.dev.moim.global.security.filter.*;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.service.OAuthLoginService;
+import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import java.util.Map;
 
@@ -38,7 +38,6 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final RefreshTokenService refreshTokenService;
     private final Map<Provider, OAuthLoginService> oAuthLoginServiceMap;
 
     @Bean
@@ -55,7 +54,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil, RedisUtil redisUtil) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors
                 .configurationSource(CorsConfig.apiConfigurationSource()));
@@ -78,19 +77,35 @@ public class SecurityConfig {
                 .requestMatchers("/**").authenticated()
                 .anyRequest().permitAll());
 
-        LoginFilter loginFilter = new LoginFilter(
-                authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService
+        CustomLoginFilter customLoginFilter = new CustomLoginFilter(
+                authenticationManager(authenticationConfiguration), jwtUtil, redisUtil
         );
-        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+        customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
-                oAuthLoginServiceMap, jwtUtil, refreshTokenService
+                oAuthLoginServiceMap, jwtUtil, redisUtil
         );
 
-        http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService), LoginFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService, redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+
+        http.logout(logout -> logout
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(
+                        new CustomLogoutHandler(jwtUtil, redisUtil))
+                .logoutSuccessHandler((request, response, authentication) -> HttpResponseUtil.setSuccessResponse(
+                        response,
+                        HttpStatus.OK,
+                        "로그아웃 성공")
+                )
+        );
+        http.addFilterAfter(
+                new LogoutFilter(
+                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 성공"),
+                        new CustomLogoutHandler(jwtUtil, redisUtil)),
+                JwtFilter.class);
 
         return http.build();
     }
