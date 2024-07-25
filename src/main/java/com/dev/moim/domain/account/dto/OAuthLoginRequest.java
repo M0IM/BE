@@ -4,6 +4,8 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 
 public record OAuthLoginRequest(
         Provider provider,
-        String oAuthToken
+        String idToken,
+        String email,
+        String nickname
 ) {
 }

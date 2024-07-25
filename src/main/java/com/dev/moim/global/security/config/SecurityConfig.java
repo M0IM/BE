@@ -1,13 +1,13 @@
 package com.dev.moim.global.security.config;
 
-import com.dev.moim.domain.account.entity.enums.Provider;
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
 import com.dev.moim.global.security.filter.*;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
-import com.dev.moim.global.security.service.OAuthLoginService;
+import com.dev.moim.global.security.service.OIDCService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
-import java.util.Map;
-
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final Map<Provider, OAuthLoginService> oAuthLoginServiceMap;
+    private final OIDCService oidcService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -54,7 +52,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil, RedisUtil redisUtil) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil, RedisUtil redisUtil, UserRepository userRepository) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors
                 .configurationSource(CorsConfig.apiConfigurationSource()));
@@ -83,7 +81,7 @@ public class SecurityConfig {
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
-                oAuthLoginServiceMap, jwtUtil, redisUtil
+                oidcService, jwtUtil, redisUtil, userRepository
         );
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
