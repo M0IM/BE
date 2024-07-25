@@ -7,6 +7,7 @@ import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
+import com.dev.moim.global.security.util.HttpRequestUtil;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,25 +44,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull HttpServletResponse response) throws AuthenticationException {
         log.info("** LoginFilter **");
 
-        LoginRequest logInRequest = readBody(request);
+        LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(logInRequest.email(), logInRequest.password());
 
         return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-    }
-
-    private LoginRequest readBody(HttpServletRequest request) {
-        LoginRequest loginRequestDto = null;
-        ObjectMapper om = new ObjectMapper();
-
-        try {
-            loginRequestDto = om.readValue(request.getInputStream(), LoginRequest.class);
-        } catch (IOException e) {
-            throw new AuthException(_BAD_REQUEST);
-        }
-
-        return loginRequestDto;
     }
 
     @Override

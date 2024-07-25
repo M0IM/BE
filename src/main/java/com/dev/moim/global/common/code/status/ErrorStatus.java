@@ -1,6 +1,5 @@
 package com.dev.moim.global.common.code.status;
 
-
 import com.dev.moim.global.common.code.BaseErrorCode;
 import com.dev.moim.global.common.code.ErrorReasonDTO;
 import lombok.AllArgsConstructor;
@@ -39,6 +38,10 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_013", "인증이 필요한 사용자입니다."),
     USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
     MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
+    OAUTH_PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_016", "OAuth provider를 찾을 수 없습니다."),
+    UNREGISTERED_OAUTH_LOGIN_USER(HttpStatus.UNAUTHORIZED, "AUTH_017", "회원가입이 필요한 사용자입니다."),
+    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_018", "만료된 ID 토큰 입니다."),
+    ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_019", "유효하지 않은 ID 토큰 입니다."),
 
     // Moim 관련
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
