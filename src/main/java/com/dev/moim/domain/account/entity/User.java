@@ -7,7 +7,6 @@ import com.dev.moim.domain.account.entity.enums.UserStatus;
 import com.dev.moim.domain.chatting.entity.UserChattingRoom;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,7 +41,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    private Long providerId;
+    private String providerId;
 
     private LocalDateTime inactive_date;
 
