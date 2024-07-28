@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.dto.OIDCDecodePayload;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.common.code.status.SuccessStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -17,40 +18,46 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.UNREGISTERED_OAUTH_LOGIN_USER;
-
+@RequiredArgsConstructor
 @Slf4j
-public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class OAuthLoginFilter extends OncePerRequestFilter {
 
     private final OIDCService oidcService;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final UserRepository userRepository;
 
-    public OAuthLoginFilter(OIDCService oidcService, JwtUtil jwtUtil, RedisUtil redisUtil, UserRepository userRepository) {
-        super(new AntPathRequestMatcher("/api/v1/auth/oAuth"));
-        this.oidcService = oidcService;
-        this.jwtUtil = jwtUtil;
-        this.redisUtil = redisUtil;
-        this.userRepository = userRepository;
-    }
-
     @Override
-    public Authentication attemptAuthentication(
+    protected void doFilterInternal(
             @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response) throws IOException, ServletException {
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         log.info("** OAuthLoginFilter **");
+
+        if (!request.getServletPath().equals("/api/v1/auth/oAuth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            authenticate(request, response);
+        } catch (AuthException e) {
+            HttpResponseUtil.setErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    public void authenticate (
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException, ServletException, AuthException {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
 
@@ -62,42 +69,25 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("[payload] email : {}", oidcDecodePayload.email());
         log.info("[payload] sub (사용자 고유 식별자 키) : {}", oidcDecodePayload.sub());
 
-        User user = userRepository.findByProviderIdAndProvider(oidcDecodePayload.sub(), oAuthLoginRequest.provider())
-                .orElseThrow(() -> new AuthException(UNREGISTERED_OAUTH_LOGIN_USER));
+        Optional<User> user = userRepository.findByProviderIdAndProvider(oidcDecodePayload.sub(), oAuthLoginRequest.provider());
 
-        PrincipalDetails principalDetails = new PrincipalDetails(user);
+        if (user.isPresent()) {
+            handleExistingUser(response, user.get());
+        } else {
+            log.info("신규 유저 : 추가 정보 입력 필요");
+            HttpResponseUtil.setSuccessResponse(response, SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER.getHttpStatus(),
+                    SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER.getMessage());
+        }
+    }
+
+    private void handleExistingUser(HttpServletResponse response, User existingUser) throws IOException {
+        PrincipalDetails principalDetails = new PrincipalDetails(existingUser);
 
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
         redisUtil.setValue(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
-
-        return null;
-    }
-
-    @Override
-    protected void successfulAuthentication(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain chain,
-            @NonNull Authentication authResult) throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException failed) throws IOException, ServletException {
-        if (failed.getCause() instanceof AuthException) {
-            AuthException authException = (AuthException) failed.getCause();
-            if (authException.getCode() == UNREGISTERED_OAUTH_LOGIN_USER) {
-                HttpResponseUtil.setErrorResponse(response, HttpStatus.UNAUTHORIZED, authException.getMessage());
-                return;
-            }
-        }
-        HttpResponseUtil.setErrorResponse(response, HttpStatus.UNAUTHORIZED, "Authentication failed");
+        HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, new TokenResponse(accessToken, refreshToken));
     }
 }

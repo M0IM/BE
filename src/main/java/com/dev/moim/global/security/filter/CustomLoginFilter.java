@@ -5,12 +5,10 @@ import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
-import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.util.HttpRequestUtil;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +31,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
+
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
