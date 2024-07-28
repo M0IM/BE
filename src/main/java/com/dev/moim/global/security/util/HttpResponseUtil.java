@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.util;
 
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.common.code.status.SuccessStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -16,11 +17,11 @@ public class HttpResponseUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void setSuccessResponse(HttpServletResponse response, HttpStatus httpStatus, Object body)
+    public static void setSuccessResponse(HttpServletResponse response, SuccessStatus status, Object body)
             throws IOException {
-        String responseBody = objectMapper.writeValueAsString(BaseResponse.onSuccess(body));
+        String responseBody = objectMapper.writeValueAsString(BaseResponse.of(status, body));
         response.setContentType("application/json");
-        response.setStatus(httpStatus.value());
+        response.setStatus(status.getHttpStatus().value());
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(responseBody);
     }

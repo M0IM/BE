@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
+import static com.dev.moim.global.common.code.status.SuccessStatus._CREATED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -65,7 +66,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
+        HttpResponseUtil.setSuccessResponse(response, _CREATED, new TokenResponse(accessToken, refreshToken));
     }
 
     @Override

@@ -5,8 +5,6 @@ import com.dev.moim.domain.account.dto.OIDCDecodePayload;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.global.common.code.status.SuccessStatus;
-import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.service.OIDCService;
@@ -20,11 +18,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import static com.dev.moim.global.common.code.status.SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER;
+import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -48,14 +48,7 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
             return;
         }
 
-        try {
-            authenticate(request, response);
-        } catch (AuthException e) {
-            log.error("e : {}", e.getMessage());
-            log.error("e : {}",e.getErrorReasonHttpStatus().getHttpStatus());
-            HttpResponseUtil.setErrorResponse(response, e.getErrorReasonHttpStatus().getHttpStatus(), e.getMessage());
-            return;
-        }
+        authenticate(request, response);
     }
 
     public void authenticate (
@@ -78,8 +71,7 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
             handleExistingUser(response, user.get());
         } else {
             log.info("신규 유저 : 추가 정보 입력 필요");
-            HttpResponseUtil.setSuccessResponse(response, SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER.getHttpStatus(),
-                    SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER.getMessage());
+            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, null);
         }
     }
 
@@ -91,6 +83,6 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
 
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, new TokenResponse(accessToken, refreshToken));
+        HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken));
     }
 }

@@ -90,11 +90,10 @@ public class JwtOIDCUtil {
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             log.error("만료된 ID 토큰");
-            throw new AuthException(AUTH_EXPIRED_TOKEN);
+            throw new AuthException(ID_TOKEN_EXPIRED);
         } catch (Exception e) {
-            log.error(e.toString());
             log.error("유효하지 않은 ID 토큰");
-            throw new AuthException(OAUTH_INVALID_TOKEN);
+            throw new AuthException(ID_TOKEN_INVALID);
         }
     }
 

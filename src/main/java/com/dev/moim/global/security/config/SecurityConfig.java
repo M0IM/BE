@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.config;
 
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.common.code.status.SuccessStatus;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
@@ -13,7 +14,6 @@ import com.dev.moim.global.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -85,7 +85,7 @@ public class SecurityConfig {
         );
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService, redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
@@ -95,13 +95,13 @@ public class SecurityConfig {
                         new CustomLogoutHandler(jwtUtil, redisUtil))
                 .logoutSuccessHandler((request, response, authentication) -> HttpResponseUtil.setSuccessResponse(
                         response,
-                        HttpStatus.OK,
+                        SuccessStatus._OK,
                         "로그아웃 성공")
                 )
         );
         http.addFilterAfter(
                 new LogoutFilter(
-                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 성공"),
+                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, SuccessStatus._OK, "로그아웃 성공"),
                         new CustomLogoutHandler(jwtUtil, redisUtil)),
                 JwtFilter.class);
 
