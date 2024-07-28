@@ -51,13 +51,13 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
         try {
             authenticate(request, response);
         } catch (AuthException e) {
-            HttpResponseUtil.setErrorResponse(response, HttpStatus.UNAUTHORIZED, e.getMessage());
+            HttpResponseUtil.setErrorResponse(response, e.getErrorReasonHttpStatus().getHttpStatus(), e.getMessage());
         }
     }
 
     public void authenticate (
             HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException, AuthException {
+            HttpServletResponse response) throws IOException {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
 

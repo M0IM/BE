@@ -1,7 +1,7 @@
 package com.dev.moim.global.security.util;
 
 import com.dev.moim.domain.account.dto.OIDCDecodePayload;
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.global.error.handler.AuthException;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -52,10 +52,10 @@ public class JwtOIDCUtil {
             return jwts;
         } catch (ExpiredJwtException e) {
             log.error("만료된 ID 토큰");
-            throw new GeneralException(ID_TOKEN_EXPIRED);
+            throw new AuthException(ID_TOKEN_EXPIRED);
         } catch (Exception e) {
             log.error("유효하지 않은 ID 토큰");
-            throw new GeneralException(ID_TOKEN_INVALID);
+            throw new AuthException(ID_TOKEN_INVALID);
         }
     }
 
@@ -63,7 +63,7 @@ public class JwtOIDCUtil {
 
         String[] splitToken = token.split("\\.");
         if (splitToken.length != 3) {
-            throw new GeneralException(OAUTH_INVALID_TOKEN);
+            throw new AuthException(ID_TOKEN_INVALID);
         }
         return splitToken[0] + "." + splitToken[1] + ".";
     }
@@ -90,11 +90,11 @@ public class JwtOIDCUtil {
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
             log.error("만료된 ID 토큰");
-            throw new GeneralException(AUTH_EXPIRED_TOKEN);
+            throw new AuthException(AUTH_EXPIRED_TOKEN);
         } catch (Exception e) {
             log.error(e.toString());
             log.error("유효하지 않은 ID 토큰");
-            throw new GeneralException(OAUTH_INVALID_TOKEN);
+            throw new AuthException(OAUTH_INVALID_TOKEN);
         }
     }
 

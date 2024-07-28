@@ -2,7 +2,7 @@ package com.dev.moim.global.security.service;
 
 import com.dev.moim.domain.account.dto.OIDCDecodePayload;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.feign.config.OauthProperties;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyDTO;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyListDTO;
@@ -38,7 +38,7 @@ public class OIDCService {
         } else if (provider.equals(APPLE)) {
             oidcPublicKeyList = appleFeign.getAppleOIDCOpenKeys();
         }else {
-            throw new GeneralException(OAUTH_PROVIDER_NOT_FOUND);
+            throw new AuthException(OAUTH_PROVIDER_NOT_FOUND);
         }
 
         return getPayloadFromIdToken(
