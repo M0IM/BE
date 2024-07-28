@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.principal;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,18 @@ public record PrincipalDetails(User user) implements UserDetails {
         collections.add(new SimpleGrantedAuthority(user.getRole().toString()));
 
         return collections;
+    }
+
+    public Long getUserId() {
+        return user.getId();
+    }
+
+    public Provider getProvider() {
+        return user.getProvider();
+    }
+
+    public String getProviderId() {
+        return user.getProviderId();
     }
 
     @Override

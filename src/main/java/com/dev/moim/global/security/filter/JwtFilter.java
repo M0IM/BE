@@ -12,14 +12,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+
+import static com.dev.moim.global.common.code.status.ErrorStatus.LOGOUT_ACCESS_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,9 +37,9 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String accessToken = getJwtFromRequest(request);
-
         log.info("** JwtFilter **");
+
+        String accessToken = jwtUtil.resolveToken(request);
 
         if (accessToken == null) {
             filterChain.doFilter(request, response);
@@ -49,33 +49,16 @@ public class JwtFilter extends OncePerRequestFilter {
         if (redisUtil.getValue(accessToken) != null) {
             filterChain.doFilter(request, response);
             log.info("logout accessToken");
-            return;
+            throw new AuthException(LOGOUT_ACCESS_TOKEN);
         }
 
         if(jwtUtil.isTokenValid(accessToken)) {
-            String email = jwtUtil.getEmail(accessToken);
-            UserDetails userDetails = principalDetailsService.loadUserByUsername(email);
+            Authentication authentication = jwtUtil.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            if (userDetails != null) {
-                setAuthenticationToContext(userDetails);
-            } else {
-                throw new AuthException(ErrorStatus.USER_NOT_FOUND);
-            }
         } else {
             throw new AuthException(ErrorStatus.AUTH_INVALID_TOKEN);
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        return (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) ? bearerToken.replace("Bearer ", ""): null;
-    }
-
-    private void setAuthenticationToContext(UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails, "", userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
 }

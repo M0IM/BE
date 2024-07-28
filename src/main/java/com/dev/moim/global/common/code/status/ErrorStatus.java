@@ -41,6 +41,7 @@ public enum ErrorStatus implements BaseErrorCode {
     OAUTH_PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_016", "지원하지 않는 소셜 로그인 provider 입니다."),
     ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_018", "만료된 ID 토큰 입니다."),
     ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_019", "유효하지 않은 ID 토큰 입니다."),
+    LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_019", "로그아웃된 access 토큰 입니다."),
 
     // Moim 관련
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),

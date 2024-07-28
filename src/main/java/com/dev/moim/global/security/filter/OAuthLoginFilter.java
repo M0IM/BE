@@ -51,7 +51,10 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
         try {
             authenticate(request, response);
         } catch (AuthException e) {
+            log.error("e : {}", e.getMessage());
+            log.error("e : {}",e.getErrorReasonHttpStatus().getHttpStatus());
             HttpResponseUtil.setErrorResponse(response, e.getErrorReasonHttpStatus().getHttpStatus(), e.getMessage());
+            return;
         }
     }
 
@@ -86,7 +89,7 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        redisUtil.setValue(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
         HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, new TokenResponse(accessToken, refreshToken));
     }
