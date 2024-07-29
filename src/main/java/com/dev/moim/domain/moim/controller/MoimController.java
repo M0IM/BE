@@ -1,5 +1,7 @@
 package com.dev.moim.domain.moim.controller;
 
+import com.dev.moim.domain.moim.dto.MoimAnnouncementListDTO;
+import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
@@ -27,6 +29,39 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "모임 관련 컨트롤러")
 public class MoimController {
 
+
+    // 홈 (모집 중인 모임 + 소개 하는 모임)
+    @Operation(summary = "인기 모임 조회 API", description = "인기 있는 모임을 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/popular")
+    public BaseResponse<MoimPreviewListDTO> getPopularMoim() {
+
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "신규 모임 조회 API", description = "신규 모임을 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/new")
+    public BaseResponse<MoimPreviewListDTO> getNewMoim() {
+
+        return BaseResponse.onSuccess(null);
+    }
+
+    // 내 모임
+    @Operation(summary = "내가 활동 중인 모임 확인 API", description = "내가 활동 중인 모임을 확인 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/active")
+    public BaseResponse<MoimPreviewListDTO> activeMoim() {
+        return BaseResponse.onSuccess(null);
+    }
+    
+    // 모임 생성
     @Operation(summary = "모임 생성 API", description = "모임을 생성 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
@@ -37,6 +72,7 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
+    // 모임 찾기
     @Operation(summary = "모임 찾기 API", description = "category와 검색어에 따라 모임을 찾습니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
@@ -50,21 +86,32 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "내가 활동 중인 모임 확인 API", description = "내가 활동 중인 모임을 확인 합니다. _by 제이미_")
-    @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
-    })
-    @GetMapping("/moims/active")
-    public BaseResponse<MoimPreviewListDTO> activeMoim() {
-        return BaseResponse.onSuccess(null);
-    }
 
-    @Operation(summary = "모임 스페이스 메인 화면 API", description = "모임 메인 화면 상세 보기를 합니다. _by 제이미_")
+    // 모임 스페 이스 api 나누기
+    @Operation(summary = "모임 스페이스 정보 API", description = "모임 카테고리, 인원수, 성별, 설명 등을 리턴합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}")
     public BaseResponse<MoimDetailDTO> getMoimDetail(@PathVariable Long moimId) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "모임 공지사항 정보 API", description = "공지 사항 리스트. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/{moimId}/announcement")
+    public BaseResponse<MoimAnnouncementListDTO> getAnnouncement(@PathVariable Long moimId) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "모임 소개 영상 API", description = "모임 소개 영상 보기. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/{moimId}/introduce")
+    public BaseResponse<MoimIntroduceDTO> getIntroduce(@PathVariable Long moimId) {
         return BaseResponse.onSuccess(null);
     }
 
@@ -95,7 +142,7 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모임 생성 API", description = "모임을 생성 합니다. _by 제이미_")
+    @Operation(summary = "모임 수정 API", description = "모임을 수정 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
