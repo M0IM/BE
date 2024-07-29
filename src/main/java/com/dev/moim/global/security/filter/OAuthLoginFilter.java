@@ -18,6 +18,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -68,15 +70,18 @@ public class OAuthLoginFilter extends OncePerRequestFilter {
         Optional<User> user = userRepository.findByProviderIdAndProvider(oidcDecodePayload.sub(), oAuthLoginRequest.provider());
 
         if (user.isPresent()) {
-            handleExistingUser(response, user.get());
+            PrincipalDetails principalDetails = new PrincipalDetails(user.get());
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            handleExistingUser(response, principalDetails);
         } else {
             log.info("신규 유저 : 추가 정보 입력 필요");
             HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, null);
         }
     }
 
-    private void handleExistingUser(HttpServletResponse response, User existingUser) throws IOException {
-        PrincipalDetails principalDetails = new PrincipalDetails(existingUser);
+    private void handleExistingUser(HttpServletResponse response, PrincipalDetails principalDetails) throws IOException {
 
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
