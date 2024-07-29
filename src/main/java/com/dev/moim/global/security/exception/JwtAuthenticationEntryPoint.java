@@ -23,8 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException authException)
-            throws IOException, ServletException {
+            AuthenticationException authException) throws IOException, ServletException {
         log.info("**JwtAuthenticationEntryPoint**");
 
         BaseResponse<Object> errorResponse = BaseResponse.onFailure(

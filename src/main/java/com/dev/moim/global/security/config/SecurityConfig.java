@@ -11,6 +11,7 @@ import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.service.OIDCService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
+import com.dev.moim.global.security.util.OAuthAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +42,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public OAuthAuthenticationProvider oAuthAuthenticationProvider() {
+        return new OAuthAuthenticationProvider(oidcService);
     }
 
     private final String[] allowUrls = {
@@ -81,7 +87,7 @@ public class SecurityConfig {
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter OAuthLoginFilter = new OAuthLoginFilter(
-                oidcService, jwtUtil, redisUtil, userRepository
+                jwtUtil, redisUtil, authenticationManager(authenticationConfiguration), userRepository
         );
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
