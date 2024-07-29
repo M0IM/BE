@@ -2,7 +2,7 @@ package com.dev.moim.global.security.service;
 
 import com.dev.moim.domain.account.dto.OIDCDecodePayload;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.feign.config.OauthProperties;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyDTO;
 import com.dev.moim.global.security.feign.dto.OIDCPublicKeyListDTO;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.*;
-import static com.dev.moim.global.common.code.status.ErrorStatus.OAUTH_PROVIDER_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PROVIDER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -38,7 +38,7 @@ public class OIDCService {
         } else if (provider.equals(APPLE)) {
             oidcPublicKeyList = appleFeign.getAppleOIDCOpenKeys();
         }else {
-            throw new GeneralException(OAUTH_PROVIDER_NOT_FOUND);
+            throw new AuthException(PROVIDER_NOT_FOUND);
         }
 
         return getPayloadFromIdToken(

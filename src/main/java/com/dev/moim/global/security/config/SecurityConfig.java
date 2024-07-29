@@ -1,6 +1,7 @@
 package com.dev.moim.global.security.config;
 
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.common.code.status.SuccessStatus;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
@@ -10,10 +11,10 @@ import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.service.OIDCService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
+import com.dev.moim.global.security.util.OAuthAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,6 +42,11 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public OAuthAuthenticationProvider oAuthAuthenticationProvider() {
+        return new OAuthAuthenticationProvider(oidcService);
     }
 
     private final String[] allowUrls = {
@@ -81,12 +87,12 @@ public class SecurityConfig {
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter OAuthLoginFilter = new OAuthLoginFilter(
-                oidcService, jwtUtil, redisUtil, userRepository
+                jwtUtil, redisUtil, authenticationManager(authenticationConfiguration), userRepository
         );
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService, redisUtil), CustomLoginFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         http.logout(logout -> logout
@@ -95,13 +101,13 @@ public class SecurityConfig {
                         new CustomLogoutHandler(jwtUtil, redisUtil))
                 .logoutSuccessHandler((request, response, authentication) -> HttpResponseUtil.setSuccessResponse(
                         response,
-                        HttpStatus.OK,
+                        SuccessStatus._OK,
                         "로그아웃 성공")
                 )
         );
         http.addFilterAfter(
                 new LogoutFilter(
-                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, HttpStatus.OK, "로그아웃 성공"),
+                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, SuccessStatus._OK, "로그아웃 성공"),
                         new CustomLogoutHandler(jwtUtil, redisUtil)),
                 JwtFilter.class);
 

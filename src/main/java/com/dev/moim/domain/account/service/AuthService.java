@@ -1,17 +1,16 @@
 package com.dev.moim.domain.account.service;
 
 import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.domain.account.dto.JoinResponse;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
-import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -33,28 +32,30 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @Transactional(readOnly = true)
 public class AuthService {
 
-    private final PrincipalDetailsService principalDetailsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
 
     @Transactional
-    public JoinResponse join(JoinRequest request) {
+    public TokenResponse join(JoinRequest request) {
 
         validateEmailDuplication(request.email());
 
         Role role = Optional.ofNullable(request.role())
-                .filter(roleStr -> !roleStr.isEmpty())
+                .filter(requestRole -> ! requestRole.isEmpty())
                 .map(Role::valueOf)
                 .orElse(ROLE_USER);
+
+        Provider provider = Optional.ofNullable(request.provider())
+                .orElseThrow(() -> new AuthException(PROVIDER_NOT_FOUND));
 
         User user = User.builder()
                 .nickname(request.nickname())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role(role)
-                .provider(LOCAL)
+                .provider(provider)
                 .userProfileList(new ArrayList<>())
                 .build();
 
@@ -67,13 +68,20 @@ public class AuthService {
 
         user.addUserProfile(userProfile);
 
-        userRepository.save(user);
+        User newUser = userRepository.save(user);
 
-        return JoinResponse.of(user);
+        PrincipalDetails principalDetails = new PrincipalDetails(newUser);
+
+        String accessToken = jwtUtil.createAccessToken(principalDetails);
+        String refreshToken = jwtUtil.createRefreshToken(principalDetails);
+
+        redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+
+        return new TokenResponse(accessToken, refreshToken);
     }
 
     private void validateEmailDuplication(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndProvider(email, LOCAL)) {
             throw new AuthException(EMAIL_DUPLICATION);
         }
     }
@@ -85,15 +93,17 @@ public class AuthService {
                 throw new AuthException(AUTH_INVALID_TOKEN);
             }
 
-            String email = jwtUtil.getEmail(refreshToken);
-            redisUtil.deleteValue(email);
+            String userId = jwtUtil.getUserId(refreshToken);
+            redisUtil.deleteValue(userId);
 
-            PrincipalDetails principalDetails = (PrincipalDetails) principalDetailsService.loadUserByUsername(email);
+            User user = userRepository.findById(Long.valueOf(userId))
+                    .orElseThrow((() -> new AuthException(USER_NOT_FOUND)));
+            PrincipalDetails principalDetails = new PrincipalDetails(user);
 
             String newAccess = jwtUtil.createAccessToken(principalDetails);
             String newRefresh = jwtUtil.createRefreshToken(principalDetails);
 
-            redisUtil.setValue(email, newRefresh, jwtUtil.getRefreshTokenValiditySec());
+            redisUtil.setValue(userId, newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
             return new TokenResponse(newAccess, newRefresh);
         } catch (IllegalArgumentException e) {

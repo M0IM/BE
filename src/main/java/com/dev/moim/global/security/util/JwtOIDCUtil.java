@@ -1,7 +1,7 @@
 package com.dev.moim.global.security.util;
 
 import com.dev.moim.domain.account.dto.OIDCDecodePayload;
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.global.error.handler.AuthException;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,19 +29,33 @@ public class JwtOIDCUtil {
     private Jwt<Header, Claims> getUnsignedTokenClaims(String token, String iss, String aud) {
 
         String unsignedToken = getUnsignedToken(token);
+        log.info("token : {}", token);
+        log.info("unsignedToken : {}", unsignedToken);
 
         try {
-            return Jwts.parserBuilder()
+            Jwt<Header, Claims> testJjwts = Jwts.parserBuilder()
+                    .build()
+                    .parseClaimsJwt(unsignedToken);
+
+            log.info("Parsed Issuer: {}", testJjwts.getBody().getIssuer());
+            log.info("Parsed Audience: {}", testJjwts.getBody().getAudience());
+            log.info("iss : {}", iss);
+            log.info("aud : {}", aud);
+
+            Jwt<Header, Claims> jwts = Jwts.parserBuilder()
                     .requireAudience(aud)
                     .requireIssuer(iss)
                     .build()
                     .parseClaimsJwt(unsignedToken);
+
+            log.info("jwts = {}", jwts);
+            return jwts;
         } catch (ExpiredJwtException e) {
             log.error("만료된 ID 토큰");
-            throw new GeneralException(ID_TOKEN_EXPIRED);
+            throw new AuthException(ID_TOKEN_EXPIRED);
         } catch (Exception e) {
             log.error("유효하지 않은 ID 토큰");
-            throw new GeneralException(ID_TOKEN_INVALID);
+            throw new AuthException(ID_TOKEN_INVALID);
         }
     }
 
@@ -49,12 +63,16 @@ public class JwtOIDCUtil {
 
         String[] splitToken = token.split("\\.");
         if (splitToken.length != 3) {
-            throw new GeneralException(OAUTH_INVALID_TOKEN);
+            throw new AuthException(ID_TOKEN_INVALID);
         }
         return splitToken[0] + "." + splitToken[1] + ".";
     }
 
     public OIDCDecodePayload getOIDCTokenBody(String token, String modulus, String exponent) {
+
+        log.info("modules : {}", modulus);
+        log.info("exponent : {}", exponent);
+
         Claims body = getOIDCTokenJws(token, modulus, exponent).getBody();
         return new OIDCDecodePayload(
                 body.getIssuer(),
@@ -71,22 +89,31 @@ public class JwtOIDCUtil {
                     .build()
                     .parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new GeneralException(AUTH_EXPIRED_TOKEN);
+            log.error("만료된 ID 토큰");
+            throw new AuthException(ID_TOKEN_EXPIRED);
         } catch (Exception e) {
-            log.error(e.toString());
-            throw new GeneralException(OAUTH_INVALID_TOKEN);
+            log.error("유효하지 않은 ID 토큰");
+            throw new AuthException(ID_TOKEN_INVALID);
         }
     }
 
     private Key getRSAPublicKey(String modulus, String exponent)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+        log.info("keyfactory : {}", keyFactory);
+
         byte[] decodeN = Base64.getUrlDecoder().decode(modulus);
+        log.info("decodeN : {}", decodeN);
         byte[] decodeE = Base64.getUrlDecoder().decode(exponent);
+        log.info("decodeE : {}", decodeE);
         BigInteger n = new BigInteger(1, decodeN);
         BigInteger e = new BigInteger(1, decodeE);
 
         RSAPublicKeySpec keySpec = new RSAPublicKeySpec(n, e);
-        return keyFactory.generatePublic(keySpec);
+        log.info("keySpec : {}", keySpec);
+        Key key = keyFactory.generatePublic(keySpec);
+        log.info("key : {}", key);
+        return key;
     }
 }

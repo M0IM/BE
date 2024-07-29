@@ -5,12 +5,10 @@ import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
-import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.util.HttpRequestUtil;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,16 +21,19 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
+import static com.dev.moim.global.common.code.status.SuccessStatus._CREATED;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
+
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -59,14 +60,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull FilterChain chain,
             @NonNull Authentication authResult) throws IOException{
 
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        redisUtil.setValue(principalDetails.user().getEmail(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        HttpResponseUtil.setSuccessResponse(response, HttpStatus.CREATED, new TokenResponse(accessToken, refreshToken));
+        HttpResponseUtil.setSuccessResponse(response, _CREATED, new TokenResponse(accessToken, refreshToken));
     }
 
     @Override
