@@ -55,7 +55,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         log.info("provider : {}", oAuthLoginRequest.provider());
         log.info("idToken : {}", oAuthLoginRequest.idToken());
 
-        OAuthAuthenticationToken authRequest = new OAuthAuthenticationToken(oAuthLoginRequest.provider(), oAuthLoginRequest.idToken());
+        OAuthAuthenticationToken authRequest = new OAuthAuthenticationToken(oAuthLoginRequest.provider(), null, oAuthLoginRequest.idToken());
 
         return authenticationManager.authenticate(authRequest);
     }
@@ -69,7 +69,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         OAuthAuthenticationToken authentication = (OAuthAuthenticationToken) authResult;
 
-        Optional<User> user = userRepository.findByProviderIdAndProvider(authentication.getCredentials(), authentication.getPrincipal());
+        Optional<User> user = userRepository.findByProviderIdAndProvider(authentication.getProviderId(), authentication.getProvider());
 
         if (user.isPresent()) {
             User existingUser = user.get();

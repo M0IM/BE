@@ -3,7 +3,6 @@ package com.dev.moim.global.security.filter;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
-import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +26,6 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.LOGOUT_ACCESS_T
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final PrincipalDetailsService principalDetailsService;
     private final RedisUtil redisUtil;
 
     @Override

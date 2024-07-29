@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.*;
-import static com.dev.moim.global.common.code.status.ErrorStatus.OAUTH_PROVIDER_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PROVIDER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -38,7 +38,7 @@ public class OIDCService {
         } else if (provider.equals(APPLE)) {
             oidcPublicKeyList = appleFeign.getAppleOIDCOpenKeys();
         }else {
-            throw new AuthException(OAUTH_PROVIDER_NOT_FOUND);
+            throw new AuthException(PROVIDER_NOT_FOUND);
         }
 
         return getPayloadFromIdToken(

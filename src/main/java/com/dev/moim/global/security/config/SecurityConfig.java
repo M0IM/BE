@@ -92,7 +92,7 @@ public class SecurityConfig {
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService, redisUtil), CustomLoginFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
         http.logout(logout -> logout

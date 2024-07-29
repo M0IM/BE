@@ -8,8 +8,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.OAUTH_PROVIDER_NOT_FOUND;
-import static com.dev.moim.global.common.code.status.ErrorStatus._INTERNAL_SERVER_ERROR;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @Getter
@@ -33,7 +32,7 @@ public class OauthProperties {
             case KAKAO -> getOAuthSecret(kakao).getBaseUrl();
             case GOOGLE -> getOAuthSecret(google).getBaseUrl();
             case APPLE -> getOAuthSecret(apple).getBaseUrl();
-            default -> throw new AuthException(OAUTH_PROVIDER_NOT_FOUND);
+            default -> throw new AuthException(PROVIDER_NOT_FOUND);
         };
     }
 
@@ -42,7 +41,7 @@ public class OauthProperties {
             case KAKAO -> getOAuthSecret(kakao).getAppKey();
             case GOOGLE -> getOAuthSecret(google).getAppKey();
             case APPLE -> getOAuthSecret(apple).getAppKey();
-            default -> throw new AuthException(OAUTH_PROVIDER_NOT_FOUND);
+            default -> throw new AuthException(PROVIDER_NOT_FOUND);
         };
     }
 

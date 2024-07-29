@@ -20,12 +20,12 @@ public class OAuthAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         OAuthAuthenticationToken oAuthToken = (OAuthAuthenticationToken) authentication;
-        Provider provider = oAuthToken.getPrincipal();
-        String idToken = oAuthToken.getCredentials();
+        Provider provider = oAuthToken.getProvider();
+        String idToken = oAuthToken.getIdToken();
 
         OIDCDecodePayload oidcDecodePayload = oidcService.getOIDCDecodePayload(provider, idToken);
 
-        return new OAuthAuthenticationToken(provider, oidcDecodePayload.sub());
+        return new OAuthAuthenticationToken(provider, oidcDecodePayload.sub(), idToken);
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.dev.moim.domain.account.dto;
 
+import com.dev.moim.domain.account.entity.enums.Provider;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
 public record JoinRequest(
+        @Schema(description = "로그인 타입", defaultValue = "KAKAO", allowableValues = {"LOCAL", "KAKAO", "APPLE", "GOOGLE"})
+        Provider provider,
+        String providerId,
         String nickname,
         String email,
         String password,
