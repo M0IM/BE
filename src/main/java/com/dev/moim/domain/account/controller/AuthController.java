@@ -27,7 +27,7 @@ public class AuthController {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
             @ApiResponse(responseCode = "AUTH_011", description = "이미 가입한 메일 입니다.")
     })
-    public BaseResponse<JoinResponse> join(@RequestBody JoinRequest request) {
+    public BaseResponse<TokenResponse> join(@RequestBody JoinRequest request) {
         return BaseResponse.onSuccess(authService.join(request));
     }
 
