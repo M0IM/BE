@@ -44,10 +44,15 @@ public enum ErrorStatus implements BaseErrorCode {
     LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_020", "로그아웃된 access 토큰 입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_021", "존재하지 않는 사용자입니다."),
 
+    // Email 관련
+    EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),
+    INCORRECT_EMAIL_CODE(HttpStatus.UNAUTHORIZED, "EMAIL_002", "이메일 인증 코드가 일치하지 않습니다."),
+    EMAIL_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EMAIL_003", "유저 이메일에 해당하는 이메일 코드가 저장되어있지 않습니다. 재요청을 시도해주세요."),
+    EMAIL_AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, "EMAIL_004", "이메일 인증에 실패했습니다."),
+
     // Moim 관련
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
     MOIM_NOT_ADMIN(HttpStatus.UNAUTHORIZED, "MOIM_002", "모임 관리자 회원이 아닙니다."),
-
 
     // Recreation 관련
     SEARCH_CONDITION_INVALID(HttpStatus.BAD_REQUEST, "RECR_001", "검색 조건이 하나라도 존재해야 합니다."),

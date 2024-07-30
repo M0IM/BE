@@ -1,5 +1,7 @@
 package com.dev.moim.domain.account.service;
 
+import com.dev.moim.domain.account.dto.EmailVerificationCodeDTO;
+import com.dev.moim.domain.account.dto.EmailVerificationResultDTO;
 import com.dev.moim.domain.account.dto.JoinRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
@@ -8,6 +10,8 @@ import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.email.EmailUtil;
+import com.dev.moim.global.error.GeneralException;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -36,6 +40,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
+    private final EmailUtil emailUtil;
 
     @Transactional
     public TokenResponse join(JoinRequest request) {
@@ -111,5 +116,30 @@ public class AuthService {
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
         }
+    }
+
+    public EmailVerificationCodeDTO sendCode(String email) {
+        try {
+            String code = emailUtil.sendMessage(email);
+            return new EmailVerificationCodeDTO(email, code);
+        } catch (Exception e) {
+            throw new GeneralException(EMAIL_SEND_FAIL);
+        }
+    }
+
+    public EmailVerificationResultDTO verifyCode(String email, String code) {
+        Object redisCode = redisUtil.getValue(email);
+        if (redisCode == null) {
+            throw new AuthException(EMAIL_CODE_NOT_FOUND);
+        }
+
+       boolean isCodeValid = code.equals(String.valueOf(redisCode));
+        if (isCodeValid) {
+            redisUtil.deleteValue(email);
+        } else {
+            throw new AuthException(INCORRECT_EMAIL_CODE);
+        }
+
+        return new EmailVerificationResultDTO(email, isCodeValid);
     }
 }

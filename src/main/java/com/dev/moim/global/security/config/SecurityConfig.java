@@ -54,6 +54,7 @@ public class SecurityConfig {
             "/v3/**",
             "/api-docs/**",
             "/api/v1/auth/join/**",
+            "/api/v1/auth/emails/**",
             "/api/v1/auth/reissueToken/**",
     };
 
