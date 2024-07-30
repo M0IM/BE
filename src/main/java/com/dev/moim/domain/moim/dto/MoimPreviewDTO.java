@@ -8,6 +8,8 @@ public record MoimPreviewDTO(
         String description,
         String category,
         String address,
+        String profileImageUrl,
+        Integer memberCount,
         LocalDateTime createAt,
         LocalDateTime updateAt
 ) {

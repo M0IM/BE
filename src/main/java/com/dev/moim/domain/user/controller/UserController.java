@@ -82,7 +82,7 @@ public class UserController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/users/reviews")
-    public BaseResponse<String> postMemberReview(@io.swagger.v3.oas.annotations.parameters.RequestBody CreateReviewDTO createReviewDTO) {
+    public BaseResponse<String> postMemberReview(@RequestBody CreateReviewDTO createReviewDTO) {
         return BaseResponse.onSuccess(null);
     }
 

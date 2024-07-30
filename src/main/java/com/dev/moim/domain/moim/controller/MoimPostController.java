@@ -34,7 +34,7 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping("/moims/{moimId}/posts/{postId}")
+    @GetMapping("/moims/{moimId}/posts/{postId}")
     public BaseResponse<MoimPostDetailDTO> getMoimPost(@PathVariable Long moimId, @PathVariable Long postId) {
         return BaseResponse.onSuccess(null);
     }
