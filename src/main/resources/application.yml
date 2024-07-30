@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  application:
+    name: like-house
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        format_sql: false
+        use_sql_comments: true
+        default_batch_fetch_size: 1000
+    database: mysql
+  profiles:
+    include:
+      - database
+      - jwt
+      - redis
+      - oauth
+      - mail
+
+
+springdoc:
+  swagger-ui:
+    path: /api-docs.html
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-produces-media-type: application/json
