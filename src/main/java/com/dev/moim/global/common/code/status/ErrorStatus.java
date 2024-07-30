@@ -1,6 +1,5 @@
 package com.dev.moim.global.common.code.status;
 
-
 import com.dev.moim.global.common.code.BaseErrorCode;
 import com.dev.moim.global.common.code.ErrorReasonDTO;
 import lombok.AllArgsConstructor;
@@ -26,8 +25,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // Auth 관련
     AUTH_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_001", "토큰이 만료되었습니다."),
     AUTH_INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_002", "토큰이 유효하지 않습니다."),
-    INVALID_LOGIN_REQUEST(HttpStatus.UNAUTHORIZED, "AUTH_003", "올바른 이메일이나 패스워드가 아닙니다."),
-    INVALID_REQUEST_INFO(HttpStatus.UNAUTHORIZED, "AUTH_006", "카카오 정보 불러오기에 실패하였습니다."),
+    OAUTH_INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_003", "OAuth 토큰이 유효하지 않습니다."),
+    INVALID_LOGIN_REQUEST(HttpStatus.UNAUTHORIZED, "AUTH_004", "올바른 이메일이나 패스워드가 아닙니다."),
+    INVALID_REQUEST_INFO(HttpStatus.UNAUTHORIZED, "AUTH_005", "카카오 정보 불러오기에 실패하였습니다."),
+    USER_PROPERTY_NOT_FOUND(HttpStatus.BAD_REQUEST,"AUTH_006", "카카오 앱에 설정되어 있지 않은 사용자 프로퍼티를 요청하였습니다." ),
     NOT_EQUAL_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_007", "리프레시 토큰이 다릅니다."),
     NOT_CONTAIN_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_008", "해당하는 토큰이 저장되어있지 않습니다."),
     BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, "AUTH_009", "비밀번호를 잘못 입력했습니다."),
@@ -37,9 +38,21 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_013", "인증이 필요한 사용자입니다."),
     USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
     MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
+    PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_016", "지원하지 않는 로그인 provider 입니다."),
+    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_018", "만료된 ID 토큰 입니다."),
+    ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_019", "유효하지 않은 ID 토큰 입니다."),
+    LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_020", "로그아웃된 access 토큰 입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_021", "존재하지 않는 사용자입니다."),
 
-    // User 관련
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_004", "존재하지 않는 사용자입니다."),
+    // Email 관련
+    EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),
+    INCORRECT_EMAIL_CODE(HttpStatus.UNAUTHORIZED, "EMAIL_002", "이메일 인증 코드가 일치하지 않습니다."),
+    EMAIL_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "EMAIL_003", "유저 이메일에 해당하는 이메일 코드가 저장되어있지 않습니다. 재요청을 시도해주세요."),
+    EMAIL_AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, "EMAIL_004", "이메일 인증에 실패했습니다."),
+
+    // Moim 관련
+    MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
+    MOIM_NOT_ADMIN(HttpStatus.UNAUTHORIZED, "MOIM_002", "모임 관리자 회원이 아닙니다."),
 
     // Recreation 관련
     SEARCH_CONDITION_INVALID(HttpStatus.BAD_REQUEST, "RECR_001", "검색 조건이 하나라도 존재해야 합니다."),

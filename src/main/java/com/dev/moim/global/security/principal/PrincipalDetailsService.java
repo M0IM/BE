@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static com.dev.moim.domain.account.entity.enums.Provider.LOCAL;
 import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
 
 @Service
@@ -19,8 +20,8 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndProvider(email, LOCAL)
                 .orElseThrow(() -> new AuthException(USER_NOT_FOUND));
-        return new PrincipalDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole().toString());
+        return new PrincipalDetails(user);
     }
 }

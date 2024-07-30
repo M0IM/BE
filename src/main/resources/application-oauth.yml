@@ -1,0 +1,10 @@
+oauth:
+  kakao:
+    base-url: ${KAKAO_BASE_URL}
+    app-key: ${KAKAO_APP_KEY}
+  google:
+    base-url: ${GOOGLE_BASE_URL}
+    app-key: ${GOOGLE_CLIENT_ID}
+  apple:
+    base-url: ${APPLE_BASE_URL}
+    app-key: ${APPLE_TEAM_ID}

@@ -2,12 +2,13 @@ package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.user.dto.CreateReviewDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
-import com.dev.moim.domain.user.dto.ProfileDetailGetResponse;
-import com.dev.moim.domain.user.dto.ProfileListGetResponse;
-import com.dev.moim.domain.user.dto.ProfileResponse;
-import com.dev.moim.domain.user.dto.ProfileUpdateRequest;
+import com.dev.moim.domain.user.dto.ProfileDetailDTO;
+import com.dev.moim.domain.user.dto.ProfileListDTO;
+import com.dev.moim.domain.user.dto.ProfileDTO;
+import com.dev.moim.domain.user.dto.ProfileCreateDTO;
 import com.dev.moim.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,33 +21,59 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "유저 관련 컨트롤러")
 public class UserController {
 
-    @GetMapping("")
-    @Operation(summary = "마이페이지 조회", description = "마이페이지 메인 화면 조회 기능 입니다.")
-    public BaseResponse<ProfileResponse> getProfile() {
+    @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다. 기본 프로필에는 닉네임, 프로필 이미지, URL이 포함되어 있습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "유저 기본 프로필 조회 성공"),
+    })
+    @GetMapping("/profile")
+    public BaseResponse<ProfileDTO> getProfile() {
 
         return BaseResponse.onSuccess(null);
     }
 
-    @GetMapping("/list")
-    @Operation(summary = "(마이페이지 : 내 프로필 관리) 내 프로필 목록 조회", description = "유저의 프로필들을 조회할 수 있는 <내 프로필 목록> 조회 기능 입니다.")
-    public BaseResponse<ProfileListGetResponse> getProfileList() {
-
-        return BaseResponse.onSuccess(null);
-    }
-
-    @GetMapping("/detail")
-    @Operation(summary = "(마이페이지 : 내 프로필 관리 : 내 프로필 목록 조회) 내 프로필 상세 조회",
-            description = "유저의 특정 프로필을 상세 조회하는 기능 입니다. '모임 평가 별점'과 '가입 모임'은 유저의 모든 프로필에서 동일하게 표시되어 프로필 별 설정이 불가능 합니다.")
-    public BaseResponse<ProfileDetailGetResponse> getDetailProfile() {
-
-        return BaseResponse.onSuccess(null);
-    }
-
-    @PostMapping("/update")
-    @Operation(summary = "내 프로필 수정", description = "유저의 프로필을 수정하는 기능 입니다.")
-    public BaseResponse<?> updateProfile(
-            @RequestBody ProfileUpdateRequest request
+    @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "프로필 생성 성공"),
+    })
+    @PostMapping("/profile")
+    public BaseResponse<Long> createProfile(
+            @RequestBody ProfileCreateDTO request
     ) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "프로필 수정 성공"),
+    })
+    @PutMapping("/profile")
+    public BaseResponse<?> updateProfile(
+            @RequestBody ProfileCreateDTO request
+    ) {
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "프로필 목록 조회", description = "유저가 등록한 프로필들을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "프로필 목록 조회 성공"),
+    })
+    @GetMapping("/profile/list")
+    public BaseResponse<ProfileListDTO> getProfileList() {
+
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "프로필 상세 조회 성공"),
+    })
+    @GetMapping(("/profile/{profileId}"))
+    public BaseResponse<ProfileDetailDTO> getDetailProfile(
+            @PathVariable Long profileId,
+            @Parameter(description = "화면에 표시할 [받은 후기] 개수", example = "3") @RequestParam(defaultValue = "3") int receivedReviewCntLimit,
+            @Parameter(description = "화면에 표시할 [참여 모임] 개수", example = "3") @RequestParam(defaultValue = "3") int joinedMoimCntLimit
+    ) {
+
         return BaseResponse.onSuccess(null);
     }
 

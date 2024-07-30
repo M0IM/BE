@@ -7,7 +7,6 @@ import com.dev.moim.domain.account.entity.enums.UserStatus;
 import com.dev.moim.domain.chatting.entity.UserChattingRoom;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,8 +19,6 @@ import org.hibernate.annotations.DynamicInsert;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 
 @Entity
 @Getter
@@ -43,6 +40,8 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Provider provider;
+
+    private String providerId;
 
     private LocalDateTime inactive_date;
 

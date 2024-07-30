@@ -37,18 +37,10 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
             throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Object principal = null;
         if (authentication != null) {
-            principal = authentication.getPrincipal();
+            String userId = authentication.getName();
+            return userRepository.findById(Long.valueOf(userId));
         }
-        if (principal == null || principal.getClass() == String.class) {
-            throw new GeneralException(USER_NOT_FOUND);
-        }
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-                (UsernamePasswordAuthenticationToken) authentication;
-        String email = authenticationToken.getName();
-
-        return userRepository.findByEmail(email);
+        return null;
     }
 }

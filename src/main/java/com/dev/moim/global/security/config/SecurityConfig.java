@@ -1,14 +1,17 @@
 package com.dev.moim.global.security.config;
 
-import com.dev.moim.global.redis.service.RefreshTokenService;
+import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.common.code.status.SuccessStatus;
+import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
-import com.dev.moim.global.security.filter.JwtExceptionFilter;
-import com.dev.moim.global.security.filter.JwtFilter;
-import com.dev.moim.global.security.filter.LoginFilter;
+import com.dev.moim.global.security.filter.*;
 import com.dev.moim.global.security.principal.PrincipalDetailsService;
+import com.dev.moim.global.security.service.OIDCService;
+import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
+import com.dev.moim.global.security.util.OAuthAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +26,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+//@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -33,11 +37,16 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final RefreshTokenService refreshTokenService;
+    private final OIDCService oidcService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public OAuthAuthenticationProvider oAuthAuthenticationProvider() {
+        return new OAuthAuthenticationProvider(oidcService);
     }
 
     private final String[] allowUrls = {
@@ -45,11 +54,13 @@ public class SecurityConfig {
             "/v3/**",
             "/api-docs/**",
             "/api/v1/auth/join/**",
+            "/api/v1/auth/emails/**",
             "/api/v1/auth/reissueToken/**",
+            "/health"
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil, RedisUtil redisUtil, UserRepository userRepository) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors
                 .configurationSource(CorsConfig.apiConfigurationSource()));
@@ -64,22 +75,43 @@ public class SecurityConfig {
                 .sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
 
         http.exceptionHandling(configurer -> configurer
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(jwtAccessDeniedHandler));
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler));
 
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(allowUrls).permitAll()
                 .requestMatchers("/**").authenticated()
                 .anyRequest().permitAll());
 
-        LoginFilter loginFilter = new LoginFilter(
-                authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenService
+        CustomLoginFilter customLoginFilter = new CustomLoginFilter(
+                authenticationManager(authenticationConfiguration), jwtUtil, redisUtil
         );
-        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+        customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
-        http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil, principalDetailsService), LoginFilter.class);
+        OAuthLoginFilter OAuthLoginFilter = new OAuthLoginFilter(
+                jwtUtil, redisUtil, authenticationManager(authenticationConfiguration), userRepository
+        );
+
+        http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
+
+        http.logout(logout -> logout
+                .logoutUrl("/api/v1/auth/logout")
+                .addLogoutHandler(
+                        new CustomLogoutHandler(jwtUtil, redisUtil))
+                .logoutSuccessHandler((request, response, authentication) -> HttpResponseUtil.setSuccessResponse(
+                        response,
+                        SuccessStatus._OK,
+                        "로그아웃 성공")
+                )
+        );
+        http.addFilterAfter(
+                new LogoutFilter(
+                        (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, SuccessStatus._OK, "로그아웃 성공"),
+                        new CustomLogoutHandler(jwtUtil, redisUtil)),
+                JwtFilter.class);
 
         return http.build();
     }

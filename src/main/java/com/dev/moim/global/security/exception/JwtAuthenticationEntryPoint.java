@@ -2,7 +2,6 @@ package com.dev.moim.global.security.exception;
 
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.util.HttpResponseUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,8 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
-            AuthenticationException authException)
-            throws IOException, ServletException {
+            AuthenticationException authException) throws IOException, ServletException {
         log.info("**JwtAuthenticationEntryPoint**");
 
         BaseResponse<Object> errorResponse = BaseResponse.onFailure(
