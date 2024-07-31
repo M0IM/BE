@@ -23,8 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @Builder
@@ -51,7 +49,7 @@ public class UserProfile extends BaseEntity {
     @ColumnDefault("'FEMALE'")
     private Gender gender;
 
-    private LocalDate birth;
+    private String birth;
 
     private String introduction;
 

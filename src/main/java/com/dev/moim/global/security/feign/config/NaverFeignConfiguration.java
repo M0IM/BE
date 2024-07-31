@@ -2,21 +2,18 @@ package com.dev.moim.global.security.feign.config;
 
 import com.dev.moim.global.security.feign.decoder.FeignErrorDecoder;
 import feign.Logger;
-import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
-public class AppleFeignConfiguration {
-    @Bean(name = "appleRequestInterceptor")
-    public RequestInterceptor requestInterceptor() {
-        return template -> template.header("Content-Type", "application/x-www-form-urlencoded");
-    }
+public class NaverFeignConfiguration {
 
-    @Bean(name = "appleErrorDecoder")
+    @Bean(name = "naverErrorDecoder")
     public ErrorDecoder errorDecoder() {return new FeignErrorDecoder();}
 
-    @Bean(name = "appleFeignLoggerLevel")
+    @Bean(name = "naverFeignLoggerLevel")
     Logger.Level feignLoggerLevel() {return Logger.Level.FULL;}
 }

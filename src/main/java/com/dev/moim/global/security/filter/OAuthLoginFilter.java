@@ -3,13 +3,11 @@ package com.dev.moim.global.security.filter;
 import com.dev.moim.domain.account.dto.OAuthLoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
-import com.dev.moim.global.security.util.HttpRequestUtil;
-import com.dev.moim.global.security.util.HttpResponseUtil;
-import com.dev.moim.global.security.util.JwtUtil;
-import com.dev.moim.global.security.util.OAuthAuthenticationToken;
+import com.dev.moim.global.security.util.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.dev.moim.domain.account.entity.enums.Provider.NAVER;
 import static com.dev.moim.global.common.code.status.SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 
@@ -52,12 +51,14 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
 
-        log.info("provider : {}", oAuthLoginRequest.provider());
-        log.info("idToken : {}", oAuthLoginRequest.idToken());
+        Provider provider = oAuthLoginRequest.provider();
+        String token = oAuthLoginRequest.token();
 
-        OAuthAuthenticationToken authRequest = new OAuthAuthenticationToken(oAuthLoginRequest.provider(), null, oAuthLoginRequest.idToken());
-
-        return authenticationManager.authenticate(authRequest);
+        if (provider == NAVER) {
+            return authenticationManager.authenticate(new NaverLoginAuthenticationToken(provider, null, token));
+        } else {
+            return authenticationManager.authenticate(new OIDCAuthenticationToken(provider, null, token));
+        }
     }
 
     @Override
@@ -67,9 +68,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             @NonNull FilterChain chain,
             @NonNull Authentication authResult) throws IOException, ServletException {
 
-        OAuthAuthenticationToken authentication = (OAuthAuthenticationToken) authResult;
-
-        Optional<User> user = userRepository.findByProviderIdAndProvider(authentication.getProviderId(), authentication.getProvider());
+        Optional<User> user = userRepository.findByProviderIdAndProvider(authResult.getCredentials().toString(), (Provider) authResult.getPrincipal());
 
         if (user.isPresent()) {
             User existingUser = user.get();
@@ -83,7 +82,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken));
         } else {
             log.info("신규 유저 : 추가 정보 입력 필요");
-            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, authentication.getCredentials());
+            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, authResult.getCredentials());
         }
     }
 }

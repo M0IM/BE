@@ -6,7 +6,6 @@ import com.dev.moim.domain.account.dto.JoinRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
-import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -61,13 +60,13 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .role(role)
                 .provider(provider)
+                .providerId(request.providerId())
                 .userProfileList(new ArrayList<>())
                 .build();
 
         UserProfile userProfile = UserProfile.builder()
-                .gender(Gender.from(request.gender()))
+                .gender(request.gender())
                 .birth(request.birth())
-                .introduction(request.introduction())
                 .residence(request.residence())
                 .build();
 

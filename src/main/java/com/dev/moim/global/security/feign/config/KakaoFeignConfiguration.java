@@ -1,6 +1,6 @@
 package com.dev.moim.global.security.feign.config;
 
-import com.dev.moim.global.error.decoder.FeignErrorDecoder;
+import com.dev.moim.global.security.feign.decoder.FeignErrorDecoder;
 import feign.Logger;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;

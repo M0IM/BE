@@ -7,15 +7,17 @@ import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
 import com.dev.moim.global.security.filter.*;
-import com.dev.moim.global.security.principal.PrincipalDetailsService;
+import com.dev.moim.global.security.service.NaverLoginService;
 import com.dev.moim.global.security.service.OIDCService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
-import com.dev.moim.global.security.util.OAuthAuthenticationProvider;
+import com.dev.moim.global.security.util.NaverLoginAuthenticationProvider;
+import com.dev.moim.global.security.util.OIDCAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,20 +35,33 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final PrincipalDetailsService principalDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final OIDCService oidcService;
+    private final NaverLoginService naverLoginService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager() throws Exception {
+
+        ProviderManager authenticationManager = null;
+        try {
+            authenticationManager = (ProviderManager) authenticationConfiguration.getAuthenticationManager();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        authenticationManager.getProviders().add(oidcAuthenticationProvider());
+        authenticationManager.getProviders().add(naverLoginAuthenticationProvider());
+
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public OAuthAuthenticationProvider oAuthAuthenticationProvider() {
-        return new OAuthAuthenticationProvider(oidcService);
+    public OIDCAuthenticationProvider oidcAuthenticationProvider() {
+        return new OIDCAuthenticationProvider(oidcService);
+    }
+
+    public NaverLoginAuthenticationProvider naverLoginAuthenticationProvider() {
+        return new NaverLoginAuthenticationProvider(naverLoginService);
     }
 
     private final String[] allowUrls = {
@@ -84,16 +99,14 @@ public class SecurityConfig {
                 .anyRequest().permitAll());
 
         CustomLoginFilter customLoginFilter = new CustomLoginFilter(
-                authenticationManager(authenticationConfiguration), jwtUtil, redisUtil
-        );
+                authenticationManager(), jwtUtil, redisUtil);
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
-        OAuthLoginFilter OAuthLoginFilter = new OAuthLoginFilter(
-                jwtUtil, redisUtil, authenticationManager(authenticationConfiguration), userRepository
-        );
+        OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
+                jwtUtil, redisUtil, authenticationManager(), userRepository);
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAt(OAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil), CustomLoginFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(), JwtFilter.class);
 
