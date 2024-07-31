@@ -11,15 +11,15 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisUtil {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public void setValue(String key, Object value, Long expireInMillis) {
-        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+    public void setValue(String key, String value, Long expireInMillis) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, value, Duration.ofMillis(expireInMillis));
     }
 
-    public Object getValue(String key) {
-        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+    public String getValue(String key) {
+        ValueOperations<String, String> values = redisTemplate.opsForValue();
         return values.get(key);
     }
 

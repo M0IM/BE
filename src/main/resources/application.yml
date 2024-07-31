@@ -8,7 +8,7 @@ server:
 
 spring:
   application:
-    name: like-house
+    name: moim
   jpa:
     show-sql: true
     generate-ddl: true

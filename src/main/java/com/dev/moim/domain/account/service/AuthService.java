@@ -1,9 +1,6 @@
 package com.dev.moim.domain.account.service;
 
-import com.dev.moim.domain.account.dto.EmailVerificationCodeDTO;
-import com.dev.moim.domain.account.dto.EmailVerificationResultDTO;
-import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.domain.account.dto.*;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
@@ -81,7 +78,7 @@ public class AuthService {
 
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, provider);
     }
 
     private void validateEmailDuplication(String email) {
@@ -109,7 +106,7 @@ public class AuthService {
 
             redisUtil.setValue(userId, newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
-            return new TokenResponse(newAccess, newRefresh);
+            return new TokenResponse(newAccess, newRefresh, principalDetails.getProvider());
         } catch (IllegalArgumentException e) {
             throw new AuthException(AUTH_INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
@@ -117,28 +114,28 @@ public class AuthService {
         }
     }
 
-    public EmailVerificationCodeDTO sendCode(String email) {
+    public EmailVerificationCodeDTO sendCode(EmailDTO request) {
         try {
-            String code = emailUtil.sendMessage(email);
-            return new EmailVerificationCodeDTO(email, code);
+            String code = emailUtil.sendMessage(request.email());
+            return new EmailVerificationCodeDTO(request.email(), code);
         } catch (Exception e) {
             throw new GeneralException(EMAIL_SEND_FAIL);
         }
     }
 
-    public EmailVerificationResultDTO verifyCode(String email, String code) {
-        Object redisCode = redisUtil.getValue(email);
+    public EmailVerificationResultDTO verifyCode(EmailVerificationCodeDTO request) {
+        String redisCode = redisUtil.getValue(request.code());
         if (redisCode == null) {
             throw new AuthException(EMAIL_CODE_NOT_FOUND);
         }
 
-       boolean isCodeValid = code.equals(String.valueOf(redisCode));
+       boolean isCodeValid = request.code().equals(redisCode);
         if (isCodeValid) {
-            redisUtil.deleteValue(email);
+            redisUtil.deleteValue(request.email());
         } else {
             throw new AuthException(INCORRECT_EMAIL_CODE);
         }
 
-        return new EmailVerificationResultDTO(email, isCodeValid);
+        return new EmailVerificationResultDTO(request.email(), isCodeValid);
     }
 }
