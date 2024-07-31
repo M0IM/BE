@@ -126,19 +126,19 @@ public class AuthService {
         }
     }
 
-    public EmailVerificationResultDTO verifyCode(String email, String code) {
-        Object redisCode = redisUtil.getValue(email);
+    public EmailVerificationResultDTO verifyCode(EmailVerificationCodeDTO request) {
+        String redisCode = redisUtil.getValue(request.code());
         if (redisCode == null) {
             throw new AuthException(EMAIL_CODE_NOT_FOUND);
         }
 
-       boolean isCodeValid = code.equals(String.valueOf(redisCode));
+       boolean isCodeValid = request.code().equals(redisCode);
         if (isCodeValid) {
-            redisUtil.deleteValue(email);
+            redisUtil.deleteValue(request.email());
         } else {
             throw new AuthException(INCORRECT_EMAIL_CODE);
         }
 
-        return new EmailVerificationResultDTO(email, isCodeValid);
+        return new EmailVerificationResultDTO(request.email(), isCodeValid);
     }
 }
