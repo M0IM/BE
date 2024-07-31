@@ -5,30 +5,35 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Arrays;
-
-import static io.swagger.v3.oas.models.security.SecurityScheme.*;
 
 @Configuration
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI moimAPI() {
-        Info info = new Info().title("Moim API").description("Moim API 명세").version("0.0.1");
+    public OpenAPI UMCstudyAPI() {
+        Info info = new Info()
+                .title("Moim server API")
+                .description("Moim Server API 명세서")
+                .version("1.0.0");
 
-        SecurityScheme securityScheme = new SecurityScheme()
-                .type(Type.HTTP).scheme("bearer").bearerFormat("JWT")
-                .in(SecurityScheme.In.HEADER).name("Authorization");
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
-        Components components =
-                new Components().addSecuritySchemes("bearerAuth",securityScheme);
+        String jwtSchemeName = "JWT TOKEN";
+        // API 요청헤더에 인증정보 포함
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
+        // SecuritySchemes 등록
+        Components components = new Components()
+                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                        .name(jwtSchemeName)
+                        .type(SecurityScheme.Type.HTTP) // HTTP 방식
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
 
         return new OpenAPI()
-                .security(Arrays.asList(securityRequirement))
-                .components(components)
-                .info(info);
+                .addServersItem(new Server().url("/"))
+                .info(info)
+                .addSecurityItem(securityRequirement)
+                .components(components);
     }
 }
