@@ -78,7 +78,7 @@ public class AuthService {
 
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponse(accessToken, refreshToken, provider);
     }
 
     private void validateEmailDuplication(String email) {
@@ -106,7 +106,7 @@ public class AuthService {
 
             redisUtil.setValue(userId, newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
-            return new TokenResponse(newAccess, newRefresh);
+            return new TokenResponse(newAccess, newRefresh, principalDetails.getProvider());
         } catch (IllegalArgumentException e) {
             throw new AuthException(AUTH_INVALID_TOKEN);
         } catch (ExpiredJwtException e) {

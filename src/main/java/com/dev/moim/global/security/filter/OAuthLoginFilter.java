@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.NAVER;
+import static com.dev.moim.domain.account.entity.enums.Provider.UNREGISTERED;
 import static com.dev.moim.global.common.code.status.SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 
@@ -54,6 +55,8 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         Provider provider = oAuthLoginRequest.provider();
         String token = oAuthLoginRequest.token();
 
+        log.info("token : {}", token);
+
         if (provider == NAVER) {
             return authenticationManager.authenticate(new NaverLoginAuthenticationToken(provider, null, token));
         } else {
@@ -79,10 +82,10 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
             redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-            HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken));
+            HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken, principalDetails.getProvider()));
         } else {
             log.info("신규 유저 : 추가 정보 입력 필요");
-            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, authResult.getCredentials());
+            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, new TokenResponse(null, null, UNREGISTERED));
         }
     }
 }
