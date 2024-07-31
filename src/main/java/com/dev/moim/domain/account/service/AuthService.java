@@ -1,9 +1,6 @@
 package com.dev.moim.domain.account.service;
 
-import com.dev.moim.domain.account.dto.EmailVerificationCodeDTO;
-import com.dev.moim.domain.account.dto.EmailVerificationResultDTO;
-import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.domain.account.dto.*;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
@@ -117,10 +114,10 @@ public class AuthService {
         }
     }
 
-    public EmailVerificationCodeDTO sendCode(String email) {
+    public EmailVerificationCodeDTO sendCode(EmailDTO request) {
         try {
-            String code = emailUtil.sendMessage(email);
-            return new EmailVerificationCodeDTO(email, code);
+            String code = emailUtil.sendMessage(request.email());
+            return new EmailVerificationCodeDTO(request.email(), code);
         } catch (Exception e) {
             throw new GeneralException(EMAIL_SEND_FAIL);
         }

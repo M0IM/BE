@@ -77,17 +77,17 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
-    @PostMapping("/e")
-    @Operation(summary="이메일 인증 코드 전송 요청 API", description="이메일 인증 번호 전송을 요청하는 API 입니다. ")
+    @PostMapping("/emails/sending")
+    @Operation(summary="이메일 인증 코드 전송 요청 API", description="이메일 인증 번호 전송을 요청하는 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @ApiResponse(responseCode = "EMAIL_001", description = "이메일 전송에 실패했습니다."),
+            @ApiResponse(responseCode = "EMAIL_001", description = "이메일 전송에 실패했습니다.")
     })
-    public BaseResponse<EmailVerificationCodeDTO> sendCode(@RequestHeader("email") String email) {
-        return BaseResponse.onSuccess(authService.sendCode(email));
+    public BaseResponse<EmailVerificationCodeDTO> sendCode(@RequestBody EmailDTO request) {
+        return BaseResponse.onSuccess(authService.sendCode(request));
     }
 
-    @PostMapping("/emails")
+    @PostMapping("/emails/verification")
     @Operation(summary="이메일 코드 인증 요청 API", description="이메일 인증 코드 일치 여부를 확인해주는 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
