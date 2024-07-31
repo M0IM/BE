@@ -77,7 +77,7 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
-    @PostMapping("/emails/sending")
+    @PostMapping("/emails/send")
     @Operation(summary="이메일 인증 코드 전송 요청 API", description="이메일 인증 번호 전송을 요청하는 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -87,7 +87,7 @@ public class AuthController {
         return BaseResponse.onSuccess(authService.sendCode(request));
     }
 
-    @PostMapping("/emails/verification")
+    @PostMapping("/emails/verify")
     @Operation(summary="이메일 코드 인증 요청 API", description="이메일 인증 코드 일치 여부를 확인해주는 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
