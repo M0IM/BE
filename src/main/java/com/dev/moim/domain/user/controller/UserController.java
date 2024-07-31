@@ -1,5 +1,7 @@
 package com.dev.moim.domain.user.controller;
 
+import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.user.UserService;
 import com.dev.moim.domain.user.dto.CreateReviewDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
@@ -7,6 +9,7 @@ import com.dev.moim.domain.user.dto.ProfileListDTO;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileCreateDTO;
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.security.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,14 +24,17 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "유저 관련 컨트롤러")
 public class UserController {
 
+    private final UserService userService;
+
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다. 기본 프로필에는 닉네임, 프로필 이미지, URL이 포함되어 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 기본 프로필 조회 성공"),
     })
     @GetMapping("/profile")
-    public BaseResponse<ProfileDTO> getProfile() {
-
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<ProfileDTO> getProfile(
+            @RequestHeader(name = "userId") Long userId
+    ) {
+        return BaseResponse.onSuccess(userService.getProfile(userId));
     }
 
     @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
