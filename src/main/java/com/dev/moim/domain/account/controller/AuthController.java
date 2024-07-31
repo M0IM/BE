@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +21,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/join")
-    @Operation(summary="회원 가입 API", description="로그인 타입을 입력해주세요. \n [Provider] LOCAL(일반 로그인), KAKAO, APPLE, GOOGLE" )
+    @Operation(summary="회원 가입 API", description="로그인 타입을 입력해주세요. \n [Provider] LOCAL(일반 로그인), KAKAO, APPLE, GOOGLE, NAVER" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
             @ApiResponse(responseCode = "AUTH_011", description = "이미 가입한 메일 입니다.")
@@ -39,11 +38,11 @@ public class AuthController {
             @ApiResponse(responseCode = "AUTH_010", description = "인증에 실패했습니다."),
             @ApiResponse(responseCode = "AUTH_021", description = "존재하지 않는 사용자입니다.")
     })
-    public BaseResponse<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
+    public BaseResponse<TokenResponse> login(@RequestBody LoginRequest request) {
         return BaseResponse.onSuccess(null);
     }
 
-    @PostMapping("/reissueToken")
+    @GetMapping("/reissueToken")
     @Operation(summary="토큰 재발급 API", description="AccessToken의 유효 기간이 만료된 경우, Authorization 헤더에 RefreshToken을 담아서 요청을 보내면 AccessToken과 RefreshToken 재발급.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -55,7 +54,7 @@ public class AuthController {
         return BaseResponse.onSuccess(authService.reissueToken(refreshToken));
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     @Operation(summary="로그아웃 API", description="로그아웃 후, 기존 유효한 토큰 무효화 (개발용)" )
     public BaseResponse<?> signOut(
             @ExtractToken @Parameter(name = "accessToken", hidden = true) String accessToken
@@ -64,7 +63,7 @@ public class AuthController {
     }
 
     @PostMapping("/oAuth")
-    @Operation(summary="소셜 로그인 API", description="소셜 로그인 타입을 입력해주세요.\n [Provider] KAKAO, APPLE, GOOGLE (개발용)")
+    @Operation(summary="소셜 로그인 API", description="소셜 로그인 타입을 입력해주세요.\n [Provider] KAKAO, APPLE, GOOGLE, NAVER (개발용)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "AUTH_001", description = "신규 유저 입니다. 회원가입을 진행해주세요."),
@@ -78,7 +77,7 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
-    @PostMapping("/emails")
+    @GetMapping("/e")
     @Operation(summary="이메일 인증 코드 전송 요청 API", description="이메일 인증 번호 전송을 요청하는 API 입니다. ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
