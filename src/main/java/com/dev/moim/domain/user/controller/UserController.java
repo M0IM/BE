@@ -26,15 +26,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다. 기본 프로필에는 닉네임, 프로필 이미지, URL이 포함되어 있습니다.")
+    @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 기본 프로필 조회 성공"),
     })
     @GetMapping("/profile")
     public BaseResponse<ProfileDTO> getProfile(
-            @RequestHeader(name = "userId") Long userId
+            @AuthUser User user
     ) {
-        return BaseResponse.onSuccess(userService.getProfile(userId));
+        return BaseResponse.onSuccess(userService.getProfile(user));
     }
 
     @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")

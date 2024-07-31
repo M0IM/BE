@@ -2,11 +2,10 @@ package com.dev.moim.global.security.annotation;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.global.error.handler.AuthException;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.AUTH_INVALID_TOKEN;
 
 @Component
 @RequiredArgsConstructor
@@ -39,7 +38,8 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
         if (authentication != null) {
             String userId = authentication.getName();
-            return userRepository.findById(Long.valueOf(userId));
+            return userRepository.findById(Long.valueOf(userId))
+                    .orElseThrow(() -> new AuthException(AUTH_INVALID_TOKEN));
         }
         return null;
     }
