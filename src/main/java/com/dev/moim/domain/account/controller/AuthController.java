@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +22,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/join")
-    @Operation(summary="회원 가입 API", description="로그인 타입을 입력해주세요. \n [Provider] LOCAL(일반 로그인), KAKAO, APPLE, GOOGLE, NAVER" )
+    @Operation(summary="회원 가입 API", description="회원가입 API 입니다." )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
             @ApiResponse(responseCode = "AUTH_011", description = "이미 가입한 메일 입니다.")
     })
-    public BaseResponse<TokenResponse> join(@RequestBody JoinRequest request) {
+    public BaseResponse<TokenResponse> join(@Valid @RequestBody JoinRequest request) {
         return BaseResponse.onSuccess(authService.join(request));
     }
 
@@ -38,7 +39,7 @@ public class AuthController {
             @ApiResponse(responseCode = "AUTH_010", description = "인증에 실패했습니다."),
             @ApiResponse(responseCode = "AUTH_021", description = "존재하지 않는 사용자입니다.")
     })
-    public BaseResponse<TokenResponse> login(@RequestBody LoginRequest request) {
+    public BaseResponse<TokenResponse> localLogin(@RequestBody LoginRequest request) {
         return BaseResponse.onSuccess(null);
     }
 
