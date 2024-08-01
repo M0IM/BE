@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static com.dev.moim.domain.account.entity.enums.Provider.LOCAL;
 import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -41,7 +40,7 @@ public class AuthService {
     @Transactional
     public TokenResponse join(JoinRequest request) {
 
-        validateEmailDuplication(request.email());
+        validateEmailDuplication(request.provider(), request.providerId(), request.email());
 
         Role role = Optional.ofNullable(request.role())
                 .filter(requestRole -> ! requestRole.isEmpty())
@@ -81,8 +80,12 @@ public class AuthService {
         return new TokenResponse(accessToken, refreshToken, provider);
     }
 
-    private void validateEmailDuplication(String email) {
-        if (userRepository.existsByEmailAndProvider(email, LOCAL)) {
+    private void validateEmailDuplication(Provider provider, String providerId, String email) {
+        boolean isDuplicated = (provider == Provider.LOCAL)
+                ? userRepository.existsByEmail(email)
+                : userRepository.existsByProviderAndProviderId(provider, providerId);
+
+        if (isDuplicated) {
             throw new AuthException(EMAIL_DUPLICATION);
         }
     }
