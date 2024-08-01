@@ -40,12 +40,16 @@ public class AuthService {
     @Transactional
     public TokenResponse join(JoinRequest request) {
 
+        String encodedPassword = (request.provider() == Provider.LOCAL && request.password() != null)
+                ? passwordEncoder.encode(request.password())
+                : null;
+
         User user = User.builder()
                 .provider(request.provider())
                 .providerId(request.providerId())
                 .nickname(request.nickname())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+                .password(encodedPassword)
                 .role(ROLE_USER)
                 .userProfileList(new ArrayList<>())
                 .build();
