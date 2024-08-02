@@ -41,6 +41,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
+    @Lob
     private String providerId;
 
     private LocalDateTime inactive_date;
