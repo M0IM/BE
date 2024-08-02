@@ -40,23 +40,17 @@ public class AuthService {
     @Transactional
     public TokenResponse join(JoinRequest request) {
 
-        validateEmailDuplication(request.provider(), request.providerId(), request.email());
-
-        Role role = Optional.ofNullable(request.role())
-                .filter(requestRole -> ! requestRole.isEmpty())
-                .map(Role::valueOf)
-                .orElse(ROLE_USER);
-
-        Provider provider = Optional.ofNullable(request.provider())
-                .orElseThrow(() -> new AuthException(PROVIDER_NOT_FOUND));
+        String encodedPassword = (request.provider() == Provider.LOCAL && request.password() != null)
+                ? passwordEncoder.encode(request.password())
+                : null;
 
         User user = User.builder()
+                .provider(request.provider())
+                .providerId(request.providerId())
                 .nickname(request.nickname())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .role(role)
-                .provider(provider)
-                .providerId(request.providerId())
+                .password(encodedPassword)
+                .role(ROLE_USER)
                 .userProfileList(new ArrayList<>())
                 .build();
 
@@ -77,17 +71,7 @@ public class AuthService {
 
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        return new TokenResponse(accessToken, refreshToken, provider);
-    }
-
-    private void validateEmailDuplication(Provider provider, String providerId, String email) {
-        boolean isDuplicated = (provider == Provider.LOCAL)
-                ? userRepository.existsByEmail(email)
-                : userRepository.existsByProviderAndProviderId(provider, providerId);
-
-        if (isDuplicated) {
-            throw new AuthException(EMAIL_DUPLICATION);
-        }
+        return new TokenResponse(accessToken, refreshToken, request.provider());
     }
 
     @Transactional

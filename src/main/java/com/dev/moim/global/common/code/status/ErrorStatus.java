@@ -39,10 +39,12 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
     MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
     PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_016", "지원하지 않는 로그인 provider 입니다."),
-    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_018", "만료된 ID 토큰 입니다."),
-    ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_019", "유효하지 않은 ID 토큰 입니다."),
-    LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_020", "로그아웃된 access 토큰 입니다."),
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_021", "존재하지 않는 사용자입니다."),
+    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_017", "만료된 ID 토큰 입니다."),
+    ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_018", "유효하지 않은 ID 토큰 입니다."),
+    LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_019", "로그아웃된 access 토큰 입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_020", "존재하지 않는 사용자입니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "AUTH_021", "비밀번호 조건에 맞지 않습니다."),
+    OAUTH_ACCOUNT_DUPLICATION(HttpStatus.BAD_REQUEST, "AUTH_022", "이미 가입한 소셜 계정입니다."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),
