@@ -45,6 +45,9 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_020", "존재하지 않는 사용자입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "AUTH_021", "비밀번호 조건에 맞지 않습니다."),
     OAUTH_ACCOUNT_DUPLICATION(HttpStatus.BAD_REQUEST, "AUTH_022", "이미 가입한 소셜 계정입니다."),
+    OAUTH_SECRET_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_023", "OAuth 관련 환경 변수가 누락되었습니다."),
+    GET_OAUTH_USER_INFO_FAIL(HttpStatus.BAD_REQUEST, "AUTH_024", "OAuth 유저 정보 요청에 실패했습니다."),
+    PROVIDER_ID_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_025", "providerId가 누락되었습니다."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),

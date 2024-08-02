@@ -24,18 +24,20 @@ public class LocalAccountValidator implements ConstraintValidator<LocalAccountVa
 
     @Override
     public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
+        if (request.provider() == LOCAL) {
+            return validateEmailDuplication(request.email(), context);
+        }
+        return true;
+    }
 
-        if (request.provider() != LOCAL) return true;
-
-        boolean isDuplicated = userRepository.existsByEmail(request.email());
-
-        if (isDuplicated) {
+    private boolean validateEmailDuplication(String email, ConstraintValidatorContext context) {
+        if (userRepository.existsByEmail(email)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(EMAIL_DUPLICATION.getMessage())
                     .addPropertyNode("email")
                     .addConstraintViolation();
 
-            log.warn("이미 가입된 메일입니다.");
+            log.warn("회원가입 실패 : 이메일 중복");
             return false;
         }
         return true;
