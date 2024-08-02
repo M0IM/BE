@@ -4,7 +4,6 @@ import com.dev.moim.domain.account.dto.*;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.email.EmailUtil;
 import com.dev.moim.global.error.GeneralException;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
