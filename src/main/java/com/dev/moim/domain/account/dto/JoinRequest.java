@@ -2,7 +2,6 @@ package com.dev.moim.domain.account.dto;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.domain.account.entity.enums.Role;
 import com.dev.moim.global.validation.annotation.LocalAccountValidation;
 import com.dev.moim.global.validation.annotation.PasswordValidation;
 import com.dev.moim.global.validation.annotation.OAuthAccountValidation;

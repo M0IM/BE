@@ -25,8 +25,6 @@ public class CustomLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        log.info("** logoutFilter **");
-
         try {
             String accessToken = jwtUtil.resolveToken(request);
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.LOCAL;
 import static com.dev.moim.global.common.code.status.ErrorStatus.OAUTH_ACCOUNT_DUPLICATION;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PROVIDER_ID_NOT_FOUND;
 
 @Slf4j
 @Component
@@ -24,20 +25,42 @@ public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountVa
 
     @Override
     public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
+        if (request.provider() == LOCAL) {
+            return true;
+        }
 
-        if (request.provider() == LOCAL) return true;
+        if (isProviderIdInvalid(request.providerId(), context)) {
+            log.warn("회원가입 실패 : providerId 누락");
+            return false;
+        }
 
+        if (isProviderIdDuplicated(request, context)) {
+            log.warn("회원가입 실패 : 이미 가입된 소셜 계정");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isProviderIdInvalid(String providerId, ConstraintValidatorContext context) {
+        if (providerId == null || providerId.isEmpty()) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(PROVIDER_ID_NOT_FOUND.getMessage())
+                    .addPropertyNode("providerId")
+                    .addConstraintViolation();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isProviderIdDuplicated(JoinRequest request, ConstraintValidatorContext context) {
         boolean isDuplicated = userRepository.existsByProviderAndProviderId(request.provider(), request.providerId());
-
         if (isDuplicated) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(OAUTH_ACCOUNT_DUPLICATION.getMessage())
                     .addPropertyNode("providerId")
                     .addConstraintViolation();
-
-            log.warn("이미 가입된 소셜 계정입니다.");
-            return false;
         }
-        return true;
+        return isDuplicated;
     }
 }

@@ -34,7 +34,6 @@ import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
@@ -43,7 +42,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response) throws AuthenticationException {
-        log.info("** LoginFilter **");
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
 
@@ -59,7 +57,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain chain,
             @NonNull Authentication authResult) throws IOException{
-
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
@@ -80,12 +77,14 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         ErrorStatus errorStatus;
 
         if (failed instanceof UsernameNotFoundException) {
-            errorStatus = USER_NOT_FOUND;
+            errorStatus = USER_UNREGISTERED;
         } else if (failed instanceof BadCredentialsException) {
             errorStatus = BAD_CREDENTIALS;
         } else {
             errorStatus = AUTHENTICATION_FAILED;
         }
+        log.error("[ERROR] : {}", errorStatus);
+
         BaseResponse<Object> errorResponse = BaseResponse.onFailure(
                 errorStatus.getCode(),
                 errorStatus.getMessage(),

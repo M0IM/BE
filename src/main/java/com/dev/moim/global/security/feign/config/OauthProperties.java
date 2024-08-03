@@ -48,7 +48,7 @@ public class OauthProperties {
     private OAuthSecret getOAuthSecret(OAuthSecret secret) {
         if (secret == null || secret.getBaseUrl() == null || secret.getAppKey() == null) {
             log.error("OAuth 관련 환경 변수 누락");
-            throw new AuthException(_INTERNAL_SERVER_ERROR);
+            throw new AuthException(OAUTH_SECRET_NOT_FOUND);
         }
         return secret;
     }

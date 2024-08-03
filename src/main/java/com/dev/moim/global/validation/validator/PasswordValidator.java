@@ -23,20 +23,22 @@ public class PasswordValidator implements ConstraintValidator<PasswordValidation
 
     @Override
     public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
+        if (request.provider() == LOCAL && !isPasswordValid(request.password(), context)) {
+            log.warn("회원가입 실패 : 비밀번호 조건 미충족");
+            return false;
+        }
+        return true;
+    }
 
-        log.info("PasswordValidator");
+    private boolean isPasswordValid(String password, ConstraintValidatorContext context) {
+        String passwordPattern = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).{8,16}$";
 
-        if (request.provider() == LOCAL) {
-            String passwordPattern = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).{8,16}$";
-            if (request.password() == null || !request.password().matches(passwordPattern)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.getMessage())
-                        .addPropertyNode("password")
-                        .addConstraintViolation();
-
-                log.warn("비밀번호 조건에 맞지 않습니다.");
-                return false;
-            }
+        if (password == null || !password.matches(passwordPattern)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.getMessage())
+                    .addPropertyNode("password")
+                    .addConstraintViolation();
+            return false;
         }
         return true;
     }

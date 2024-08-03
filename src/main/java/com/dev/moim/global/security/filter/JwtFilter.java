@@ -13,20 +13,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.LOGOUT_ACCESS_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
+    private final String[] excludePath;
 
     @Override
     public void doFilterInternal(
@@ -34,8 +34,6 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
-        log.info("** JwtFilter **");
 
         String accessToken = jwtUtil.resolveToken(request);
 
@@ -46,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (redisUtil.getValue(accessToken) != null) {
             filterChain.doFilter(request, response);
-            log.info("logout accessToken");
             throw new AuthException(LOGOUT_ACCESS_TOKEN);
         }
 
@@ -58,5 +55,12 @@ public class JwtFilter extends OncePerRequestFilter {
             throw new AuthException(ErrorStatus.AUTH_INVALID_TOKEN);
         }
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
 }
