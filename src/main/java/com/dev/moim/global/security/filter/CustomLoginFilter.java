@@ -2,7 +2,6 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
-import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -42,7 +41,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(
             @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response) throws AuthenticationException, AuthException {
+            @NonNull HttpServletResponse response) throws AuthenticationException {
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
 
@@ -78,7 +77,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         ErrorStatus errorStatus;
 
         if (failed instanceof UsernameNotFoundException) {
-            errorStatus = USER_NOT_FOUND;
+            errorStatus = USER_UNREGISTERED;
         } else if (failed instanceof BadCredentialsException) {
             errorStatus = BAD_CREDENTIALS;
         } else {

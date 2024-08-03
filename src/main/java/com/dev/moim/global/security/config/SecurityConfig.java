@@ -7,6 +7,7 @@ import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
 import com.dev.moim.global.security.exception.JwtAuthenticationEntryPoint;
 import com.dev.moim.global.security.filter.*;
+import com.dev.moim.global.security.principal.PrincipalDetailsService;
 import com.dev.moim.global.security.service.NaverLoginService;
 import com.dev.moim.global.security.service.OIDCService;
 import com.dev.moim.global.security.util.HttpResponseUtil;
@@ -18,9 +19,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     private final OIDCService oidcService;
     private final NaverLoginService naverLoginService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final PrincipalDetailsService principalDetailsService;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -50,10 +52,19 @@ public class SecurityConfig {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        authenticationManager.getProviders().add(daoAuthenticationProvider());
         authenticationManager.getProviders().add(oidcAuthenticationProvider());
         authenticationManager.getProviders().add(naverLoginAuthenticationProvider());
 
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(principalDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);
+        return provider;
     }
 
     public OIDCAuthenticationProvider oidcAuthenticationProvider() {

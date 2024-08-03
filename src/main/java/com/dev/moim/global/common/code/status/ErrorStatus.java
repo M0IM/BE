@@ -50,6 +50,7 @@ public enum ErrorStatus implements BaseErrorCode {
     PROVIDER_ID_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_025", "providerId가 누락되었습니다."),
     INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, "AUTH_026", "잘못된 요청 본문입니다."),
     INVALID_REQUEST_HEADER(HttpStatus.BAD_REQUEST, "AUTH_027", "잘못된 요청 헤더입니다."),
+    USER_UNREGISTERED(HttpStatus.UNAUTHORIZED, "AUTH_028", "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),

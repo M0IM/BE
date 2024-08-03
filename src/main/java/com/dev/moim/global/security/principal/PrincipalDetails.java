@@ -37,9 +37,7 @@ public record PrincipalDetails(User user) implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
+    public String getPassword() {return user.getPassword();}
 
     @Override
     public boolean isAccountNonExpired() {
