@@ -1,5 +1,6 @@
 package com.dev.moim.global.security.util;
 
+import com.dev.moim.global.error.handler.FeignException;
 import com.dev.moim.global.security.dto.NaverUserInfo;
 import com.dev.moim.global.security.service.NaverLoginService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,7 @@ public class NaverLoginAuthenticationProvider implements AuthenticationProvider 
     private final NaverLoginService naverLoginService;
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-        log.info("** NaverLoginAuthenticationProvider **");
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException, FeignException {
 
         NaverLoginAuthenticationToken naverAuthenticationToken = (NaverLoginAuthenticationToken) authentication;
 

@@ -37,7 +37,7 @@ public class OIDCService {
             oidcPublicKeyList = googleFeign.getGoogleOIDCOpenKeys();
         } else if (provider.equals(APPLE)) {
             oidcPublicKeyList = appleFeign.getAppleOIDCOpenKeys();
-        }else {
+        } else {
             throw new AuthException(PROVIDER_NOT_FOUND);
         }
 

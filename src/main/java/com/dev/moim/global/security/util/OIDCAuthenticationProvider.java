@@ -19,9 +19,6 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-        log.info("** OIDCAuthenticationProvider **");
-
         OIDCAuthenticationToken oidcAuthenticationToken = (OIDCAuthenticationToken) authentication;
 
         Provider provider = oidcAuthenticationToken.getPrincipal();

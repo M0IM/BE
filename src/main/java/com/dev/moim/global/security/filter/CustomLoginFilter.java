@@ -2,6 +2,7 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -34,7 +35,6 @@ import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 @RequiredArgsConstructor
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
@@ -42,8 +42,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(
             @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response) throws AuthenticationException {
-        log.info("** LoginFilter **");
+            @NonNull HttpServletResponse response) throws AuthenticationException, AuthException {
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
 
@@ -59,7 +58,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain chain,
             @NonNull Authentication authResult) throws IOException{
-
         SecurityContextHolder.getContext().setAuthentication(authResult);
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
@@ -86,6 +84,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         } else {
             errorStatus = AUTHENTICATION_FAILED;
         }
+        log.error("[ERROR] : {}", errorStatus);
+
         BaseResponse<Object> errorResponse = BaseResponse.onFailure(
                 errorStatus.getCode(),
                 errorStatus.getMessage(),

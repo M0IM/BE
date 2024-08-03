@@ -35,11 +35,11 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "AUTH_010", "인증에 실패했습니다."),
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "AUTH_011", "이미 가입한 메일 입니다."),
     INVALID_GENDER(HttpStatus.BAD_REQUEST, "AUTH_012", "올바르지 않은 gender 입력값 입니다."),
-    USER_AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "AUTH_013", "인증이 필요한 사용자입니다."),
+    USER_AUTHENTICATION_FAIL(HttpStatus.UNAUTHORIZED, "AUTH_013", "유저 인증에 실패했습니다."),
     USER_INSUFFICIENT_PERMISSION(HttpStatus.FORBIDDEN, "AUTH_014", "권한이 부족한 사용자 입니다."),
     MISSING_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "AUTH_015", "Authorization 헤더가 비어있습니다."),
     PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_016", "지원하지 않는 로그인 provider 입니다."),
-    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_017", "만료된 ID 토큰 입니다."),
+    ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "AUTH_017", "ID 토큰이 만료되었습니다."),
     ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "AUTH_018", "유효하지 않은 ID 토큰 입니다."),
     LOGOUT_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AUTH_019", "로그아웃된 access 토큰 입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "AUTH_020", "존재하지 않는 사용자입니다."),
@@ -48,6 +48,8 @@ public enum ErrorStatus implements BaseErrorCode {
     OAUTH_SECRET_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH_023", "OAuth 관련 환경 변수가 누락되었습니다."),
     GET_OAUTH_USER_INFO_FAIL(HttpStatus.BAD_REQUEST, "AUTH_024", "OAuth 유저 정보 요청에 실패했습니다."),
     PROVIDER_ID_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTH_025", "providerId가 누락되었습니다."),
+    INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, "AUTH_026", "잘못된 요청 본문입니다."),
+    INVALID_REQUEST_HEADER(HttpStatus.BAD_REQUEST, "AUTH_027", "잘못된 요청 헤더입니다."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),

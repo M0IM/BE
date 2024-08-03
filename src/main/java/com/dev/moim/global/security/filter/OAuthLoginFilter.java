@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.util.*;
@@ -46,16 +47,12 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(
             @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response) throws IOException, ServletException {
-
-        log.info("** OAuthLoginFilter **");
+            @NonNull HttpServletResponse response) throws IOException, ServletException, AuthException {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
 
         Provider provider = oAuthLoginRequest.provider();
         String token = oAuthLoginRequest.token();
-
-        log.info("token : {}", token);
 
         if (provider == NAVER) {
             return authenticationManager.authenticate(new NaverLoginAuthenticationToken(provider, null, token));
