@@ -4,18 +4,7 @@ import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,16 +12,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "user_profile")
 public class UserProfile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_profile_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -41,7 +31,7 @@ public class UserProfile extends BaseEntity {
 
     private String name;
 
-    private String profile_image;
+    private String imageUrl;
 
     private String residence;
 
@@ -57,8 +47,8 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private UserMoim userMoim;
+    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    private List<UserMoim> userMoimList = new ArrayList<>();
 
     public void setUser(User user) {
         this.user = user;

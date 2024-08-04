@@ -1,13 +1,7 @@
 package com.dev.moim.domain.chatting.entity;
 
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,4 +27,7 @@ public class ChattingRoom extends BaseEntity {
 
     @OneToMany(mappedBy = "chattingRoom")
     private List<UserChattingRoom> userChattingRoomList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chattingRoom")
+    private List<Chatting> chattingList = new ArrayList<>();
 }

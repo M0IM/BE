@@ -1,7 +1,6 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,23 +30,23 @@ public class Plan extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "is_attention")
-    private Boolean isAttention;
-
     private String title;
 
     private LocalDate date;
     
-    private String locationAddress;
+    private String location;
 
     private String locationDetail;
 
     private String cost;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_group_id")
-    private UserMoim userMoim;
+    @JoinColumn(name = "moim_id")
+    private Moim moim;
 
     @OneToMany(mappedBy = "plan")
     private List<Schedule> scheduleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "plan")
+    private List<UserPlan> userPlanList = new ArrayList<>();
 }

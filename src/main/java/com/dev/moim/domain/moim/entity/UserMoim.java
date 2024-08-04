@@ -3,19 +3,9 @@ package com.dev.moim.domain.moim.entity;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
-import com.dev.moim.domain.moim.entity.enums.Role;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +27,7 @@ public class UserMoim extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private MoimRole moimRole;
 
     @Enumerated(EnumType.STRING)
     private JoinStatus joinStatus;
@@ -50,28 +40,13 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<Plan> planList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<MoimAlarm> moimAlarmList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<ExitReason> exitReasonList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<TakingOverPost> takingOverPostList = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
 
     @OneToMany(mappedBy = "userMoim")
     private List<Post> postList = new ArrayList<>();
 
     @OneToMany(mappedBy = "userMoim")
     private List<Comment> commentList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<Announcement> announcementList = new ArrayList<>();
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
-    private UserProfile userProfile;
 }
