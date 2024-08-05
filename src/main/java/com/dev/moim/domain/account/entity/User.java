@@ -1,18 +1,12 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.domain.account.entity.enums.Role;
+import com.dev.moim.domain.account.entity.enums.UserRole;
 import com.dev.moim.domain.account.entity.enums.UserRank;
 import com.dev.moim.domain.account.entity.enums.UserStatus;
-import com.dev.moim.domain.chatting.entity.UserChattingRoom;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -41,42 +35,27 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Lob
     private String providerId;
 
     private LocalDateTime inactive_date;
 
     private String deviceId;
 
-    private Long writerId;
+    private Boolean isPushAlarm;
+
+    private Boolean isEventAlarm;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'ROLE_USER'")
-    private Role role;
+    private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus userStatus;
+    private UserStatus status;
 
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("'FREE'")
     private UserRank userRank;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<UserProfile> userProfileList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<SNS> snsList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<UserMoim> userMoimList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<UserChattingRoom> userChattingRoomList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviewList = new ArrayList<>();
-
-    public void addUserProfile(UserProfile userProfile) {
-        userProfileList.add(userProfile);
-        userProfile.setUser(this);
-    }
 }

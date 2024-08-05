@@ -1,21 +1,12 @@
 package com.dev.moim.domain.chatting.entity;
 
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +21,4 @@ public class ChattingRoom extends BaseEntity {
     private Long id;
 
     private String title;
-
-    @OneToMany(mappedBy = "chattingRoom")
-    private List<UserChattingRoom> userChattingRoomList = new ArrayList<>();
 }

@@ -1,7 +1,7 @@
 package com.dev.moim.domain.user.dto;
 
 import com.dev.moim.domain.account.entity.enums.ProfileType;
-import com.dev.moim.domain.moim.entity.enums.Role;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ public record ProfileDetailDTO(
         @Schema(description = "프로필 타입", defaultValue = "SUB", allowableValues = {"MAIN", "SUB"})
         ProfileType profileType,
         @Schema(description = "모임 내의 유저 역할", defaultValue = "MEMBER", allowableValues = {"OWNER", "ADMIN", "MEMBER"})
-        Role userMoimRole,
+        MoimRole moimRole,
         String residence,
         LocalDate birth,
         LocalDateTime createdAt,

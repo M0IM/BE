@@ -1,22 +1,13 @@
 package com.dev.moim.domain.moim.entity;
 
+import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -29,14 +20,20 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> commentList = new ArrayList<>();
+    private String title;
 
-    @OneToMany(mappedBy = "post")
-    private List<PostCategory> postCategoryList = new ArrayList<>();
+    private String content;
 
+    private String imageFileName;
+
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_group_id")
+    @JoinColumn(name = "moim_id")
+    private Moim moim;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_moim_id")
     private UserMoim userMoim;
 }

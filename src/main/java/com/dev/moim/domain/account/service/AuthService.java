@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-import static com.dev.moim.domain.account.entity.enums.Role.ROLE_USER;
+import static com.dev.moim.domain.account.entity.enums.UserRole.ROLE_USER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
@@ -48,7 +48,7 @@ public class AuthService {
                 .nickname(request.nickname())
                 .email(request.email())
                 .password(encodedPassword)
-                .role(ROLE_USER)
+                .userRole(ROLE_USER)
                 .userProfileList(new ArrayList<>())
                 .build();
 
@@ -58,7 +58,7 @@ public class AuthService {
                 .residence(request.residence())
                 .build();
 
-        user.addUserProfile(userProfile);
+        userProfile.addUser(user);
 
         User newUser = userRepository.save(user);
 

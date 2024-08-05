@@ -13,37 +13,30 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "user_chatting_room")
 public class UserChattingRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_chatting_room_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
     private AlarmStatus alarmStatus;
 
-    @Column(name = "last_chatting_id")
-    private Long lastChattingId;
-
-    @OneToMany(mappedBy = "userChattingRoom")
-    private List<Chatting> chattingList = new ArrayList<>();
+    @Column(name = "last_read_time")
+    private LocalDateTime lastReadTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

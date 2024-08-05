@@ -1,5 +1,5 @@
 package com.dev.moim.domain.account.entity.enums;
 
-public enum SNSType {
-    KAKAO, NAVER
+public enum AlarmType {
+    PUSH, EVENT
 }

@@ -28,17 +28,11 @@ public class Comment extends BaseEntity {
 
     private String content;
 
-    @Column(name = "is_anonymous")
-    private Boolean isAnonymous;
-
-    // 신고 횟수
-    private Integer report;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_group_id")
+    @JoinColumn(name = "user_moim_id")
     private UserMoim userMoim;
 }

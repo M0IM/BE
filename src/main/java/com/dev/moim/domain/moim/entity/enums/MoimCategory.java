@@ -1,5 +1,5 @@
 package com.dev.moim.domain.moim.entity.enums;
 
-public enum CategoryType {
-    GROUP, POST
+public enum MoimCategory {
+    SPORTS, STUDY
 }
