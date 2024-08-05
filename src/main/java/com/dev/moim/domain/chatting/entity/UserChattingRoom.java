@@ -20,6 +20,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -33,8 +35,8 @@ public class UserChattingRoom extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AlarmStatus alarmStatus;
 
-    @Column(name = "last_chatting_id")
-    private Long lastChattingId;
+    @Column(name = "last_read_time")
+    private LocalDateTime lastReadTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

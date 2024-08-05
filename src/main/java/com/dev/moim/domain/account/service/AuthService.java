@@ -58,7 +58,7 @@ public class AuthService {
                 .residence(request.residence())
                 .build();
 
-        user.addUserProfile(userProfile);
+        userProfile.addUser(user);
 
         User newUser = userRepository.save(user);
 

@@ -8,9 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -24,10 +21,4 @@ public class ChattingRoom extends BaseEntity {
     private Long id;
 
     private String title;
-
-    @OneToMany(mappedBy = "chattingRoom")
-    private List<UserChattingRoom> userChattingRoomList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "chattingRoom")
-    private List<Chatting> chattingList = new ArrayList<>();
 }

@@ -2,7 +2,6 @@ package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,9 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -31,7 +27,7 @@ public class UserProfile extends BaseEntity {
 
     private String name;
 
-    private String imageUrl;
+    private String imageFileName;
 
     private String residence;
 
@@ -47,10 +43,8 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "userProfile", cascade = CascadeType.ALL)
-    private List<UserMoim> userMoimList = new ArrayList<>();
-
-    public void setUser(User user) {
+    public void addUser(User user) {
+        user.getUserProfileList().add(this);
         this.user = user;
     }
 }

@@ -12,9 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -40,13 +37,7 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<Post> postList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "userMoim")
-    private List<Comment> commentList = new ArrayList<>();
 }

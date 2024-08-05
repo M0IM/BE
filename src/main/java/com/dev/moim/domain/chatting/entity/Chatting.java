@@ -21,10 +21,6 @@ public class Chatting extends BaseEntity {
 
     private String chat;
 
-    private Boolean isAnonymous;
-
-    private String imageUrl;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatting_room_id")
     private ChattingRoom chattingRoom;
