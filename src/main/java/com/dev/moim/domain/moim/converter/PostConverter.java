@@ -1,8 +1,7 @@
 package com.dev.moim.domain.moim.converter;
 
-import com.dev.moim.domain.moim.dto.MoimPostDetailDTO;
-import com.dev.moim.domain.moim.dto.MoimPostPreviewDTO;
-import com.dev.moim.domain.moim.dto.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.MoimPostPreviewDTO;
+import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;

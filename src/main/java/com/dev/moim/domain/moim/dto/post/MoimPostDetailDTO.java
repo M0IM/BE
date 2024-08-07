@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostImage;

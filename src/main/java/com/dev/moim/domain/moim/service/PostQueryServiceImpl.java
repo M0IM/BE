@@ -3,12 +3,12 @@ package com.dev.moim.domain.moim.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
-import com.dev.moim.domain.moim.dto.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.PostType;
-import com.dev.moim.domain.moim.repository.MoimPostRepository;
+import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MoimPostQueryServiceImpl implements MoimPostQueryService{
+public class PostQueryServiceImpl implements PostQueryService {
 
-    private final MoimPostRepository moimPostRepository;
+    private final PostRepository postRepository;
     private final MoimRepository moimRepository;
     private final UserMoimRepository userMoimRepository;
 
@@ -37,10 +37,10 @@ public class MoimPostQueryServiceImpl implements MoimPostQueryService{
 
         Slice<Post> postSlices;
         if (postRequestType.equals(PostRequestType.ALL)) {
-            postSlices = moimPostRepository.findByUserMoimAndIdLessThanOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByUserMoimAndIdLessThanOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
         } else {
             PostType postType = PostType.valueOf(postRequestType.toString());
-            postSlices = moimPostRepository.findByUserMoimAndPostTypeAndIdLessThanOrderByIdDesc(userMoim, postType, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByUserMoimAndPostTypeAndIdLessThanOrderByIdDesc(userMoim, postType, cursor, PageRequest.of(0, take));
         }
 
         Long nextCursor = null;
@@ -59,6 +59,6 @@ public class MoimPostQueryServiceImpl implements MoimPostQueryService{
            throw new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN);
        }
 
-        return moimPostRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+        return postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
     }
 }

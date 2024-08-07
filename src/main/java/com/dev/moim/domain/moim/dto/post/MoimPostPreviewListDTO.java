@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.post;
 
 import java.util.List;
 

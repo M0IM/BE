@@ -2,13 +2,13 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.dto.CreateMoimPostDTO;
-import com.dev.moim.domain.moim.dto.CreateMoimPostResultDTO;
-import com.dev.moim.domain.moim.dto.MoimPostDetailDTO;
-import com.dev.moim.domain.moim.dto.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
+import com.dev.moim.domain.moim.dto.post.CreateMoimPostResultDTO;
+import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
+import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Post;
-import com.dev.moim.domain.moim.service.MoimPostCommandService;
-import com.dev.moim.domain.moim.service.MoimPostQueryService;
+import com.dev.moim.domain.moim.service.PostCommandService;
+import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class MoimPostController {
 
-    private final MoimPostQueryService moimPostQueryService;
-    private final MoimPostCommandService moimPostCommandService;
+    private final PostQueryService postQueryService;
+    private final PostCommandService postCommandService;
 
     @Operation(summary = "모임 게시판 목록 API", description = "모임 게시판 목록을 조회 합니다. _by 제이미_")
     @ApiResponses({
@@ -50,7 +50,7 @@ public class MoimPostController {
             @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
     ) {
-        MoimPostPreviewListDTO moimPostPreviewListDTO = moimPostQueryService.getMoimPostList(user, moimId, postRequestType, cursor, take);
+        MoimPostPreviewListDTO moimPostPreviewListDTO = postQueryService.getMoimPostList(user, moimId, postRequestType, cursor, take);
         return BaseResponse.onSuccess(moimPostPreviewListDTO);
     }
 
@@ -64,7 +64,7 @@ public class MoimPostController {
             @PathVariable Long moimId,
             @PathVariable Long postId
     ) {
-        Post post = moimPostQueryService.getMoimPost(user, moimId, postId);
+        Post post = postQueryService.getMoimPost(user, moimId, postId);
         return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post));
     }
 
@@ -74,10 +74,19 @@ public class MoimPostController {
     })
     @PostMapping("/moims/posts")
     public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
-        Post post = moimPostCommandService.createMoimPost(user, createMoimPostDTO);
+        Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
         return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
     }
 
+    @Operation(summary = "댓글 무한 스크롤 API", description = "댓글을 무한 스크롤로 조회합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts")
+    public BaseResponse<CreateMoimPostResultDTO> getcomments(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
+        Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
+        return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
+    }
 
 
 }

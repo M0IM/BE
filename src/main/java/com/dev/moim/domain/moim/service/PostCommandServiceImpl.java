@@ -1,12 +1,12 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.CreateMoimPostDTO;
+import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.repository.MoimPostRepository;
+import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.PostImageRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
@@ -16,16 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MoimPostCommandServiceImpl implements MoimPostCommandService{
+public class PostCommandServiceImpl implements PostCommandService {
 
     private final MoimRepository moimRepository;
     private final UserMoimRepository userMoimRepository;
-    private final MoimPostRepository moimPostRepository;
+    private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
 
     @Override
@@ -43,7 +41,7 @@ public class MoimPostCommandServiceImpl implements MoimPostCommandService{
                 .moim(moim)
                 .build();
 
-        moimPostRepository.save(savedPost);
+        postRepository.save(savedPost);
 
         createMoimPostDTO.imageKeyNames().forEach((i) ->{
                 PostImage postImage = PostImage.builder().imageKeyName(i).post(savedPost).build();
