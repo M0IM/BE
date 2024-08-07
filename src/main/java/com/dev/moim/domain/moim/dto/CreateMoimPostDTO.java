@@ -8,7 +8,7 @@ public record CreateMoimPostDTO(
         Long moimId,
         String title,
         String content,
-        List<String> imageKeyName,
+        List<String> imageKeyNames,
         PostType postType
 ) {
 }
