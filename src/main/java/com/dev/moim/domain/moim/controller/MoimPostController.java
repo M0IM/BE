@@ -2,15 +2,17 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
+import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentResultDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostResultDTO;
+import com.dev.moim.domain.moim.dto.post.LikeResultDTO;
 import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
 import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.PostLikeDTO;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.service.PostCommandService;
@@ -25,7 +27,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,6 +121,26 @@ public class MoimPostController {
     public BaseResponse<CreateCommentResultDTO> createCommentComment(@AuthUser User user, @RequestBody CreateCommentCommentDTO createCommentCommentDTO) {
         Comment comment = postCommandService.createCommentComment(user, createCommentCommentDTO);
         return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
+    }
+
+    @Operation(summary = "모임 게시글 좋아요/좋아요 취소 API", description = "모임 게시글 좋아요가 되어있으면 취소를 아니면 좋아요  합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/Like")
+    public BaseResponse<LikeResultDTO> postLike(@AuthUser User user, @RequestBody PostLikeDTO postLikeDTO) {
+        postCommandService.postLike(user, postLikeDTO);
+        return BaseResponse.onSuccess(LikeResultDTO.toLikeResultDTO(postQueryService.isPostLike(user.getId(), postLikeDTO.postId())));
+    }
+
+    @Operation(summary = "모임 댓글 좋아요/좋아요 취소 API", description = "모임 댓글 좋아요가 되어있으면 취소를 아니면 좋아요  합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/Like")
+    public BaseResponse<LikeResultDTO> commentLike(@AuthUser User user, @RequestBody CommentLikeDTO commentLikeDTO) {
+        postCommandService.commentLike(user, commentLikeDTO);
+        return BaseResponse.onSuccess(LikeResultDTO.toLikeResultDTO(postQueryService.isCommentLike(user.getId(), commentLikeDTO.commentId())));
     }
 
 }
