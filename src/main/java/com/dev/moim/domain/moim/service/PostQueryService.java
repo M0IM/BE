@@ -16,4 +16,6 @@ public interface PostQueryService {
     Boolean isCommentLike(Long userId, Long commentId);
 
     CommentResponseListDTO getcomments(User user, Long moimId, Long postId, Long cursor, Integer take);
+
+    Boolean isPostLike(Long userId, Long postId);
 }

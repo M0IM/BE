@@ -14,11 +14,12 @@ public record MoimPostDetailDTO(
         String writer,
         Integer commentCount,
         Integer likeCount,
+        Boolean isLike,
         List<String> imageKeyNames,
         LocalDateTime updateAt,
         LocalDateTime createAt
 ) {
-    public static MoimPostDetailDTO toMoimPostDetailDTO(Post post) {
+    public static MoimPostDetailDTO toMoimPostDetailDTO(Post post, Boolean postLike) {
 
         List<String> imageKeyNames = post.getPostImageList().stream().map(PostImage::getImageKeyName).toList();
 
@@ -30,6 +31,7 @@ public record MoimPostDetailDTO(
                 post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getName(),
                 post.getCommentList().size(),
                 post.getPostLikeList().size(),
+                postLike,
                 imageKeyNames,
                 post.getUpdatedAt(),
                 post.getCreatedAt()

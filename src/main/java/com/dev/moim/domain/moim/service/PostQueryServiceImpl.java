@@ -13,6 +13,7 @@ import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.CommentLikeRepository;
 import com.dev.moim.domain.moim.repository.CommentRepository;
+import com.dev.moim.domain.moim.repository.PostLikeRepository;
 import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
@@ -35,6 +36,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final UserMoimRepository userMoimRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -98,9 +100,14 @@ public class PostQueryServiceImpl implements PostQueryService {
         }
 
         List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) ->
-            CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), moimId))
+            CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()))
         ).toList();
 
         return CommentResponseListDTO.toCommentResponseListDTO(commentResponseDTOList, nextCursor, commentSlices.hasNext());
+    }
+
+    @Override
+    public Boolean isPostLike(Long userId, Long postId) {
+        return postLikeRepository.existsPostLikeByUserIdAndPostId(userId, postId);
     }
 }

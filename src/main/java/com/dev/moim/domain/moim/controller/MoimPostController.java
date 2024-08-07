@@ -71,7 +71,8 @@ public class MoimPostController {
             @PathVariable Long postId
     ) {
         Post post = postQueryService.getMoimPost(user, moimId, postId);
-        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post));
+        Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
+        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
     }
 
     @Operation(summary = "모임 게시글 작성 API", description = "모임 게시글을 작성 합니다. _by 제이미_")
@@ -104,7 +105,7 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping("/moims/posts")
+    @PostMapping("/moims/posts/comments")
     public BaseResponse<CreateCommentResultDTO> createComment(@AuthUser User user, @RequestBody CreateCommentDTO createCommentDTO) {
         Comment comment = postCommandService.createComment(user, createCommentDTO);
         return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
