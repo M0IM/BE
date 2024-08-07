@@ -72,6 +72,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_001", "POST를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_002", "COMMENT를 찾을 수 없습니다."),
 
     // FeignClient 관련
     FEIGN_400_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_001", "FeignClient 400번대 에러 발생"),

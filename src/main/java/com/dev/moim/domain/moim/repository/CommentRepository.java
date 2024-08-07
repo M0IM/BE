@@ -7,5 +7,5 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Slice<Comment> findByUserMoimAndIdLessThanOrderByIdDesc(UserMoim userMoim, Long id, Pageable pageable);
+    Slice<Comment> findByUserMoimAndIdLessThanAndParentIsNullOrderByIdDesc(UserMoim userMoim, Long id, Pageable pageable);
 }

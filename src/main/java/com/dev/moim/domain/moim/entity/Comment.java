@@ -1,7 +1,6 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -42,4 +41,11 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikeList = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>();
 }

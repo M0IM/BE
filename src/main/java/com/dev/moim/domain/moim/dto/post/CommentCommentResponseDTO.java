@@ -1,12 +1,10 @@
 package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Comment;
-import com.dev.moim.domain.moim.entity.Post;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-public record CommentResponseDTO(
+public record CommentCommentResponseDTO(
         Long commentId,
         String content,
         Integer likeCount,
@@ -14,11 +12,10 @@ public record CommentResponseDTO(
         String writer,
         Boolean isLike,
         LocalDateTime updateAt,
-        LocalDateTime createAt,
-        List<CommentCommentResponseDTO> commentResponseDTOList
+        LocalDateTime createAt
 ) {
-    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList) {
-        return new CommentResponseDTO(
+    public static CommentCommentResponseDTO toCommentCommentResponseDTO(Comment comment, Boolean isLike) {
+        return new CommentCommentResponseDTO(
                 comment.getId(),
                 comment.getContent(),
                 comment.getCommentLikeList().size(),
@@ -26,8 +23,7 @@ public record CommentResponseDTO(
                 comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
                 comment.getUpdatedAt(),
-                comment.getCreatedAt(),
-                commentResponseDTOList
+                comment.getCreatedAt()
         );
     }
 }

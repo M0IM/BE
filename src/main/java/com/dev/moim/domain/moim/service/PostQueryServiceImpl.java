@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
+import com.dev.moim.domain.moim.dto.post.CommentCommentResponseDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
 import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -92,16 +94,17 @@ public class PostQueryServiceImpl implements PostQueryService {
         }
 
 
-        Slice<Comment> commentSlices = commentRepository.findByUserMoimAndIdLessThanOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
+        Slice<Comment> commentSlices = commentRepository.findByUserMoimAndIdLessThanAndParentIsNullOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
 
         Long nextCursor = null;
         if (!commentSlices.isLast()) {
             nextCursor = commentSlices.toList().get(commentSlices.toList().size() - 1).getId();
         }
 
-        List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) ->
-            CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()))
-        ).toList();
+        List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) -> {
+            List<CommentCommentResponseDTO> commentCommentResponseDTOList = comment.getChildren().stream().map(commentcomment -> CommentCommentResponseDTO.toCommentCommentResponseDTO(commentcomment, isCommentLike(user.getId(), commentcomment.getId()))).toList();
+            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList);
+        }).toList();
 
         return CommentResponseListDTO.toCommentResponseListDTO(commentResponseDTOList, nextCursor, commentSlices.hasNext());
     }

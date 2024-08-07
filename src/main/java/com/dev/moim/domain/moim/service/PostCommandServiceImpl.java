@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
 import com.dev.moim.domain.moim.entity.Comment;
@@ -14,6 +15,7 @@ import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.PostImageRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.global.common.code.status.ErrorStatus;
+import com.dev.moim.global.error.handler.CommentException;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +70,28 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         Comment comment = Comment.builder()
                 .content(createCommentDTO.content())
+                .post(post)
+                .userMoim(userMoim)
+                .build();
+
+        commentRepository.save(comment);
+
+        return comment;
+    }
+
+    @Override
+    public Comment createCommentComment(User user, CreateCommentCommentDTO createCommentCommentDTO) {
+        Moim moim = moimRepository.findById(createCommentCommentDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        Post post = postRepository.findById(createCommentCommentDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        Comment parentComment = commentRepository.findById(createCommentCommentDTO.commentId()).orElseThrow(()-> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        Comment comment = Comment.builder()
+                .parent(parentComment)
+                .content(createCommentCommentDTO.content())
                 .post(post)
                 .userMoim(userMoim)
                 .build();

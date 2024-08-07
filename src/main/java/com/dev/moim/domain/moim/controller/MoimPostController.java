@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
+import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
 import com.dev.moim.domain.moim.dto.post.CreateCommentResultDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
@@ -108,6 +109,16 @@ public class MoimPostController {
     @PostMapping("/moims/posts/comments")
     public BaseResponse<CreateCommentResultDTO> createComment(@AuthUser User user, @RequestBody CreateCommentDTO createCommentDTO) {
         Comment comment = postCommandService.createComment(user, createCommentDTO);
+        return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
+    }
+
+    @Operation(summary = "모임 대댓글 작성 API", description = "모임 대댓글 작성 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/comments/comments")
+    public BaseResponse<CreateCommentResultDTO> createCommentComment(@AuthUser User user, @RequestBody CreateCommentCommentDTO createCommentCommentDTO) {
+        Comment comment = postCommandService.createCommentComment(user, createCommentCommentDTO);
         return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
     }
 
