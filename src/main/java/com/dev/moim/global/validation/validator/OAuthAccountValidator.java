@@ -45,7 +45,7 @@ public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountVa
     private boolean isProviderIdInvalid(String providerId, ConstraintValidatorContext context) {
         if (providerId == null || providerId.isEmpty()) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(PROVIDER_ID_NOT_FOUND.getMessage())
+            context.buildConstraintViolationWithTemplate(PROVIDER_ID_NOT_FOUND.toString())
                     .addPropertyNode("providerId")
                     .addConstraintViolation();
             return true;
@@ -57,7 +57,7 @@ public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountVa
         boolean isDuplicated = userRepository.existsByProviderAndProviderId(request.provider(), request.providerId());
         if (isDuplicated) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(OAUTH_ACCOUNT_DUPLICATION.getMessage())
+            context.buildConstraintViolationWithTemplate(OAUTH_ACCOUNT_DUPLICATION.toString())
                     .addPropertyNode("providerId")
                     .addConstraintViolation();
         }

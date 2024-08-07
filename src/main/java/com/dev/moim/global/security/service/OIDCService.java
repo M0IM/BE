@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.*;
+import static com.dev.moim.global.common.code.status.ErrorStatus.OIDC_PUBLIC_KEY_NOT_FOUND;
 import static com.dev.moim.global.common.code.status.ErrorStatus.PROVIDER_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -50,11 +51,12 @@ public class OIDCService {
 
     public OIDCDecodePayload getPayloadFromIdToken(String token, String iss, String aud, OIDCPublicKeyListDTO oidcPublicKeyList) {
         String kid = jwtOIDCUtil.getKidFromUnsignedTokenHeader(token, iss, aud);
+        System.out.println("KID : " + kid);
 
         OIDCPublicKeyDTO oidcPublicKey = oidcPublicKeyList.keys().stream()
                 .filter(o -> o.kid().equals(kid))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new AuthException(OIDC_PUBLIC_KEY_NOT_FOUND));
 
         return jwtOIDCUtil.getOIDCTokenBody(
                 token, oidcPublicKey.n(), oidcPublicKey.e());

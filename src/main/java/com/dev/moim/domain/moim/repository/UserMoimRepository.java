@@ -1,0 +1,13 @@
+package com.dev.moim.domain.moim.repository;
+
+import com.dev.moim.domain.moim.entity.UserMoim;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
+
+    Boolean existsByUserIdAndMoimId(Long userId, Long moimId);
+
+    Optional<UserMoim> findByUserIdAndMoimId(Long userId, Long moimId);
+}

@@ -13,7 +13,4 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
 
-    public ProfileDTO getProfile(User user) {
-        return ProfileDTO.of(user);
-    }
 }

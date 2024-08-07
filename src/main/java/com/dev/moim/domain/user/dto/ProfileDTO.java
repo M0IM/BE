@@ -1,20 +1,17 @@
 package com.dev.moim.domain.user.dto;
 
-import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.enums.Provider;
+import com.dev.moim.domain.account.entity.UserProfile;
 
 public record ProfileDTO(
         Long userId,
-        String email,
         String nickname,
-        Provider provider
+        String imageUrl
 ) {
-    public static ProfileDTO of(User user) {
+    public static ProfileDTO of(UserProfile userProfile) {
         return new ProfileDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getNickname(),
-                user.getProvider()
+                userProfile.getUser().getId(),
+                userProfile.getName(),
+                userProfile.getImageFileName()
         );
     }
 }

@@ -35,7 +35,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordValidation
 
         if (password == null || !password.matches(passwordPattern)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.getMessage())
+            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.toString())
                     .addPropertyNode("password")
                     .addConstraintViolation();
             return false;

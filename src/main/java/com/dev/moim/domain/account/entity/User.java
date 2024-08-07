@@ -56,6 +56,6 @@ public class User extends BaseEntity {
     @ColumnDefault("'FREE'")
     private UserRank userRank;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProfile> userProfileList = new ArrayList<>();
 }

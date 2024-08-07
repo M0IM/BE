@@ -34,7 +34,7 @@ public class UserController {
     public BaseResponse<ProfileDTO> getProfile(
             @AuthUser User user
     ) {
-        return BaseResponse.onSuccess(userService.getProfile(user));
+        return null;
     }
 
     @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
