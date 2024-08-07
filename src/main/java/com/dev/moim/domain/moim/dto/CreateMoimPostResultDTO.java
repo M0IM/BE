@@ -1,5 +1,7 @@
 package com.dev.moim.domain.moim.dto;
 
+import com.dev.moim.domain.moim.entity.Post;
+
 import java.time.LocalDateTime;
 
 public record CreateMoimPostResultDTO(
@@ -7,4 +9,7 @@ public record CreateMoimPostResultDTO(
         LocalDateTime createAt,
         LocalDateTime updateAt
 ) {
+    public static CreateMoimPostResultDTO toCreateMoimPostDTO(Post post) {
+        return new CreateMoimPostResultDTO(post.getId(), post.getCreatedAt(), post.getUpdatedAt());
+    }
 }

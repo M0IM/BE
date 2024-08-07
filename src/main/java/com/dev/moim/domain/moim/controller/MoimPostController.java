@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.dto.CreateMoimPostResultDTO;
 import com.dev.moim.domain.moim.dto.MoimPostDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimPostPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.service.MoimPostCommandService;
 import com.dev.moim.domain.moim.service.MoimPostQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MoimPostController {
 
     private final MoimPostQueryService moimPostQueryService;
+    private final MoimPostCommandService moimPostCommandService;
 
     @Operation(summary = "모임 게시판 목록 API", description = "모임 게시판 목록을 조회 합니다. _by 제이미_")
     @ApiResponses({
@@ -70,9 +72,10 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping("/moims/{moimId}/posts")
-    public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@RequestBody CreateMoimPostDTO createMoimPostDTO) {
-        return BaseResponse.onSuccess(null);
+    @PostMapping("/moims/posts")
+    public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
+        Post post = moimPostCommandService.createMoimPost(user, createMoimPostDTO);
+        return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
     }
 
 

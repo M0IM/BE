@@ -27,8 +27,6 @@ public class Post extends BaseEntity {
 
     private String content;
 
-    private String imageFileName;
-
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
