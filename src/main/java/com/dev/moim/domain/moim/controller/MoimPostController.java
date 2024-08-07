@@ -2,6 +2,8 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
+import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
+import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
 import com.dev.moim.domain.moim.dto.post.CreateMoimPostResultDTO;
 import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
@@ -19,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,10 +85,16 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping("/moims/posts")
-    public BaseResponse<CreateMoimPostResultDTO> getcomments(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
-        Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
-        return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
+    @GetMapping("/moims/{moimId}/posts/{postId}/comments")
+    public BaseResponse<CommentResponseListDTO> getcomments(
+            @AuthUser User user,
+            @PathVariable Long moimId,
+            @PathVariable Long postId,
+            @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "take") @CheckTakeValidation Integer take
+    ) {
+        CommentResponseListDTO commentResponseListDTO = postQueryService.getcomments(user, moimId, postId, cursor, take);
+        return BaseResponse.onSuccess(commentResponseListDTO);
     }
 
 
