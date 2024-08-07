@@ -38,12 +38,12 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_moim_id")
     private UserMoim userMoim;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostLike> postLikeList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostImage> postImageList = new ArrayList<>();
 }
