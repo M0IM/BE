@@ -52,10 +52,10 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Slice<Post> postSlices;
         if (postRequestType.equals(PostRequestType.ALL)) {
-            postSlices = postRepository.findByUserMoimAndIdLessThanOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByMoimAndIdLessThanOrderByIdDesc(moim, cursor, PageRequest.of(0, take));
         } else {
             PostType postType = PostType.valueOf(postRequestType.toString());
-            postSlices = postRepository.findByUserMoimAndPostTypeAndIdLessThanOrderByIdDesc(userMoim, postType, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByMoimAndPostTypeAndIdLessThanOrderByIdDesc(moim, postType, cursor, PageRequest.of(0, take));
         }
 
         Long nextCursor = null;
@@ -89,12 +89,14 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
+        Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
 
-        Slice<Comment> commentSlices = commentRepository.findByUserMoimAndIdLessThanAndParentIsNullOrderByIdDesc(userMoim, cursor, PageRequest.of(0, take));
+        Slice<Comment> commentSlices = commentRepository.findByPostAndIdLessThanAndParentIsNullOrderByIdDesc(post, cursor, PageRequest.of(0, take));
 
         Long nextCursor = null;
         if (!commentSlices.isLast()) {

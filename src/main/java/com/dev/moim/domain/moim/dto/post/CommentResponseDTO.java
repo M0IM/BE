@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.UserMoim;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,12 +19,14 @@ public record CommentResponseDTO(
         List<CommentCommentResponseDTO> commentResponseDTOList
 ) {
     public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList) {
+        UserMoim userMoim = comment.getUserMoim();
+
         return new CommentResponseDTO(
                 comment.getId(),
                 comment.getContent(),
                 comment.getCommentLikeList().size(),
-                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getImageFileName(),
-                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getName(),
+                userMoim == null ? null : comment.getUserMoim().getUserProfile().getImageFileName(),
+                userMoim == null ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
                 comment.getUpdatedAt(),
                 comment.getCreatedAt(),
