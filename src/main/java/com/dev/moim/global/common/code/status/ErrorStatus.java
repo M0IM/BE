@@ -51,6 +51,7 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, "AUTH_026", "잘못된 요청 본문입니다."),
     INVALID_REQUEST_HEADER(HttpStatus.BAD_REQUEST, "AUTH_027", "잘못된 요청 헤더입니다."),
     USER_UNREGISTERED(HttpStatus.UNAUTHORIZED, "AUTH_028", "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
+    OIDC_PUBLIC_KEY_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_029", "OIDC ID 토큰 공개키를 받아오는데 실패했습니다."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),
@@ -61,6 +62,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // Moim 관련
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
     MOIM_NOT_ADMIN(HttpStatus.UNAUTHORIZED, "MOIM_002", "모임 관리자 회원이 아닙니다."),
+    INVALID_MOIM_MEMBER(HttpStatus.FORBIDDEN, "MOIM_003", "모임의 멤버가 아닙니다."),
+    PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_004", "존재하지 않는 일정입니다."),
+    PLAN_WRITER_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_005", "해당 일정의 작성자를 찾을 수 없습니다."),
     USER_NOT_MOIM_JOIN(HttpStatus.UNAUTHORIZED, "MOIM_003", "모임의 회원이 아닙니다."),
     
     // UserProfile 관련

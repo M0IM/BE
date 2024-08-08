@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 
 public record ScheduleCreateDTO(
         String title,
-        LocalDateTime startTime,
-        boolean notification,
-        LocalDateTime notificationTime
+        LocalDateTime startTime
 ) {
 }
