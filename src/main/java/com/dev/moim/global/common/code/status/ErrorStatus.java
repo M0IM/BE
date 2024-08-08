@@ -61,17 +61,18 @@ public enum ErrorStatus implements BaseErrorCode {
     // Moim 관련
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
     MOIM_NOT_ADMIN(HttpStatus.UNAUTHORIZED, "MOIM_002", "모임 관리자 회원이 아닙니다."),
+    USER_NOT_MOIM_JOIN(HttpStatus.UNAUTHORIZED, "MOIM_003", "모임의 회원이 아닙니다."),
+    
+    // UserProfile 관련
+    USERPROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
 
-    // Recreation 관련
-    SEARCH_CONDITION_INVALID(HttpStatus.BAD_REQUEST, "RECR_001", "검색 조건이 하나라도 존재해야 합니다."),
-    RECREATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECR_002", "존재하지 않는 레크레이션입니다."),
+    // page 관련
+    NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),
+    NOT_VALID_TAKE(HttpStatus.BAD_REQUEST, "PAGE_002", "take 값이 유효하지 않습니다."),
 
-    // RecreationReview 관련
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REV_001", "존재하지 않는 리뷰입니다."),
-
-    // Flow 관련
-    FLOW_NOT_FOUND(HttpStatus.NOT_FOUND, "FLO_001", "존재하지 않는 플로우입니다."),
-    FLOW_DELETE_UNAUTHORIZED(HttpStatus.FORBIDDEN, "FLOW_002", "삭제 권한이 없습니다."),
+    // Post
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_001", "POST를 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_002", "COMMENT를 찾을 수 없습니다."),
 
     // FeignClient 관련
     FEIGN_400_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_001", "FeignClient 400번대 에러 발생"),
