@@ -8,15 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
 
     Boolean existsByPlanIdAndUserId(Long planId, Long userId);
 
-    @Query("SELECT COUNT(DISTINCT up.user.id) FROM UserPlan up " +
-            "JOIN up.plan p " +
-            "WHERE p.date >= :startDate AND p.date <= :endDate " +
-            "AND up.user.id IN (SELECT um.user.id FROM UserMoim um WHERE um.moim.id = :moimId)")
+    @Query("SELECT COUNT(DISTINCT u.id) " +
+            "FROM User u " +
+            "LEFT JOIN UserPlan up ON u.id = up.user.id " +
+            "LEFT JOIN Plan p ON up.plan.id = p.id " +
+            "LEFT JOIN IndividualPlan ip ON u.id = ip.user.id " +
+            "WHERE (p.date BETWEEN :startDate AND :endDate AND up.user.id IN " +
+            "(SELECT um.user.id FROM UserMoim um WHERE um.moim.id = :moimId)) " +
+            "OR (ip.date BETWEEN :startDate AND :endDate AND u.id IN " +
+            "(SELECT um.user.id FROM UserMoim um WHERE um.moim.id = :moimId))")
     int countUsersWithPlansInDateRange(@Param("moimId") Long moimId,
                                        @Param("startDate") LocalDateTime startDate,
                                        @Param("endDate") LocalDateTime endDate);
@@ -26,4 +32,6 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
     Boolean existsByUserIdAndPlanId(Long userId, Long planId);
 
     Slice<UserPlan> findByPlanId(Long planId, PageRequest pageRequest);
+
+    List<UserPlan> findByUserIdAndPlanDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }

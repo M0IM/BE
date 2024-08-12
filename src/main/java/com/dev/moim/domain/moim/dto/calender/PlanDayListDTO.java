@@ -4,6 +4,6 @@ import java.util.List;
 
 public record PlanDayListDTO(
         int memberWithPlanCnt,
-        List<PlanDTO> planList
+        List<MoimPlanDTO> planList
 ) {
 }
