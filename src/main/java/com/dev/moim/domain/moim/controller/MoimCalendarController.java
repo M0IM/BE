@@ -34,7 +34,7 @@ public class MoimCalendarController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
     })
-    @GetMapping("/calender")
+    @GetMapping("/calender/individual-plans")
     public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
@@ -47,7 +47,7 @@ public class MoimCalendarController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
     })
-    @GetMapping("/calender")
+    @GetMapping("/calender/user-moim-plans")
     public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getUserPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
