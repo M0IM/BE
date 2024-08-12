@@ -41,7 +41,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final IndividualPlanRepository individualPlanRepository;
 
     @Override
-    public PlanMonthListDTO getIndividualPlans(User user, int year, int month) {
+    public PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
@@ -53,11 +53,26 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
                 .map(UserPlanDTO::of)
                 .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
 
-        return new PlanMonthListDTO(monthPlanListByDay);
+        return new PlanMonthListDTO<>(monthPlanListByDay);
     }
 
     @Override
-    public PlanMonthListDTO getMoimPlans(User user, Long moimId, int year, int month) {
+    public PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<UserPlan> userPlanList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate);
+
+        Map<Integer, List<UserPlanDTO>> planListByDay = userPlanList.stream()
+                .map(userPlan -> UserPlanDTO.of(userPlan.getPlan()))
+                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
+
+        return new PlanMonthListDTO<>(planListByDay);
+    }
+
+    @Override
+    public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
@@ -87,7 +102,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
             planDayListMap.put(day, new PlanDayListDTO(memberWithPlanCnt, planList));
         }
 
-        return new PlanMonthListDTO(planDayListMap);
+        return new PlanMonthListDTO<>(planDayListMap);
     }
 
     @Override

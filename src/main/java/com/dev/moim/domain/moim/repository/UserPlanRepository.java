@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
 
@@ -31,4 +32,6 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
     Boolean existsByUserIdAndPlanId(Long userId, Long planId);
 
     Slice<UserPlan> findByPlanId(Long planId, PageRequest pageRequest);
+
+    List<UserPlan> findByUserIdAndPlanDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 }
