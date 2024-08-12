@@ -4,7 +4,7 @@ import com.dev.moim.domain.moim.entity.Plan;
 
 import java.time.LocalDateTime;
 
-public record PlanDTO(
+public record MoimPlanDTO(
         Long planId,
         String title,
         String location,
@@ -12,8 +12,8 @@ public record PlanDTO(
         LocalDateTime time,
         boolean isParticipant
 ) {
-    public static PlanDTO from(Plan plan, boolean isParticipant) {
-        return new PlanDTO(
+    public static MoimPlanDTO from(Plan plan, boolean isParticipant) {
+        return new MoimPlanDTO(
                 plan.getId(),
                 plan.getTitle(),
                 plan.getLocation(),

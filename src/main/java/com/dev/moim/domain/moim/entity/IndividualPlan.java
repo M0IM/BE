@@ -22,7 +22,7 @@ public class IndividualPlan extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    private String title;
 
     private LocalDateTime date;
 

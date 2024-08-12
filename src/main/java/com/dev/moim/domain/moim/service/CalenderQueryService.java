@@ -8,7 +8,9 @@ import com.dev.moim.domain.moim.dto.calender.ScheduleListDTO;
 
 public interface CalenderQueryService {
 
-    PlanMonthListDTO getPlans(User user, Long moimId, int year, int month);
+    PlanMonthListDTO getIndividualPlans(User user, int year, int month);
+
+    PlanMonthListDTO getMoimPlans(User user, Long moimId, int year, int month);
 
     PlanDetailDTO getPlanDetails(User user, Long planId);
 

@@ -1,7 +1,5 @@
 package com.dev.moim.domain.user;
 
-import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.user.dto.ProfileDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

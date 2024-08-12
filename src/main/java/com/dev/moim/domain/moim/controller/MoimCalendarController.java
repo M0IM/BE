@@ -28,19 +28,32 @@ public class MoimCalendarController {
     private final CalenderCommandService calenderCommandService;
     private final CalenderQueryService calenderQueryService;
 
+    @Operation(summary = "모임 개인 일정 조회", description = "유저의 개인 일정 및 참여하는 모임의 일정들을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
+    })
+    @GetMapping("/calender")
+    public BaseResponse<PlanMonthListDTO> getIndividualPlans(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month
+    ) {
+        return BaseResponse.onSuccess(calenderQueryService.getIndividualPlans(user, year, month));
+    }
+
     @Operation(summary = "모임 일정 조회", description = "달력에서 특정 연도, 월에 등록되어 있는 일정들을 조회합니다. 모임에 참여하는 멤버만 조회 가능 합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "모임 일정 조회 성공"),
             @ApiResponse(responseCode = "MOIM_001", description = "모임을 찾을 수 없습니다.")
     })
     @GetMapping("/{moimId}/calender")
-    public BaseResponse<PlanMonthListDTO> getPlans(
+    public BaseResponse<PlanMonthListDTO> getMoimPlans(
             @AuthUser User user,
             @PathVariable Long moimId,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getPlans(user, moimId, year, month));
+        return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(user, moimId, year, month));
     }
 
     @Operation(summary = "모임 새로운 일정 추가", description = "상세 스케줄, 알림 설정은 필수 입력 정보는 아닙니다.")

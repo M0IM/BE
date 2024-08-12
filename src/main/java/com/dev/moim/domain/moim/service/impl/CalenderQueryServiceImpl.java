@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
 import com.dev.moim.domain.moim.entity.UserPlan;
@@ -37,9 +38,26 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final UserPlanRepository userPlanRepository;
     private final ScheduleRepository scheduleRepository;
     private final UserMoimRepository userMoimRepository;
+    private final IndividualPlanRepository individualPlanRepository;
 
     @Override
-    public PlanMonthListDTO getPlans(User user, Long moimId, int year, int month) {
+    public PlanMonthListDTO getIndividualPlans(User user, int year, int month) {
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<IndividualPlan> individualPlanList = individualPlanRepository.findByDateBetween(startDate, endDate);
+
+        Map<Integer, List<UserPlanDTO>> monthPlanListByDay = individualPlanList.stream()
+                .map(UserPlanDTO::of)
+                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
+
+        return new PlanMonthListDTO(monthPlanListByDay);
+    }
+
+    @Override
+    public PlanMonthListDTO getMoimPlans(User user, Long moimId, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
@@ -61,9 +79,9 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
             log.info("비교 종료 일 : {}", dayEnd);
             int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(moimId, dayStart, dayEnd);
 
-            List<PlanDTO> planList = dayPlans.stream()
+            List<MoimPlanDTO> planList = dayPlans.stream()
                     .filter(plan -> plan.getMoim().getId().equals(moimId))
-                    .map(plan -> PlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), user.getId())))
+                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), user.getId())))
                     .collect(Collectors.toList());
 
             planDayListMap.put(day, new PlanDayListDTO(memberWithPlanCnt, planList));
