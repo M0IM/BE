@@ -64,12 +64,12 @@ public class UserController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
     @GetMapping(("/profile/reviews"))
-    public BaseResponse<ProfileDetailDTO> getUserReview(
+    public BaseResponse<ReviewListDTO> getUserReviews(
             @AuthUser User user,
-            @Parameter(description = "화면에 표시할 [받은 후기] 개수", example = "3") @RequestParam(defaultValue = "3") int receivedReviewCntLimit,
-            @Parameter(description = "화면에 표시할 [참여 모임] 개수", example = "3") @RequestParam(defaultValue = "3") int joinedMoimCntLimit
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess(userService.getUserReviews(user, page, size));
     }
 
     @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")

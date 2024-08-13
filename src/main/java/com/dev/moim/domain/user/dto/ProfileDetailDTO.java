@@ -6,7 +6,7 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import java.time.LocalDateTime;
 
 public record ProfileDetailDTO(
-        Long profileId,
+        Long userId,
         String imageFileName,
         String nickname,
         String residence,
@@ -17,7 +17,7 @@ public record ProfileDetailDTO(
 ) {
         public static ProfileDetailDTO from(User user, UserProfile userProfile) {
                 return new ProfileDetailDTO(
-                        userProfile.getId(),
+                        user.getId(),
                         userProfile.getImageFileName(),
                         userProfile.getName(),
                         userProfile.getResidence(),
