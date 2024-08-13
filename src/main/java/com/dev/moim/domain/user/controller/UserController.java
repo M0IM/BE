@@ -28,7 +28,7 @@ public class UserController {
 
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "유저 기본 프로필 조회 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
     @GetMapping("/profile")
     public BaseResponse<ProfileDTO> getProfile(
@@ -37,20 +37,9 @@ public class UserController {
         return BaseResponse.onSuccess(userService.getProfile(user));
     }
 
-    @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
+    @Operation(summary = "유저 프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON201", description = "프로필 생성 성공"),
-    })
-    @PostMapping("/profile")
-    public BaseResponse<Long> createProfile(
-            @RequestBody ProfileCreateDTO request
-    ) {
-        return BaseResponse.onSuccess(null);
-    }
-
-    @Operation(summary = "프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON201", description = "프로필 수정 성공"),
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
     })
     @PutMapping("/profile")
     public BaseResponse<?> updateProfile(
@@ -59,27 +48,27 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "프로필 목록 조회", description = "유저가 등록한 프로필들을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "프로필 목록 조회 성공"),
-    })
-    @GetMapping("/profile/list")
-    public BaseResponse<ProfileListDTO> getProfileList() {
-
-        return BaseResponse.onSuccess(null);
-    }
-
     @Operation(summary = "프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "프로필 상세 조회 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/{profileId}"))
+    @GetMapping(("/profile/{userId}"))
     public BaseResponse<ProfileDetailDTO> getDetailProfile(
-            @PathVariable Long profileId,
+            @AuthUser User user
+    ) {
+        return BaseResponse.onSuccess(userService.getDetailProfile(user));
+    }
+
+    @Operation(summary = "유저 후기 리스트 조회", description = "모임의 멤버가 유저에 대해 남긴 후기를 조회하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping(("/profile/reviews"))
+    public BaseResponse<ProfileDetailDTO> getUserReview(
+            @AuthUser User user,
             @Parameter(description = "화면에 표시할 [받은 후기] 개수", example = "3") @RequestParam(defaultValue = "3") int receivedReviewCntLimit,
             @Parameter(description = "화면에 표시할 [참여 모임] 개수", example = "3") @RequestParam(defaultValue = "3") int joinedMoimCntLimit
     ) {
-
         return BaseResponse.onSuccess(null);
     }
 

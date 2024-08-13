@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.user.dto.ProfileDTO;
+import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.service.UserService;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,15 @@ public class UserServiceImpl implements UserService {
     public ProfileDTO getProfile(User user) {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-        return ProfileDTO.of(userProfile);
+
+        return ProfileDTO.of(user, userProfile);
+    }
+
+    @Override
+    public ProfileDetailDTO getDetailProfile(User user) {
+        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
+                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
+
+        return ProfileDetailDTO.from(user, userProfile);
     }
 }

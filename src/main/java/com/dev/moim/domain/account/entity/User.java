@@ -45,6 +45,8 @@ public class User extends BaseEntity {
 
     private Boolean isEventAlarm;
 
+    private double rating;
+
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'ROLE_USER'")
     private UserRole userRole;
