@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record PlanCreateDTO(
-        Long userId,
         @UserMoimValidaton Long moimId,
         String title,
         LocalDateTime date,
