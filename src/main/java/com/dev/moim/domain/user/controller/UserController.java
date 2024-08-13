@@ -1,7 +1,7 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.user.UserService;
+import com.dev.moim.domain.user.service.UserService;
 import com.dev.moim.domain.user.dto.CreateReviewDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
@@ -34,7 +34,7 @@ public class UserController {
     public BaseResponse<ProfileDTO> getProfile(
             @AuthUser User user
     ) {
-        return null;
+        return BaseResponse.onSuccess(userService.getProfile(user));
     }
 
     @Operation(summary = "프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")

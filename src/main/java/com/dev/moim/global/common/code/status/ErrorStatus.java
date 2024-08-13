@@ -68,7 +68,7 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_NOT_MOIM_JOIN(HttpStatus.UNAUTHORIZED, "MOIM_003", "모임의 회원이 아닙니다."),
     
     // UserProfile 관련
-    USERPROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
+    USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
 
     // page 관련
     NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),

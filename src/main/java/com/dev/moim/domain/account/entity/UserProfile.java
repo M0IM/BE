@@ -22,7 +22,7 @@ public class UserProfile extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'SUB'")
+    @ColumnDefault("'MAIN'")
     private ProfileType profileType;
 
     private String name;
