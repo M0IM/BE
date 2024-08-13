@@ -9,13 +9,16 @@ import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileCreateDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.validation.annotation.ExistUserValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -35,6 +38,7 @@ public class UserController {
         return BaseResponse.onSuccess(userService.getProfile(user));
     }
 
+    // TODO : 유저 프로필 수정
     @Operation(summary = "유저 프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
@@ -53,7 +57,7 @@ public class UserController {
     @GetMapping(("/profile/{userId}"))
     public BaseResponse<ProfileDetailDTO> getDetailProfile(
             @AuthUser User user,
-            @PathVariable Long userId
+            @ExistUserValidation @PathVariable Long userId
     ) {
         return BaseResponse.onSuccess(userService.getDetailProfile(userId));
     }
