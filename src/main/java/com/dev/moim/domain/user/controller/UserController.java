@@ -5,13 +5,11 @@ import com.dev.moim.domain.user.service.UserService;
 import com.dev.moim.domain.user.dto.CreateReviewDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
-import com.dev.moim.domain.user.dto.ProfileListDTO;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileCreateDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,9 +52,10 @@ public class UserController {
     })
     @GetMapping(("/profile/{userId}"))
     public BaseResponse<ProfileDetailDTO> getDetailProfile(
-            @AuthUser User user
+            @AuthUser User user,
+            @PathVariable Long userId
     ) {
-        return BaseResponse.onSuccess(userService.getDetailProfile(user));
+        return BaseResponse.onSuccess(userService.getDetailProfile(userId));
     }
 
     @Operation(summary = "유저 후기 리스트 조회", description = "모임의 멤버가 유저에 대해 남긴 후기를 조회하는 기능입니다.")

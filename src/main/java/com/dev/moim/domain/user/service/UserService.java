@@ -9,7 +9,7 @@ public interface UserService {
 
     ProfileDTO getProfile(User user);
 
-    ProfileDetailDTO getDetailProfile(User user);
+    ProfileDetailDTO getDetailProfile(Long userId);
 
     ReviewListDTO getUserReviews(User user, int page, int size);
 }
