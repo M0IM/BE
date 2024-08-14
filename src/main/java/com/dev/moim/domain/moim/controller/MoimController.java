@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -148,13 +149,14 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모임 탈퇴 관리 하기 API", description = "모임을 탈퇴합니다. _by 제이미_")
+    @Operation(summary = "모임 탈퇴 신청 하기 API", description = "모임을 탈퇴 신청을 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping ("/moims/withdraw")
-    public BaseResponse<String> withDrawMoim(@RequestBody WithMoimDTO withMoimDTO) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<String> withDrawMoim(@AuthUser User user, @RequestBody @Valid WithMoimDTO withMoimDTO) {
+        moimCommandService.withDrawMoim(user, withMoimDTO);
+        return BaseResponse.onSuccess("탈퇴 신청하였습니다.");
     }
 
     @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청 상태 확인합니다. _by 제이미_")
