@@ -1,5 +1,6 @@
 package com.dev.moim.domain.user.dto;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 
 public record ProfileDTO(
@@ -7,9 +8,9 @@ public record ProfileDTO(
         String nickname,
         String imageUrl
 ) {
-    public static ProfileDTO of(UserProfile userProfile) {
+    public static ProfileDTO of(User user, UserProfile userProfile) {
         return new ProfileDTO(
-                userProfile.getUser().getId(),
+                user.getId(),
                 userProfile.getName(),
                 userProfile.getImageFileName()
         );
