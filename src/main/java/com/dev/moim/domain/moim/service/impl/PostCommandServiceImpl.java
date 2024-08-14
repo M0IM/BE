@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.service;
+package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
@@ -20,6 +20,7 @@ import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.PostImageRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.CommentException;
 import com.dev.moim.global.error.handler.MoimException;

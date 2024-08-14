@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.service;
+package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
@@ -18,6 +18,7 @@ import com.dev.moim.domain.moim.repository.PostLikeRepository;
 import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
@@ -27,7 +28,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
