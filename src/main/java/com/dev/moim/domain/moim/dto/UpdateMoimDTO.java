@@ -1,14 +1,16 @@
 package com.dev.moim.domain.moim.dto;
 
+import com.dev.moim.global.validation.annotation.UserMoimValidaton;
+
 import java.util.List;
 
 public record UpdateMoimDTO(
+         @UserMoimValidaton
          Long moimId,
          String title,
          String address,
          String category,
          String description,
-         List<String>imageUrl,
-         String tag
+         List<String> imageKeyNames
 ) {
 }

@@ -29,13 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -172,8 +166,9 @@ public class MoimController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping ("/moims/{moimId}")
-    public BaseResponse<String> modifyMoimInfo(@RequestBody UpdateMoimDTO updateMoimDTO) {
-        return BaseResponse.onSuccess(null);
+    @PutMapping("/moims")
+    public BaseResponse<String> modifyMoimInfo(@RequestBody @Valid UpdateMoimDTO updateMoimDTO) {
+        moimCommandService.modifyMoimInfo(updateMoimDTO);
+        return BaseResponse.onSuccess("모임 수정에 성공하였습니다.");
     }
 }
