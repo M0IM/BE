@@ -4,6 +4,7 @@ import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record MoimPreviewDTO(
         Long moimId,
@@ -11,19 +12,19 @@ public record MoimPreviewDTO(
         String description,
         MoimCategory category,
         String address,
-        String profileImageUrl,
+        List<String> profileImageKeys,
         Integer memberCount,
         LocalDateTime createAt,
         LocalDateTime updateAt
 ) {
-    public static MoimPreviewDTO toMoimPreviewDTO(Moim moim) {
+    public static MoimPreviewDTO toMoimPreviewDTO(Moim moim, List<String> imageKeys) {
         return new MoimPreviewDTO(
                 moim.getId(),
                 moim.getName(),
                 moim.getIntroduction(),
                 moim.getMoimCategory(),
                 moim.getLocation(),
-                moim.getImageFileName(),
+                imageKeys,
                 moim.getUserMoimList().size(),
                 moim.getCreatedAt(),
                 moim.getUpdatedAt()

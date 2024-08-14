@@ -32,8 +32,9 @@ public class Moim extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
-    private String imageFileName;
-
     @OneToMany(mappedBy = "moim")
     private List<UserMoim> userMoimList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "moim", cascade = CascadeType.REMOVE)
+    private List<MoimImage> moimImages = new ArrayList<>();
 }

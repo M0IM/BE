@@ -3,6 +3,8 @@ package com.dev.moim.domain.moim.controller;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.MoimAnnouncementListDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimDTO;
@@ -13,6 +15,7 @@ import com.dev.moim.domain.moim.dto.UpdateMoimDTO;
 import com.dev.moim.domain.moim.dto.WithMoimDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MoimController {
 
     private final MoimQueryService moimQueryService;
+    private final MoimCommandService moimCommandService;
 
 
     // 홈 (모집 중인 모임 + 소개 하는 모임)
@@ -75,9 +79,9 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims")
-    public BaseResponse<CreateMoimResultDTO> createMoim(@RequestBody CreateMoimDTO createMoimDTO) {
-
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<CreateMoimResultDTO> createMoim(@Parameter(hidden = true) @AuthUser User user, @RequestBody CreateMoimDTO createMoimDTO) {
+        Moim moim = moimCommandService.createMoim(user, createMoimDTO);
+        return BaseResponse.onSuccess(CreateMoimResultDTO.toCreateMoimResultDTO(moim));
     }
 
     // 모임 찾기
