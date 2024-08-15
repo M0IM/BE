@@ -3,6 +3,7 @@ package com.dev.moim.domain.account.service;
 import com.dev.moim.domain.account.dto.*;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.email.EmailUtil;
@@ -53,9 +54,11 @@ public class AuthService {
                 .build();
 
         UserProfile userProfile = UserProfile.builder()
+                .name(request.nickname())
                 .gender(request.gender())
                 .birth(request.birth())
                 .residence(request.residence())
+                .profileType(ProfileType.MAIN)
                 .build();
 
         userProfile.addUser(user);
