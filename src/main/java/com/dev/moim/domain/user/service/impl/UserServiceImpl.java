@@ -53,10 +53,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ReviewListDTO getUserReviews(User user, int page, int size) {
+    public ReviewListDTO getUserReviews(Long userId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<UserReview> userReviewPage = userReviewRepository.findByUserId(user.getId(), pageRequest);
+        Page<UserReview> userReviewPage = userReviewRepository.findByUserId(userId, pageRequest);
 
-        return ReviewListDTO.of(userReviewPage, pageRequest);
+        return ReviewListDTO.of(userReviewPage);
     }
 }
