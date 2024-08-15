@@ -1,7 +1,13 @@
 package com.dev.moim.domain.moim.controller;
 
+import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimAnnouncementListDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.enums.MoimCategory;
+import com.dev.moim.domain.moim.service.MoimCommandService;
+import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimDTO;
 import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
@@ -10,24 +16,30 @@ import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.UpdateMoimDTO;
 import com.dev.moim.domain.moim.dto.WithMoimDTO;
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.validation.annotation.CheckCursorValidation;
+import com.dev.moim.global.validation.annotation.CheckTakeValidation;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "모임 관련 컨트롤러")
+@RequiredArgsConstructor
+@Validated
 public class MoimController {
+
+    private final MoimQueryService moimQueryService;
+    private final MoimCommandService moimCommandService;
 
 
     // 홈 (모집 중인 모임 + 소개 하는 모임)
@@ -56,9 +68,10 @@ public class MoimController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @GetMapping("/moims/active")
-    public BaseResponse<MoimPreviewListDTO> activeMoim() {
-        return BaseResponse.onSuccess(null);
+    @GetMapping("/moims/me")
+    public BaseResponse<MoimPreviewListDTO> getMyMoim(@AuthUser User user, @CheckCursorValidation Long cursor, @CheckTakeValidation Integer take) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getMyMoim(user, cursor, take);
+        return BaseResponse.onSuccess(moimPreviewListDTO);
     }
     
     // 모임 생성
@@ -67,9 +80,9 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims")
-    public BaseResponse<CreateMoimResultDTO> createMoim(@RequestBody CreateMoimDTO createMoimDTO) {
-
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<CreateMoimResultDTO> createMoim(@Parameter(hidden = true) @AuthUser User user, @RequestBody CreateMoimDTO createMoimDTO) {
+        Moim moim = moimCommandService.createMoim(user, createMoimDTO);
+        return BaseResponse.onSuccess(CreateMoimResultDTO.toCreateMoimResultDTO(moim));
     }
 
     // 모임 찾기
@@ -78,12 +91,18 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "type", description = "'category' 인지 'search'  인지", example = "category"),
-            @Parameter(name = "keyword", description = "선택한 카테 고리 혹은 검색어", example = "all")
+            @Parameter(name = "moimRequestType", description = "선택한 카테 고리", example = "all"),
+            @Parameter(name = "name", description = "해당 이름이 포함된 모임을 찾습니다.", example = "고양이 모임")
     })
     @GetMapping("/moims")
-    public BaseResponse<MoimPreviewListDTO> findMoim(@RequestParam(name = "type") String type, @RequestParam(name = "keyword") String keyword) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<MoimPreviewListDTO> findMoims(
+            @RequestParam(name = "moimRequestType") MoimRequestType moimRequestType,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "take") @CheckTakeValidation Integer take
+    ) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.findMoims(moimRequestType, name, cursor, take);
+        return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
 
@@ -124,13 +143,14 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모임 탈퇴 관리 하기 API", description = "모임을 탈퇴합니다. _by 제이미_")
+    @Operation(summary = "모임 탈퇴 신청 하기 API", description = "모임을 탈퇴 신청을 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping ("/moims/withdraw")
-    public BaseResponse<String> withDrawMoim(@RequestBody WithMoimDTO withMoimDTO) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<String> withDrawMoim(@AuthUser User user, @RequestBody @Valid WithMoimDTO withMoimDTO) {
+        moimCommandService.withDrawMoim(user, withMoimDTO);
+        return BaseResponse.onSuccess("탈퇴 신청하였습니다.");
     }
 
     @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청 상태 확인합니다. _by 제이미_")
@@ -146,8 +166,9 @@ public class MoimController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping ("/moims/{moimId}")
-    public BaseResponse<String> modifyMoimInfo(@RequestBody UpdateMoimDTO updateMoimDTO) {
-        return BaseResponse.onSuccess(null);
+    @PutMapping("/moims")
+    public BaseResponse<String> modifyMoimInfo(@RequestBody @Valid UpdateMoimDTO updateMoimDTO) {
+        moimCommandService.modifyMoimInfo(updateMoimDTO);
+        return BaseResponse.onSuccess("모임 수정에 성공하였습니다.");
     }
 }

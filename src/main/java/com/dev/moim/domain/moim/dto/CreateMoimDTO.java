@@ -1,14 +1,15 @@
 package com.dev.moim.domain.moim.dto;
 
+import com.dev.moim.domain.moim.entity.enums.MoimCategory;
+
 import java.util.List;
 
 public record CreateMoimDTO(
         String title,
-        String address,
-        String category,
-        String description,
-        List<String>imageUrl,
-        String tag
+        String location,
+        MoimCategory moimCategory,
+        List<String> imageKeyName,
+        String introduction
 ) {
 
 }
