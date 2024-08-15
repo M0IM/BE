@@ -180,6 +180,6 @@ public class MoimController {
     @PostMapping("/moims/{moimId}/join")
     public BaseResponse<String> joinMoim(@AuthUser User user, @PathVariable Long moimId) {
         moimCommandService.joinMoim(user, moimId);
-        return BaseResponse.onSuccess("모임 가입에 성공하였습니다.");
+        return BaseResponse.onSuccess("모임 가입에 신청에 성공하였습니다.");
     }
 }
