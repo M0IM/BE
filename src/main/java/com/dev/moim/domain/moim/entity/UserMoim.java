@@ -44,4 +44,8 @@ public class UserMoim extends BaseEntity {
     public void accept() {
         this.joinStatus = JoinStatus.COMPLETE;
     }
+
+    public void changeStatus(MoimRole moimRole) {
+        this.moimRole = moimRole;
+    }
 }
