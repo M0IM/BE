@@ -172,4 +172,14 @@ public class MoimController {
         moimCommandService.modifyMoimInfo(updateMoimDTO);
         return BaseResponse.onSuccess("모임 수정에 성공하였습니다.");
     }
+
+    @Operation(summary = "모임 수정 API", description = "모임을 수정 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/{moimId}/join")
+    public BaseResponse<String> joinMoim(@AuthUser User user, @PathVariable Long moimId) {
+        moimCommandService.joinMoim(user, moimId);
+        return BaseResponse.onSuccess("모임 가입에 성공하였습니다.");
+    }
 }

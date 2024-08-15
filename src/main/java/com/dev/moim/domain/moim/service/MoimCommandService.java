@@ -13,4 +13,6 @@ public interface MoimCommandService {
     void withDrawMoim(User user, @Valid WithMoimDTO withMoimDTO);
 
     void modifyMoimInfo(@Valid UpdateMoimDTO updateMoimDTO);
+
+    void joinMoim(User user, Long moimId);
 }

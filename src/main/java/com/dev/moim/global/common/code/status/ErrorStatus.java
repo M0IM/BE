@@ -69,6 +69,7 @@ public enum ErrorStatus implements BaseErrorCode {
     
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
+    USER_PROFILE_NOT_FOUND_MAIN(HttpStatus.NOT_FOUND, "USERPROFILE_002", "메인 프로필을 찾을 수 없습니다."),
 
     // page 관련
     NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),
