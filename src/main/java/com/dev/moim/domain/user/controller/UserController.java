@@ -1,12 +1,9 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.user.dto.*;
+import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserService;
-import com.dev.moim.domain.user.dto.CreateReviewDTO;
-import com.dev.moim.domain.user.dto.ReviewListDTO;
-import com.dev.moim.domain.user.dto.ProfileDetailDTO;
-import com.dev.moim.domain.user.dto.ProfileDTO;
-import com.dev.moim.domain.user.dto.ProfileCreateDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.ExistUserValidation;
@@ -14,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final UserCommandService userCommandService;
 
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -38,15 +37,16 @@ public class UserController {
         return BaseResponse.onSuccess(userService.getProfile(user));
     }
 
-    // TODO : 유저 프로필 수정
     @Operation(summary = "유저 프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
     })
     @PutMapping("/profile")
-    public BaseResponse<?> updateProfile(
-            @RequestBody ProfileCreateDTO request
+    public BaseResponse<Void> updateProfile(
+            @AuthUser User user,
+            @Valid @RequestBody UpdateUserInfoDTO request
     ) {
+        userCommandService.updateInfo(user, request);
         return BaseResponse.onSuccess(null);
     }
 

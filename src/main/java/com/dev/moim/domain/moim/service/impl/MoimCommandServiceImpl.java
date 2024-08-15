@@ -11,6 +11,7 @@ import com.dev.moim.domain.moim.entity.MoimImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.domain.moim.repository.ExitReasonRepository;
 import com.dev.moim.domain.moim.repository.MoimImageRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
@@ -50,6 +51,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .user(user)
                 .moimRole(MoimRole.ADMIN)
                 .joinStatus(JoinStatus.COMPLETE)
+                .profileStatus(ProfileStatus.PUBLIC)
 //                .userProfile()       profile 관련 api 완성되면 추가할 예정
                 .build();
 
