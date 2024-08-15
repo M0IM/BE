@@ -50,12 +50,15 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         moimRepository.save(moim);
 
+        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
+
+
         UserMoim userMoim = UserMoim.builder()
                 .moim(moim)
                 .user(user)
                 .moimRole(MoimRole.OWNER)
                 .joinStatus(JoinStatus.COMPLETE)
-//                .userProfile()       profile 관련 api 완성되면 추가할 예정
+                .userProfile(userProfile)
                 .build();
 
         userMoimRepository.save(userMoim);
