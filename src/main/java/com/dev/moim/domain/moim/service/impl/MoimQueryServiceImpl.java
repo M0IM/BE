@@ -1,6 +1,9 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.repository.UserProfileRepository;
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
@@ -9,6 +12,8 @@ import com.dev.moim.domain.moim.entity.MoimImage;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.service.MoimQueryService;
+import com.dev.moim.domain.user.dto.UserPreviewDTO;
+import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -23,6 +28,8 @@ import java.util.List;
 public class MoimQueryServiceImpl implements MoimQueryService {
 
     private final MoimRepository moimRepository;
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -72,5 +79,14 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }).toList();
 
         return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, moimSlice.hasNext());
+    }
+
+    @Override
+    public UserPreviewListDTO getMoimMembers(Long moimId) {
+        List<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId);
+
+        List<UserPreviewDTO> userPreviewList = moimUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+
+        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewList);
     }
 }

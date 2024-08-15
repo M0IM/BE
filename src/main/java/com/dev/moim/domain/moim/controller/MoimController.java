@@ -140,7 +140,8 @@ public class MoimController {
     })
     @GetMapping("/moims/{moimId}/members")
     public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembers(moimId);
+        return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
     @Operation(summary = "모임 탈퇴 신청 하기 API", description = "모임을 탈퇴 신청을 합니다. _by 제이미_")

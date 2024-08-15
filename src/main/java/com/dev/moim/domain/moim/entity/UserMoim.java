@@ -37,7 +37,7 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
 }
