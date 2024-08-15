@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
         configuration = GoogleFeignConfiguration.class
 )
 public interface GoogleFeign {
-    @Cacheable(cacheNames = "GoogleOIDC", cacheManager = "oidcCacheManager")
+    @Cacheable(cacheNames = "GOOGLE", cacheManager = "oidcCacheManager")
     @GetMapping("/oauth2/v3/certs")
     OIDCPublicKeyListDTO getGoogleOIDCOpenKeys();
 }
