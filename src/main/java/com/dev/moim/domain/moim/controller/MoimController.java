@@ -10,6 +10,7 @@ import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.validation.annotation.CheckAdminValidation;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import com.dev.moim.global.validation.annotation.CheckTakeValidation;
 import com.dev.moim.global.validation.annotation.UserMoimValidaton;
@@ -129,7 +130,7 @@ public class MoimController {
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
-    @Operation(summary = "모임 탈퇴 신청 하기 API", description = "모임을 탈퇴 신청을 합니다. _by 제이미_")
+    @Operation(summary = "모임 탈퇴 하기 API", description = "모임을 탈퇴 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
@@ -144,7 +145,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping ("/moims/{moimId}/requests/users")
-    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
+    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
         UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take);
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
@@ -174,7 +175,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/accept")
-    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable Long moimId) {
+    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId) {
         moimCommandService.acceptMoim(user, moimId);
         return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
     }
@@ -184,7 +185,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PatchMapping("/moims/{moimId}/authorities")
-    public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
+    public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
         ChangeAuthorityResponseDTO changeAuthorityResponseDTO = moimCommandService.changeMemberAuthorities(user, changeAuthorityRequestDTO);
         return BaseResponse.onSuccess(changeAuthorityResponseDTO);
     }
