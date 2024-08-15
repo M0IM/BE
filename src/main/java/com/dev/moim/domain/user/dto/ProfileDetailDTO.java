@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record ProfileDetailDTO(
         Long userId,
-        String imageFileName,
+        String imageUrl,
         String nickname,
         String residence,
         String birth,
