@@ -173,7 +173,7 @@ public class MoimController {
         return BaseResponse.onSuccess("모임 수정에 성공하였습니다.");
     }
 
-    @Operation(summary = "모임 수정 API", description = "모임을 수정 합니다. _by 제이미_")
+    @Operation(summary = "모임 신청 API", description = "모임을 신청 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
