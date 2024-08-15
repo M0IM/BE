@@ -15,4 +15,6 @@ public interface MoimCommandService {
     void modifyMoimInfo(@Valid UpdateMoimDTO updateMoimDTO);
 
     void joinMoim(User user, Long moimId);
+
+    void acceptMoim(User user, Long moimId);
 }

@@ -175,4 +175,14 @@ public class MoimController {
         moimCommandService.joinMoim(user, moimId);
         return BaseResponse.onSuccess("모임 가입에 신청에 성공하였습니다.");
     }
+
+    @Operation(summary = "모임 가입 신청 받아주기 API", description = "모임 가입 신청 받아줍니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/{moimId}/accept")
+    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable Long moimId) {
+        moimCommandService.acceptMoim(user, moimId);
+        return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
+    }
 }

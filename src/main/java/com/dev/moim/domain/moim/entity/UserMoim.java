@@ -40,4 +40,8 @@ public class UserMoim extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
+
+    public void accept() {
+        this.joinStatus = JoinStatus.COMPLETE;
+    }
 }

@@ -112,4 +112,12 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         userMoimRepository.save(userMoim);
     }
+
+    @Override
+    public void acceptMoim(User user, Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoim.accept();
+    }
 }
