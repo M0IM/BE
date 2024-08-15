@@ -53,7 +53,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = UserMoim.builder()
                 .moim(moim)
                 .user(user)
-                .moimRole(MoimRole.ADMIN)
+                .moimRole(MoimRole.OWNER)
                 .joinStatus(JoinStatus.COMPLETE)
 //                .userProfile()       profile 관련 api 완성되면 추가할 예정
                 .build();
