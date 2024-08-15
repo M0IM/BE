@@ -1,6 +1,9 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -15,6 +18,8 @@ import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
+import com.dev.moim.global.common.code.status.ErrorStatus;
+import com.dev.moim.global.error.handler.MoimException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -30,7 +35,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
     private final MoimRepository moimRepository;
     private final UserRepository userRepository;
-    private final UserProfileRepository userProfileRepository;
+    private final UserMoimRepository userMoimRepository;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -108,5 +113,12 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         return UserPreviewListDTO.toUserPreviewListDTO(userPreviewDTOList, moimUsers.hasNext(), nextCursor);
+    }
+
+    @Override
+    public MoimIntroduceDTO getIntroduce(Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        IntroduceVideoDTO introduceVideo = userMoimRepository.findIntroduceVideo(moimId).orElseThrow(() -> new MoimException(ErrorStatus.VIDEO_ERROR));
+        return MoimIntroduceDTO.toMoimIntroduceDTO(introduceVideo.getMoim(), introduceVideo.getUserProfile());
     }
 }

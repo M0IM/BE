@@ -111,13 +111,14 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모임 소개 영상 API", description = "모임 소개 영상 보기. _by 제이미_")
+    @Operation(summary = "모임 소개 영상 불러오기 API", description = "모임 소개 영상 보기. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @GetMapping("/moims/{moimId}/introduce")
+    @GetMapping("/moims/{moimId}/introduce-videos")
     public BaseResponse<MoimIntroduceDTO> getIntroduce(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+        MoimIntroduceDTO moimIntroduceDTO = moimQueryService.getIntroduce(moimId);
+        return BaseResponse.onSuccess(moimIntroduceDTO);
     }
 
     @Operation(summary = "모임 멤버 API", description = "모임에 참여한 멤버들을 조회합니다. _by 제이미_")

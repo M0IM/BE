@@ -32,6 +32,10 @@ public class Moim extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MoimCategory moimCategory;
 
+    private String introduceVideoKeyName;
+
+    private String introduceVideoTitle;
+
     @OneToMany(mappedBy = "moim")
     private List<UserMoim> userMoimList = new ArrayList<>();
 
