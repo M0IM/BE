@@ -26,7 +26,7 @@ public class NaverLoginAuthenticationProvider implements AuthenticationProvider 
 
         NaverUserInfo naverUserInfo = naverLoginService.getUserInfo(naverAuthenticationToken.getOAuthAccessToken());
 
-        return new NaverLoginAuthenticationToken(NAVER, naverUserInfo.getResponse().getId(), naverAuthenticationToken.getOAuthAccessToken());
+        return new NaverLoginAuthenticationToken(NAVER, naverUserInfo.getResponse().getId(), naverAuthenticationToken.getOAuthAccessToken(), naverAuthenticationToken.getName());
     }
 
     @Override

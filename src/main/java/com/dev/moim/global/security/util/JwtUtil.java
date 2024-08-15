@@ -60,18 +60,11 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(String.valueOf(principalDetails.getUserId()))
-                .claim("email", principalDetails.getUsername())
-                .claim("provider", principalDetails.getProvider())
-                .claim("providerId", principalDetails.getProviderId())
                 .claim("role", principalDetails.getAuthorities())
                 .setIssuedAt(Date.from(issuedAt))
                 .setExpiration(Date.from(expirationTime))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String getEmail(String token) {
-        return getClaims(token).getBody().get("email", String.class);
     }
 
     public String getUserId(String token) {

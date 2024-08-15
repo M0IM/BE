@@ -75,6 +75,17 @@ public class JwtOIDCUtil {
                     .setSigningKey(getRSAPublicKey(modulus, exponent))
                     .build()
                     .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            log.error("유저 인증 실패 : 토큰 만료 : {}", e.getMessage());
+            throw new AuthException(ID_TOKEN_EXPIRED);
+        } catch (UnsupportedJwtException |
+                 MalformedJwtException |
+                 ClaimJwtException e) {
+            log.error("유저 인증 실패 : {}", e.getMessage());
+            throw new AuthException(ID_TOKEN_INVALID);
+        } catch (JwtException e) {
+            log.error("유저 인증 실패 : JWT processing error: {}", e.getMessage());
+            throw new AuthException(ID_TOKEN_INVALID);
         } catch (Exception e) {
             log.error("JWT 파싱 실패 : {}", e.getMessage());
             throw new AuthException(ID_TOKEN_INVALID);

@@ -26,7 +26,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
         OIDCDecodePayload oidcDecodePayload = oidcService.getOIDCDecodePayload(provider, idToken);
 
-        return new OIDCAuthenticationToken(provider, oidcDecodePayload.sub(), idToken);
+        return new OIDCAuthenticationToken(provider, oidcDecodePayload.sub(), idToken, oidcDecodePayload.email());
     }
 
     @Override
