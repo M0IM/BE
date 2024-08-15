@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -82,11 +83,30 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO getMoimMembers(Long moimId) {
-        List<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId);
+    public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take) {
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
 
-        List<UserPreviewDTO> userPreviewList = moimUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+        List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
-        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewList);
+        Long nextCursor = null;
+        if (!moimUsers.isLast()) {
+            nextCursor = moimUsers.toList().get(moimUsers.toList().size() - 1).getUserMoim().getId();
+        }
+
+        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewDTOList, moimUsers.hasNext(), nextCursor);
+    }
+
+    @Override
+    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take) {
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
+
+        List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+
+        Long nextCursor = null;
+        if (!moimUsers.isLast()) {
+            nextCursor = moimUsers.toList().get(moimUsers.toList().size() - 1).getUserMoim().getId();
+        }
+
+        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewDTOList, moimUsers.hasNext(), nextCursor);
     }
 }
