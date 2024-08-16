@@ -40,7 +40,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        userProfile.updateUser(request.name(), request.residence(), request.introduction());
+        userProfile.updateUser(request.nickname(), request.residence(), request.introduction());
 
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
