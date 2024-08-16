@@ -127,7 +127,7 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @PostMapping("/moims/posts/Like")
+    @PostMapping("/moims/posts/like")
     public BaseResponse<LikeResultDTO> postLike(@AuthUser User user, @RequestBody PostLikeDTO postLikeDTO) {
         postCommandService.postLike(user, postLikeDTO);
         return BaseResponse.onSuccess(LikeResultDTO.toLikeResultDTO(postQueryService.isPostLike(user.getId(), postLikeDTO.postId())));
