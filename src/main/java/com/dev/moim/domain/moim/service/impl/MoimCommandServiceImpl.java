@@ -47,6 +47,8 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .introduction(createMoimDTO.introduction())
                 .location(createMoimDTO.location())
                 .moimCategory(createMoimDTO.moimCategory())
+                .introduceVideoKeyName(createMoimDTO.introduceVideoKeyName())
+                .introduceVideoTitle(createMoimDTO.introduceVideoTitle())
                 .build();
 
         moimRepository.save(moim);
