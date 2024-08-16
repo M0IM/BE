@@ -14,10 +14,13 @@ import com.dev.moim.domain.user.dto.CreateReviewResultDTO;
 import com.dev.moim.domain.user.dto.UpdateUserInfoDTO;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.global.error.handler.UserException;
+import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PRIVATE;
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PUBLIC;
@@ -34,6 +37,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserMoimRepository userMoimRepository;
     private final UserRepository userRepository;
     private final UserReviewRepository userReviewRepository;
+    private final S3Service s3Service;
 
     @Override
     public void updateInfo(User user, UpdateUserInfoDTO request) {
@@ -41,9 +45,15 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        userProfile.updateUser(request.nickname(), request.imageKey(), request.residence(), request.introduction());
+        Optional.ofNullable(request.imageKey())
+                .map(s3Service::generateStaticUrl)
+                .ifPresent(userProfile::updateImageUrl);
 
-        // TODO: 이미지 처리
+        userProfile.updateUser(
+                request.nickname(),
+                request.residence(),
+                request.introduction()
+        );
 
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
