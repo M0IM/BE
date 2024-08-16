@@ -11,5 +11,5 @@ public interface UserService {
 
     ProfileDetailDTO getDetailProfile(Long userId);
 
-    ReviewListDTO getUserReviews(User user, int page, int size);
+    ReviewListDTO getUserReviews(Long userId, int page, int size);
 }

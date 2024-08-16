@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
         configuration = KakaoFeignConfiguration.class
 )
 public interface KakaoFeign {
-    @Cacheable(cacheNames = "KakaoOIDC", cacheManager = "oidcCacheManager")
+    @Cacheable(cacheNames = "KAKAO", cacheManager = "oidcCacheManager")
     @GetMapping("/.well-known/jwks.json")
     OIDCPublicKeyListDTO getKakaoOIDCOpenKeys();
 }

@@ -1,7 +1,7 @@
 package com.dev.moim.global.security.filter;
 
+import com.dev.moim.domain.account.dto.LoginResponseDTO;
 import com.dev.moim.domain.account.dto.OAuthLoginRequest;
-import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -55,9 +55,9 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         String token = oAuthLoginRequest.token();
 
         if (provider == NAVER) {
-            return authenticationManager.authenticate(new NaverLoginAuthenticationToken(provider, null, token));
+            return authenticationManager.authenticate(new NaverLoginAuthenticationToken(provider, null, token, null));
         } else {
-            return authenticationManager.authenticate(new OIDCAuthenticationToken(provider, null, token));
+            return authenticationManager.authenticate(new OIDCAuthenticationToken(provider, null, token, null));
         }
     }
 
@@ -79,10 +79,10 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
             redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-            HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken, principalDetails.getProvider()));
+            HttpResponseUtil.setSuccessResponse(response, _OK, new LoginResponseDTO(accessToken, refreshToken, principalDetails.getProvider(), authResult.getName()));
         } else {
             log.info("신규 유저 : 추가 정보 입력 필요");
-            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, new TokenResponse(null, null, UNREGISTERED));
+            HttpResponseUtil.setSuccessResponse(response, UNREGISTERED_OAUTH_LOGIN_USER, new LoginResponseDTO(null, null, UNREGISTERED, authResult.getName()));
         }
     }
 }

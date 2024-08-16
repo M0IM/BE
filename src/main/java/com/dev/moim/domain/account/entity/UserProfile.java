@@ -47,4 +47,10 @@ public class UserProfile extends BaseEntity {
         user.getUserProfileList().add(this);
         this.user = user;
     }
+
+    public void updateUser(String name, String residence, String introduction) {
+        this.name = name;
+        this.residence = residence;
+        this.introduction = introduction;
+    }
 }

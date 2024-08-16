@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
@@ -21,4 +22,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO(m, up) from UserMoim um join um.userProfile up join um.moim m where um.moim.id = :moimId and um.moimRole = 'OWNER'")
     Optional<IntroduceVideoDTO> findIntroduceVideo(Long moimId);
+
+    List<UserMoim> findByUserId(Long userId);
 }

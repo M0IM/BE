@@ -12,6 +12,7 @@ import com.dev.moim.domain.moim.entity.MoimImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.domain.moim.repository.ExitReasonRepository;
 import com.dev.moim.domain.moim.repository.MoimImageRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
@@ -58,6 +59,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .user(user)
                 .moimRole(MoimRole.OWNER)
                 .joinStatus(JoinStatus.COMPLETE)
+                .profileStatus(ProfileStatus.PRIVATE)
                 .userProfile(userProfile)
                 .build();
 
@@ -111,6 +113,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                             .user(user)
                             .moimRole(MoimRole.MEMBER)
                             .moim(moim)
+                            .profileStatus(ProfileStatus.PRIVATE)
                             .build();
 
         userMoimRepository.save(userMoim);
