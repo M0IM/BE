@@ -44,7 +44,7 @@ public class MoimController {
     })
     @GetMapping("/moims/popular")
     public BaseResponse<MoimPreviewListDTO> getPopularMoim() {
-
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getPopularMoim();
         return BaseResponse.onSuccess(null);
     }
 
@@ -53,9 +53,9 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/new")
-    public BaseResponse<MoimPreviewListDTO> getNewMoim() {
-
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<MoimPreviewListDTO> getNewMoim(@RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getNewMoim(cursor, take);
+        return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
     // 내 모임
