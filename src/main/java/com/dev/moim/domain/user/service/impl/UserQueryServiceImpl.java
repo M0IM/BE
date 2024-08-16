@@ -9,7 +9,7 @@ import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
-import com.dev.moim.domain.user.service.UserService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.USER_PROFILE_NO
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserServiceImpl implements UserService {
+public class UserQueryServiceImpl implements UserQueryService {
 
     private final UserProfileRepository userProfileRepository;
     private final UserReviewRepository userReviewRepository;

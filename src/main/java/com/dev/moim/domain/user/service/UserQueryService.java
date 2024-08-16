@@ -5,7 +5,7 @@ import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 
-public interface UserService {
+public interface UserQueryService {
 
     ProfileDTO getProfile(User user);
 
