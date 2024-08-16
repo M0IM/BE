@@ -2,23 +2,18 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
-import com.dev.moim.domain.moim.dto.MoimAnnouncementListDTO;
-import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
-import com.dev.moim.domain.moim.dto.CreateMoimDTO;
-import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
-import com.dev.moim.domain.moim.dto.MoimDetailDTO;
-import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
-import com.dev.moim.domain.moim.dto.UpdateMoimDTO;
-import com.dev.moim.domain.moim.dto.WithMoimDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.validation.annotation.CheckAdminValidation;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import com.dev.moim.global.validation.annotation.CheckTakeValidation;
+import com.dev.moim.global.validation.annotation.UserMoimValidaton;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -116,22 +111,14 @@ public class MoimController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "모임 공지사항 정보 API", description = "공지 사항 리스트. _by 제이미_")
+    @Operation(summary = "모임 소개 영상 불러오기 API", description = "모임 소개 영상 보기. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @GetMapping("/moims/{moimId}/announcement")
-    public BaseResponse<MoimAnnouncementListDTO> getAnnouncement(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
-    }
-
-    @Operation(summary = "모임 소개 영상 API", description = "모임 소개 영상 보기. _by 제이미_")
-    @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
-    })
-    @GetMapping("/moims/{moimId}/introduce")
+    @GetMapping("/moims/{moimId}/introduce-videos")
     public BaseResponse<MoimIntroduceDTO> getIntroduce(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+        MoimIntroduceDTO moimIntroduceDTO = moimQueryService.getIntroduce(moimId);
+        return BaseResponse.onSuccess(moimIntroduceDTO);
     }
 
     @Operation(summary = "모임 멤버 API", description = "모임에 참여한 멤버들을 조회합니다. _by 제이미_")
@@ -139,11 +126,12 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/members")
-    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembers(moimId, cursor, take);
+        return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
-    @Operation(summary = "모임 탈퇴 신청 하기 API", description = "모임을 탈퇴 신청을 합니다. _by 제이미_")
+    @Operation(summary = "모임 탈퇴 하기 API", description = "모임을 탈퇴 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
@@ -153,13 +141,14 @@ public class MoimController {
         return BaseResponse.onSuccess("탈퇴 신청하였습니다.");
     }
 
-    @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청 상태 확인합니다. _by 제이미_")
+    @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청한 멤버들을 확인합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @GetMapping ("/moims/{moimId}/status")
-    public BaseResponse<MoimPreviewListDTO> confirmStatusMoim(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+    @GetMapping ("/moims/{moimId}/requests/users")
+    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take);
+        return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
     @Operation(summary = "모임 수정 API", description = "모임을 수정 합니다. _by 제이미_")
@@ -170,5 +159,35 @@ public class MoimController {
     public BaseResponse<String> modifyMoimInfo(@RequestBody @Valid UpdateMoimDTO updateMoimDTO) {
         moimCommandService.modifyMoimInfo(updateMoimDTO);
         return BaseResponse.onSuccess("모임 수정에 성공하였습니다.");
+    }
+
+    @Operation(summary = "모임 신청 API", description = "모임을 신청 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/{moimId}/requests")
+    public BaseResponse<String> joinMoim(@AuthUser User user, @PathVariable Long moimId) {
+        moimCommandService.joinMoim(user, moimId);
+        return BaseResponse.onSuccess("모임 가입에 신청에 성공하였습니다.");
+    }
+
+    @Operation(summary = "모임 가입 신청 받아주기 API", description = "모임 가입 신청 받아줍니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/{moimId}/accept")
+    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId) {
+        moimCommandService.acceptMoim(user, moimId);
+        return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
+    }
+
+    @Operation(summary = "멤버 권한 수정하기 API", description = "멤버 권한을 수정합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PatchMapping("/moims/{moimId}/authorities")
+    public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
+        ChangeAuthorityResponseDTO changeAuthorityResponseDTO = moimCommandService.changeMemberAuthorities(user, changeAuthorityRequestDTO);
+        return BaseResponse.onSuccess(changeAuthorityResponseDTO);
     }
 }

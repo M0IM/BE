@@ -1,10 +1,11 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.CreateMoimDTO;
-import com.dev.moim.domain.moim.dto.CreateMoimResultDTO;
-import com.dev.moim.domain.moim.dto.UpdateMoimDTO;
-import com.dev.moim.domain.moim.dto.WithMoimDTO;
+import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.account.entity.enums.ProfileType;
+import com.dev.moim.domain.account.repository.UserProfileRepository;
+import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.ExitReason;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.MoimImage;
@@ -19,11 +20,13 @@ import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final MoimImageRepository moimImageRepository;
     private final UserMoimRepository userMoimRepository;
     private final ExitReasonRepository exitReasonRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
@@ -46,13 +51,16 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         moimRepository.save(moim);
 
+        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
+
+
         UserMoim userMoim = UserMoim.builder()
                 .moim(moim)
                 .user(user)
-                .moimRole(MoimRole.ADMIN)
+                .moimRole(MoimRole.OWNER)
                 .joinStatus(JoinStatus.COMPLETE)
-                .profileStatus(ProfileStatus.PUBLIC)
-//                .userProfile()       profile 관련 api 완성되면 추가할 예정
+                .profileStatus(ProfileStatus.PRIVATE)
+                .userProfile(userProfile)
                 .build();
 
         userMoimRepository.save(userMoim);
@@ -93,5 +101,42 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         ).toList();
 
         moim.updateMoim(moim.getName(), moim.getIntroduction(), moim.getIntroduction(), moimImageList);
+    }
+
+    @Override
+    public void joinMoim(User user, Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
+        UserMoim userMoim = UserMoim.builder()
+                            .userProfile(userProfile)
+                            .joinStatus(JoinStatus.LOADING)
+                            .user(user)
+                            .moimRole(MoimRole.MEMBER)
+                            .moim(moim)
+                            .profileStatus(ProfileStatus.PRIVATE)
+                            .build();
+
+        userMoimRepository.save(userMoim);
+    }
+
+    @Override
+    public void acceptMoim(User user, Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoim.accept();
+    }
+
+    @Override
+    public ChangeAuthorityResponseDTO changeMemberAuthorities(User user, ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
+        User targetUser = userRepository.findById(changeAuthorityRequestDTO.userId()).orElseThrow(() -> {
+            throw new UserException(ErrorStatus.USER_NOT_FOUND);
+        });
+        Moim moim = moimRepository.findById(changeAuthorityRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(targetUser, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
+
+        return new ChangeAuthorityResponseDTO(targetUser.getId(), userMoim.getMoimRole());
     }
 }
