@@ -41,8 +41,12 @@ public class User extends BaseEntity {
 
     private String deviceId;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean isPushAlarm;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
     private Boolean isEventAlarm;
 
     private double rating;
@@ -51,6 +55,8 @@ public class User extends BaseEntity {
     @ColumnDefault("'ROLE_USER'")
     private UserRole userRole;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
@@ -63,5 +69,13 @@ public class User extends BaseEntity {
 
     public void updateRating(double newRating) {
         this.rating = newRating;
+    }
+
+    public void changePushAlarm() {
+        this.isPushAlarm = !this.isPushAlarm;
+    }
+
+    public void changeEventAlarm() {
+        this.isEventAlarm = !this.isEventAlarm;
     }
 }
