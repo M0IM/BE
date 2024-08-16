@@ -12,6 +12,6 @@ public record UserPreviewDTO(
 ) {
     public static UserPreviewDTO toUserPreviewDTO (UserProfileDTO userProfileDTO) {
         UserProfile userProfile = userProfileDTO.getUserProfile();
-        return new UserPreviewDTO(userProfile.getUser().getId(), userProfile.getName(), userProfile.getImageFileName(), userProfileDTO.getUserMoim().getMoimRole());
+        return new UserPreviewDTO(userProfile.getUser().getId(), userProfile.getName(), userProfile.getImageUrl(), userProfileDTO.getUserMoim().getMoimRole());
     }
 }
