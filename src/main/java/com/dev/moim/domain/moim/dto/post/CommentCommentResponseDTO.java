@@ -19,7 +19,7 @@ public record CommentCommentResponseDTO(
                 comment.getId(),
                 comment.getContent(),
                 comment.getCommentLikeList().size(),
-                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getImageFileName(),
+                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
                 comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
                 comment.getUpdatedAt(),

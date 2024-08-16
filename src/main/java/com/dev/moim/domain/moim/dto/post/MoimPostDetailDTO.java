@@ -27,7 +27,7 @@ public record MoimPostDetailDTO(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getImageFileName(),
+                post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getImageUrl(),
                 post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getName(),
                 post.getCommentList().size(),
                 post.getPostLikeList().size(),

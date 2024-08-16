@@ -12,7 +12,7 @@ public record ProfileDTO(
         return new ProfileDTO(
                 user.getId(),
                 userProfile.getName(),
-                userProfile.getImageFileName()
+                userProfile.getImageUrl()
         );
     }
 }
