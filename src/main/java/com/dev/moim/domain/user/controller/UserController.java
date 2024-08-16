@@ -108,4 +108,22 @@ public class UserController {
             @RequestBody CreateReviewDTO createReviewDTO) {
         return BaseResponse.onSuccess(userCommandService.postMemberReview(user, createReviewDTO));
     }
+
+    @Operation(summary = "push 알림 설정", description = "push 알림이 켜져있으면 끄고 꺼져있으면 킵니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @PostMapping("/alarms/push")
+    public BaseResponse<AlarmDTO> settingPushAlarm(@AuthUser User user) {
+        return BaseResponse.onSuccess(userCommandService.settingPushAlarm(user));
+    }
+
+    @Operation(summary = "event 알림 설정", description = "event 알림이 켜져있으면 끄고 꺼져있으면 킵니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @PostMapping("/alarms/event")
+    public BaseResponse<AlarmDTO> settingEventAlarm(@AuthUser User user) {
+        return BaseResponse.onSuccess(userCommandService.settingEventAlarm(user));
+    }
 }

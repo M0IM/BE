@@ -64,4 +64,12 @@ public class User extends BaseEntity {
     public void updateRating(double newRating) {
         this.rating = newRating;
     }
+
+    public void changePushAlarm() {
+        this.isPushAlarm = !this.isPushAlarm;
+    }
+
+    public void changeEventAlarm() {
+        this.isEventAlarm = !this.isEventAlarm;
+    }
 }

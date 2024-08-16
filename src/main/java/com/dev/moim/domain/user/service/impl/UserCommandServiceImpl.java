@@ -8,6 +8,7 @@ import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.user.dto.AlarmDTO;
 import com.dev.moim.domain.user.dto.CreateReviewDTO;
 import com.dev.moim.domain.user.dto.CreateReviewResultDTO;
 import com.dev.moim.domain.user.dto.UpdateUserInfoDTO;
@@ -72,5 +73,17 @@ public class UserCommandServiceImpl implements UserCommandService {
         targetUser.updateRating(averageRating);
 
         return CreateReviewResultDTO.of(userReview);
+    }
+
+    @Override
+    public AlarmDTO settingPushAlarm(User user) {
+        user.changePushAlarm();
+        return AlarmDTO.toAlarmDTO(user);
+    }
+
+    @Override
+    public AlarmDTO settingEventAlarm(User user) {
+        user.changeEventAlarm();
+        return AlarmDTO.toAlarmDTO(user);
     }
 }
