@@ -6,6 +6,7 @@ import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
@@ -32,6 +35,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserProfileRepository userProfileRepository;
     private final UserReviewRepository userReviewRepository;
     private final UserRepository userRepository;
+    private final UserMoimRepository userMoimRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -58,5 +62,12 @@ public class UserQueryServiceImpl implements UserQueryService {
         Page<UserReview> userReviewPage = userReviewRepository.findByUserId(userId, pageRequest);
 
         return ReviewListDTO.of(userReviewPage);
+    }
+
+    @Override
+    public List<Long> findUserMoimIdListByUserId(Long userId) {
+        return userMoimRepository.findByUserId(userId).stream()
+                .map(userMoim -> userMoim.getMoim().getId())
+                .toList();
     }
 }
