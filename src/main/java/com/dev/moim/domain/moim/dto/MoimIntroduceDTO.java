@@ -11,6 +11,6 @@ public record MoimIntroduceDTO(
         String writerProfileImage
 ) {
     public static MoimIntroduceDTO toMoimIntroduceDTO(Moim moim, UserProfile userProfile) {
-        return new MoimIntroduceDTO(moim.getIntroduceVideoKeyName(), moim.getIntroduceVideoTitle(), userProfile.getName(), userProfile.getImageFileName());
+        return new MoimIntroduceDTO(moim.getIntroduceVideoKeyName(), moim.getIntroduceVideoTitle(), userProfile.getName(), userProfile.getImageUrl());
     }
 }
