@@ -126,4 +126,13 @@ public class UserController {
     public BaseResponse<AlarmDTO> settingEventAlarm(@AuthUser User user) {
         return BaseResponse.onSuccess(userCommandService.settingEventAlarm(user));
     }
+
+    @Operation(summary = "알림 상태 조회", description = "알림 상태를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping("/alarms")
+    public BaseResponse<AlarmDTO> getAlarmSetting(@AuthUser User user) {
+        return BaseResponse.onSuccess(AlarmDTO.toAlarmDTO(user));
+    }
 }
