@@ -15,10 +15,10 @@ public record ProfileDetailDTO(
         double rating,
         String introduction
 ) {
-        public static ProfileDetailDTO from(User user, UserProfile userProfile) {
+        public static ProfileDetailDTO from(User user, UserProfile userProfile, String imageUrl) {
                 return new ProfileDetailDTO(
                         user.getId(),
-                        userProfile.getImageFileName(),
+                        imageUrl,
                         userProfile.getName(),
                         userProfile.getResidence(),
                         userProfile.getBirth(),

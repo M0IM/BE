@@ -8,11 +8,11 @@ public record ProfileDTO(
         String nickname,
         String imageUrl
 ) {
-    public static ProfileDTO of(User user, UserProfile userProfile) {
+    public static ProfileDTO of(User user, UserProfile userProfile, String imageUrl) {
         return new ProfileDTO(
                 user.getId(),
                 userProfile.getName(),
-                userProfile.getImageFileName()
+                imageUrl
         );
     }
 }
