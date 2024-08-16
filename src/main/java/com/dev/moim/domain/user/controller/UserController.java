@@ -54,7 +54,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile"))
+    @GetMapping(("/profile/detail"))
     public BaseResponse<ProfileDetailDTO> getUserDetailProfile(
             @AuthUser User user
     ) {
@@ -65,7 +65,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/{userId}"))
+    @GetMapping(("/profile/detail/{userId}"))
     public BaseResponse<ProfileDetailDTO> getMemberDetailProfile(
             @ExistUserValidation @PathVariable Long userId
     ) {
@@ -76,7 +76,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/reviews"))
+    @GetMapping(("/reviews"))
     public BaseResponse<ReviewListDTO> getUserReviews(
             @AuthUser User user,
             @RequestParam(name = "page") int page,
@@ -89,7 +89,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/reviews/{userId}"))
+    @GetMapping(("/reviews/{userId}"))
     public BaseResponse<ReviewListDTO> getMemberReviews(
             @ExistUserValidation @PathVariable Long userId,
             @RequestParam(name = "page") int page,
@@ -98,12 +98,14 @@ public class UserController {
         return BaseResponse.onSuccess(userService.getUserReviews(userId, page, size));
     }
 
-    @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")
+    @Operation(summary = "멤버 후기 작성", description = "멤버 후기 작성을 합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @PostMapping("/users/reviews")
-    public BaseResponse<String> postMemberReview(@RequestBody CreateReviewDTO createReviewDTO) {
-        return BaseResponse.onSuccess(null);
+    @PostMapping("/reviews")
+    public BaseResponse<CreateReviewResultDTO> postMemberReview(
+            @AuthUser User user,
+            @RequestBody CreateReviewDTO createReviewDTO) {
+        return BaseResponse.onSuccess(userCommandService.postMemberReview(user, createReviewDTO));
     }
 }

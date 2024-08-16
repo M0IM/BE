@@ -60,4 +60,8 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProfile> userProfileList = new ArrayList<>();
+
+    public void updateRating(double newRating) {
+        this.rating = newRating;
+    }
 }

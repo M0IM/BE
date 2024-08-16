@@ -11,7 +11,7 @@ public record ReviewDTO(
         return new ReviewDTO(
                 userReview.getId(),
                 userReview.getContent(),
-                userReview.getRate()
+                userReview.getRating()
         );
     }
 }
