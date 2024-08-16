@@ -62,17 +62,18 @@ public class UserController {
         return BaseResponse.onSuccess(userService.getDetailProfile(userId));
     }
 
-    @Operation(summary = "유저 후기 리스트 조회", description = "모임의 멤버가 유저에 대해 남긴 후기를 조회하는 기능입니다.")
+    @Operation(summary = "유저 후기 리스트 조회", description = "조회할 멤버의 id를 넣어주세요.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/reviews"))
+    @GetMapping(("/profile/reviews/{userId}"))
     public BaseResponse<ReviewListDTO> getUserReviews(
             @AuthUser User user,
+            @ExistUserValidation @PathVariable Long userId,
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userService.getUserReviews(user, page, size));
+        return BaseResponse.onSuccess(userService.getUserReviews(userId, page, size));
     }
 
     @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")
