@@ -27,7 +27,7 @@ public class UserProfile extends BaseEntity {
 
     private String name;
 
-    private String imageKey;
+    private String imageUrl;
 
     private String residence;
 
@@ -48,9 +48,9 @@ public class UserProfile extends BaseEntity {
         this.user = user;
     }
 
-    public void updateUser(String name, String imageKey, String residence, String introduction) {
+    public void updateUser(String name, String imageUrl, String residence, String introduction) {
         this.name = name;
-        this.imageKey = imageKey;
+        this.imageUrl = imageUrl;
         this.residence = residence;
         this.introduction = introduction;
     }

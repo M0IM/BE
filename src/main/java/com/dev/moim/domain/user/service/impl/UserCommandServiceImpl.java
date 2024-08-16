@@ -42,6 +42,8 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         userProfile.updateUser(request.nickname(), request.imageKey(), request.residence(), request.introduction());
 
+        // TODO: 이미지 처리
+
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
         );

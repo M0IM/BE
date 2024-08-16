@@ -38,9 +38,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        // TODO: 이미지 처리
-
-        return ProfileDTO.of(user, userProfile, userProfile.getImageKey());
+        return ProfileDTO.of(user, userProfile);
     }
 
     @Override
@@ -51,9 +49,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(userId, MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        // TODO: 이미지 처리
-
-        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageKey());
+        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl());
     }
 
     @Override

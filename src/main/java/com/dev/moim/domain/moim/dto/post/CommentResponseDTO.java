@@ -25,7 +25,7 @@ public record CommentResponseDTO(
                 comment.getId(),
                 comment.getContent(),
                 comment.getCommentLikeList().size(),
-                userMoim == null ? null : comment.getUserMoim().getUserProfile().getImageFileName(),
+                userMoim == null ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
                 userMoim == null ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
                 comment.getUpdatedAt(),
