@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.repository;
 
 import com.dev.moim.domain.moim.entity.UserPlan;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,7 +31,13 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
 
     Boolean existsByUserIdAndPlanId(Long userId, Long planId);
 
-    Slice<UserPlan> findByPlanId(Long planId, PageRequest pageRequest);
-
     List<UserPlan> findByUserIdAndPlanDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT up FROM UserPlan up " +
+            "JOIN FETCH up.user u " +
+            "JOIN FETCH UserMoim um ON u.id = um.user.id AND um.moim.id = :moimId " +
+            "WHERE up.plan.id = :planId")
+    Slice<UserPlan> findByPlanIdWithUserAndUserMoim(@Param("planId") Long planId,
+                                                    @Param("moimId") Long moimId,
+                                                    Pageable pageable);
 }
