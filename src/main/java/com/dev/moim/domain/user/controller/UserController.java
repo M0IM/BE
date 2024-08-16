@@ -50,30 +50,39 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
+    @Operation(summary = "유저 프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping(("/profile"))
+    public BaseResponse<ProfileDetailDTO> getUserDetailProfile(
+            @AuthUser User user
+    ) {
+        return BaseResponse.onSuccess(userService.getDetailProfile(user.getId()));
+    }
+
+    @Operation(summary = "멤버 프로필 상세 조회", description = "다른 멤버의 프로필을 상세 조회하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
     @GetMapping(("/profile/{userId}"))
-    public BaseResponse<ProfileDetailDTO> getDetailProfile(
-            @AuthUser User user,
+    public BaseResponse<ProfileDetailDTO> getMemberDetailProfile(
             @ExistUserValidation @PathVariable Long userId
     ) {
         return BaseResponse.onSuccess(userService.getDetailProfile(userId));
     }
 
-    @Operation(summary = "유저 후기 리스트 조회", description = "조회할 멤버의 id를 넣어주세요.")
+    @Operation(summary = "유저 후기 리스트 조회", description = "유저 자신의 후기를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping(("/profile/reviews/{userId}"))
+    @GetMapping(("/profile/reviews"))
     public BaseResponse<ReviewListDTO> getUserReviews(
             @AuthUser User user,
-            @ExistUserValidation @PathVariable Long userId,
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userService.getUserReviews(userId, page, size));
+        return BaseResponse.onSuccess(userService.getUserReviews(user.getId(), page, size));
     }
 
     @Operation(summary = "멤버 후기 작성 API", description = "멤버 후기 작성을 합니다. _by 제이미_")
@@ -82,15 +91,6 @@ public class UserController {
     })
     @PostMapping("/users/reviews")
     public BaseResponse<String> postMemberReview(@RequestBody CreateReviewDTO createReviewDTO) {
-        return BaseResponse.onSuccess(null);
-    }
-
-    @Operation(summary = "멤버 후기 상세보기 API", description = "멤버 후기를 조회 합니다. _by 제이미_")
-    @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
-    })
-    @GetMapping("/users/{userId}/reviews")
-    public BaseResponse<ReviewListDTO> getMemberReview(@PathVariable Long userId) {
         return BaseResponse.onSuccess(null);
     }
 }
