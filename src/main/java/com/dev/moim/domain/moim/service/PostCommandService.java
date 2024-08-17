@@ -17,4 +17,6 @@ public interface PostCommandService {
     void commentLike(User user, CommentLikeDTO commentLikeDTO);
 
     void reportMoimPost(User user, PostReportDTO postReportDTO);
+
+    void deletePost(User user, Long postId);
 }
