@@ -1,25 +1,9 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
-import com.dev.moim.domain.moim.dto.post.PostLikeDTO;
-import com.dev.moim.domain.moim.entity.Comment;
-import com.dev.moim.domain.moim.entity.CommentLike;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.Post;
-import com.dev.moim.domain.moim.entity.PostImage;
-import com.dev.moim.domain.moim.entity.PostLike;
-import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.repository.CommentLikeRepository;
-import com.dev.moim.domain.moim.repository.CommentRepository;
-import com.dev.moim.domain.moim.repository.PostLikeRepository;
-import com.dev.moim.domain.moim.repository.PostRepository;
-import com.dev.moim.domain.moim.repository.MoimRepository;
-import com.dev.moim.domain.moim.repository.PostImageRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.dto.post.*;
+import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.CommentException;
@@ -43,6 +27,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final PostReportRepository postReportRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -146,5 +131,30 @@ public class PostCommandServiceImpl implements PostCommandService {
 
             commentLikeRepository.save(savedCommentLike);
         }
+    }
+
+    @Override
+    public void reportMoimPost(User user, PostReportDTO postReportDTO) {
+
+        Post post = postRepository.findById(postReportDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        Optional<PostReport> postReport = postReportRepository.findByUserAndPost(user, post);
+
+        if (postReport.isPresent()) {
+
+            // 이미 있음.
+            postReportRepository.delete(postReport.get());
+        } else {
+
+            // 없음 -> 삭제
+            PostReport savedPostReport = PostReport.builder()
+                    .post(post)
+                    .user(user)
+                    .build();
+
+            postReportRepository.save(savedPostReport);
+        }
+
+
     }
 }

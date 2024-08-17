@@ -2,17 +2,7 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
-import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentResultDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostResultDTO;
-import com.dev.moim.domain.moim.dto.post.LikeResultDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
-import com.dev.moim.domain.moim.dto.post.PostLikeDTO;
+import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.service.PostCommandService;
@@ -85,6 +75,16 @@ public class MoimPostController {
     public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
         Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
         return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
+    }
+
+    @Operation(summary = "모임 게시글 신고 API", description = "모임 게시글을 신고 / 신고 취소 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/reports")
+    public BaseResponse<String> reportMoimPost(@AuthUser User user, @RequestBody PostReportDTO postReportDTO) {
+        postCommandService.reportMoimPost(user, postReportDTO);
+        return BaseResponse.onSuccess("게시물 신고가 완료되었습니다.");
     }
 
     @Operation(summary = "댓글 무한 스크롤 API", description = "댓글을 무한 스크롤로 조회합니다. _by 제이미_")
