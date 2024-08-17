@@ -16,4 +16,6 @@ public interface UserCommandService {
     void createIndividualPlan(User user, CreateIndividualPlanRequestDTO request);
 
     void deleteIndividualPlan(Long individualPlanId);
+
+    void updateIndividualPlan(Long individualPlanId, CreateIndividualPlanRequestDTO request);
 }

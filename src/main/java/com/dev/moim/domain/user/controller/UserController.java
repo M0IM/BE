@@ -161,4 +161,17 @@ public class UserController {
         userCommandService.deleteIndividualPlan(individualPlanId);
         return BaseResponse.onSuccess(null);
     }
+
+    @Operation(summary = "개인 일정 수정", description = "개인의 일정을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @PutMapping("/calender/{individualPlanId}")
+    public BaseResponse<?> updateIndividualPlan(
+            @IndividualPlanValidation @PathVariable Long individualPlanId,
+            @RequestBody CreateIndividualPlanRequestDTO request
+    ) {
+        userCommandService.updateIndividualPlan(individualPlanId, request);
+        return BaseResponse.onSuccess(null);
+    }
 }
