@@ -141,7 +141,7 @@ public class MoimPostController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @DeleteMapping("/moims/posts/{postId}}")
+    @DeleteMapping("/moims/posts/{postId}")
     public BaseResponse<String> deletePost(@AuthUser User user, @PathVariable Long postId) {
         postCommandService.deletePost(user, postId);
         return BaseResponse.onSuccess("게시글이 삭제 되었습니다.");
