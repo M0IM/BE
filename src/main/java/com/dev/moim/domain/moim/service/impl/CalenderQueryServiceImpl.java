@@ -47,7 +47,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
-        List<IndividualPlan> individualPlanList = individualPlanRepository.findByDateBetween(startDate, endDate);
+        List<IndividualPlan> individualPlanList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
 
         Map<Integer, List<UserPlanDTO>> monthPlanListByDay = individualPlanList.stream()
                 .map(UserPlanDTO::of)

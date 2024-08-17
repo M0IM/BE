@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface IndividualPlanRepository extends JpaRepository<IndividualPlan, Long> {
 
-    List<IndividualPlan> findByDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<IndividualPlan> findByUserIdAndDateBetween(Long userID, LocalDateTime startDate, LocalDateTime endDate);
 }
