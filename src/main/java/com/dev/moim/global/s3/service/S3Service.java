@@ -34,8 +34,7 @@ public class S3Service {
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, keyName)
                 .withMethod(HttpMethod.PUT)
-                .withExpiration(expiration)
-                .withContentType(presignedUploadRequest.getContentType());
+                .withExpiration(expiration);
 
         return PresignedUrlUploadResponse.builder()
                 .url(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString())
@@ -52,14 +51,13 @@ public class S3Service {
         Date expiration = new Date();
         expiration.setTime(expiration.getTime() + TimeUnit.MINUTES.toMillis(3));
 
-        List<PresignedUrlUploadResponse> responses = presignedUploadListRequest.getPresignedUploadRequestList().stream()
-                .map(request -> {
-                    String keyName = UUID.randomUUID() + "_" + request.getFileName();
+        List<PresignedUrlUploadResponse> responses = presignedUploadListRequest.getFileNameList().stream()
+                .map(oldKeyName -> {
+                    String keyName = UUID.randomUUID() + "_" + oldKeyName;
 
                     GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, keyName)
                             .withMethod(HttpMethod.PUT)
-                            .withExpiration(expiration)
-                            .withContentType(request.getContentType());
+                            .withExpiration(expiration);
 
                     return PresignedUrlUploadResponse.builder()
                             .url(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString())

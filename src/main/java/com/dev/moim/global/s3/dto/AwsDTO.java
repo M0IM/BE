@@ -32,12 +32,11 @@ public class AwsDTO {
 
     @Getter
     public static class PresignedUploadListRequest {
-        private List<PresignedUploadRequest> presignedUploadRequestList;
+        private List<String> fileNameList;
     }
 
     @Getter
     public static class PresignedUploadRequest {
         private String fileName;
-        private String contentType;
     }
 }
