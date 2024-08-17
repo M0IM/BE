@@ -65,8 +65,6 @@ public class S3Service {
                 .map(oldKeyName -> {
                     String keyName = UUID.randomUUID() + "_" + oldKeyName;
 
-                    System.out.println(oldKeyName);
-
                     GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, keyName)
                             .withMethod(HttpMethod.PUT)
                             .withExpiration(expiration);
