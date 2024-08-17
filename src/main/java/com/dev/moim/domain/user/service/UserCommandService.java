@@ -1,10 +1,7 @@
 package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.user.dto.AlarmDTO;
-import com.dev.moim.domain.user.dto.CreateReviewDTO;
-import com.dev.moim.domain.user.dto.CreateReviewResultDTO;
-import com.dev.moim.domain.user.dto.UpdateUserInfoDTO;
+import com.dev.moim.domain.user.dto.*;
 
 public interface UserCommandService {
 
@@ -15,4 +12,6 @@ public interface UserCommandService {
     AlarmDTO settingPushAlarm(User user);
 
     AlarmDTO settingEventAlarm(User user);
+
+    void createIndividualPlan(User user, CreateIndividualPlanRequestDTO request);
 }

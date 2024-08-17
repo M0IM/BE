@@ -1,6 +1,7 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.calender.PlanCreateDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
@@ -134,5 +135,18 @@ public class UserController {
     @GetMapping("/alarms")
     public BaseResponse<AlarmDTO> getAlarmSetting(@AuthUser User user) {
         return BaseResponse.onSuccess(AlarmDTO.toAlarmDTO(user));
+    }
+
+    @Operation(summary = "개인 일정 추가", description = "개인의 일정을 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨")
+    })
+    @PostMapping("/calender")
+    public BaseResponse<?> createIndividualPlan(
+            @AuthUser User user,
+            @RequestBody CreateIndividualPlanRequestDTO request
+    ) {
+        userCommandService.createIndividualPlan(user, request);
+        return BaseResponse.onSuccess(null);
     }
 }

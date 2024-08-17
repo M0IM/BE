@@ -7,11 +7,10 @@ import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
-import com.dev.moim.domain.user.dto.AlarmDTO;
-import com.dev.moim.domain.user.dto.CreateReviewDTO;
-import com.dev.moim.domain.user.dto.CreateReviewResultDTO;
-import com.dev.moim.domain.user.dto.UpdateUserInfoDTO;
+import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.s3.service.S3Service;
@@ -38,6 +37,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserRepository userRepository;
     private final UserReviewRepository userReviewRepository;
     private final S3Service s3Service;
+    private final IndividualPlanRepository individualPlanRepository;
 
     @Override
     public void updateInfo(User user, UpdateUserInfoDTO request) {
@@ -95,5 +95,16 @@ public class UserCommandServiceImpl implements UserCommandService {
     public AlarmDTO settingEventAlarm(User user) {
         user.changeEventAlarm();
         return AlarmDTO.toAlarmDTO(user);
+    }
+
+    @Override
+    public void createIndividualPlan(User user, CreateIndividualPlanRequestDTO request) {
+        IndividualPlan individualPlan = IndividualPlan.builder()
+                .title(request.content())
+                .date(request.date())
+                .user(user)
+                .build();
+
+        individualPlanRepository.save(individualPlan);
     }
 }
