@@ -5,6 +5,8 @@ import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 
+import java.util.List;
+
 public interface UserQueryService {
 
     ProfileDTO getProfile(User user);
@@ -12,4 +14,6 @@ public interface UserQueryService {
     ProfileDetailDTO getDetailProfile(Long userId);
 
     ReviewListDTO getUserReviews(Long userId, int page, int size);
+
+    List<Long> findUserMoimIdListByUserId(Long userId);
 }
