@@ -27,8 +27,11 @@ public class S3Service {
 
     public PresignedUrlUploadResponse getPresignedUrlToUpload(PresignedUploadRequest presignedUploadRequest) {
 
+        /// 제한시간 설정
         Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + TimeUnit.MINUTES.toMillis(3));
+        long expTime = expiration.getTime();
+        expTime += TimeUnit.MINUTES.toMillis(3); // 3 Minute
+        expiration.setTime(expTime);
 
         String keyName = UUID.randomUUID() + "_" + presignedUploadRequest.getFileName();
 
@@ -36,9 +39,11 @@ public class S3Service {
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(expiration);
 
+        String key = generatePresignedUrlRequest.getKey();
+
         return PresignedUrlUploadResponse.builder()
                 .url(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString())
-                .keyName(generatePresignedUrlRequest.getKey())
+                .keyName(key)
                 .build();
     }
 
@@ -48,20 +53,29 @@ public class S3Service {
 
     public PresignedUrlUploadResponseList getPresignedUrlToUploadList(PresignedUploadListRequest presignedUploadListRequest) {
 
+        /// 제한시간 설정
         Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + TimeUnit.MINUTES.toMillis(3));
+        long expTime = expiration.getTime();
+        expTime += TimeUnit.MINUTES.toMillis(3); // 3 Minute
+        expiration.setTime(expTime);
+
+
 
         List<PresignedUrlUploadResponse> responses = presignedUploadListRequest.getFileNameList().stream()
                 .map(oldKeyName -> {
                     String keyName = UUID.randomUUID() + "_" + oldKeyName;
 
+                    System.out.println(oldKeyName);
+
                     GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, keyName)
                             .withMethod(HttpMethod.PUT)
                             .withExpiration(expiration);
 
+                    String key = generatePresignedUrlRequest.getKey();
+
                     return PresignedUrlUploadResponse.builder()
                             .url(amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString())
-                            .keyName(generatePresignedUrlRequest.getKey())
+                            .keyName(key)
                             .build();
                 })
                 .collect(Collectors.toList());
