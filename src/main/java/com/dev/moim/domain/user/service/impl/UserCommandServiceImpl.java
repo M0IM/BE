@@ -107,4 +107,9 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         individualPlanRepository.save(individualPlan);
     }
+
+    @Override
+    public void deleteIndividualPlan(Long individualPlanId) {
+        individualPlanRepository.deleteById(individualPlanId);
+    }
 }

@@ -6,11 +6,14 @@ import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
+import com.dev.moim.global.error.handler.IndividualPlanException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_PROFILE_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @Service
@@ -36,6 +38,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserReviewRepository userReviewRepository;
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
+    private final IndividualPlanRepository individualPlanRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -69,5 +72,13 @@ public class UserQueryServiceImpl implements UserQueryService {
         return userMoimRepository.findByUserId(userId).stream()
                 .map(userMoim -> userMoim.getMoim().getId())
                 .toList();
+    }
+
+    @Override
+    public Long findUserByPlanId(Long individualPlanId) {
+        IndividualPlan individualPlan = individualPlanRepository.findById(individualPlanId)
+                .orElseThrow(() -> new IndividualPlanException(INDIVIDUAL_PLAN_NOT_FOUND));
+
+        return individualPlan.getUser().getId();
     }
 }

@@ -16,4 +16,6 @@ public interface UserQueryService {
     ReviewListDTO getUserReviews(Long userId, int page, int size);
 
     List<Long> findUserMoimIdListByUserId(Long userId);
+
+    Long findUserByPlanId(Long individualPlanId);
 }

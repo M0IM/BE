@@ -1,13 +1,13 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.calender.PlanCreateDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.ExistUserValidation;
+import com.dev.moim.global.validation.annotation.IndividualPlanValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -147,6 +147,18 @@ public class UserController {
             @RequestBody CreateIndividualPlanRequestDTO request
     ) {
         userCommandService.createIndividualPlan(user, request);
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "개인 일정 삭제", description = "개인의 일정을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @DeleteMapping("/calender/{individualPlanId}")
+    public BaseResponse<?> deleteIndividualPlan(
+            @IndividualPlanValidation @PathVariable Long individualPlanId
+    ) {
+        userCommandService.deleteIndividualPlan(individualPlanId);
         return BaseResponse.onSuccess(null);
     }
 }

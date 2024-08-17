@@ -14,4 +14,6 @@ public interface UserCommandService {
     AlarmDTO settingEventAlarm(User user);
 
     void createIndividualPlan(User user, CreateIndividualPlanRequestDTO request);
+
+    void deleteIndividualPlan(Long individualPlanId);
 }
