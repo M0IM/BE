@@ -32,38 +32,11 @@ public class AwsDTO {
 
     @Getter
     public static class PresignedUploadListRequest {
-        private List<String> keyNames;
+        private List<String> fileNameList;
     }
 
     @Getter
     public static class PresignedUploadRequest {
-        private String keyName;
-    }
-
-    @Getter
-    public static class PresignedDownLoadListRequest {
-        private List<String> keyNames;
-    }
-
-    @Getter
-    public static class PresignedDownloadRequest {
-        private String keyName;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class PresignedUrlDownLoadResponseList {
-        private List<PresignedUrlDownLoadResponse> presignedUrlDownLoadResponseLists;
-    }
-
-    @Schema(description = "AWS S3 URL 응답 정보")
-    @Builder
-    @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class PresignedUrlDownLoadResponse {
-        private String url;
+        private String fileName;
     }
 }

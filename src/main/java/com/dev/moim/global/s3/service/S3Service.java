@@ -32,7 +32,7 @@ public class S3Service {
         expTime += TimeUnit.MINUTES.toMillis(3);
         expiration.setTime(expTime);
 
-        String keyName = UUID.randomUUID() + "_" + presignedUploadRequest.getKeyName();
+        String keyName = UUID.randomUUID() + "_" + presignedUploadRequest.getFileName();
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucket, keyName)
                 .withMethod(HttpMethod.PUT)
@@ -55,7 +55,7 @@ public class S3Service {
         Date expiration = new Date();
         expiration.setTime(expiration.getTime() + TimeUnit.MINUTES.toMillis(3));
 
-        List<PresignedUrlUploadResponse> responses = presignedUploadListRequest.getKeyNames().stream()
+        List<PresignedUrlUploadResponse> responses = presignedUploadListRequest.getFileNameList().stream()
                 .map(oldKeyName -> {
                     String keyName = UUID.randomUUID() + "_" + oldKeyName;
 
