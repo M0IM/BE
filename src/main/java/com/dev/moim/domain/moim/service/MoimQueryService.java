@@ -17,4 +17,8 @@ public interface MoimQueryService {
     UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take);
 
     MoimIntroduceDTO getIntroduce(Long moimId);
+
+    MoimPreviewListDTO getPopularMoim();
+
+    MoimPreviewListDTO getNewMoim(Long cursor, Integer take);
 }

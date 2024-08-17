@@ -6,7 +6,6 @@ import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
@@ -120,5 +119,34 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
         IntroduceVideoDTO introduceVideo = userMoimRepository.findIntroduceVideo(moimId).orElseThrow(() -> new MoimException(ErrorStatus.VIDEO_ERROR));
         return MoimIntroduceDTO.toMoimIntroduceDTO(introduceVideo.getMoim(), introduceVideo.getUserProfile());
+    }
+
+    @Override
+    public MoimPreviewListDTO getPopularMoim() {
+
+        return null;
+    }
+
+    @Override
+    public MoimPreviewListDTO getNewMoim(Long cursor, Integer take) {
+
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Moim> moims = moimRepository.findByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, take));
+
+        List<MoimPreviewDTO> findMyMoims = moims.stream().map((moim)->{
+            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+        }).toList();
+
+
+        Long nextCursor = null;
+        if (!moims.isLast()) {
+            nextCursor = moims.toList().get(moims.toList().size() - 1).getId();
+        }
+
+        return MoimPreviewListDTO.toMoimPreviewListDTO(findMyMoims, nextCursor, moims.hasNext());
     }
 }

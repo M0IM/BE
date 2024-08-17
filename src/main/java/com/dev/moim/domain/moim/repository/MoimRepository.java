@@ -8,8 +8,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
-
 public interface MoimRepository extends JpaRepository<Moim, Long> {
 
     @Query("SELECT m FROM UserMoim um join um.moim m where um.user = :user and m.id < :cursor order by m.id desc")
@@ -19,4 +17,5 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
 
     Slice<Moim> findByNameLikeAndIdLessThanOrderByIdDesc(String name, Long id, Pageable pageable);
 
+    Slice<Moim> findByIdLessThanOrderByIdDesc(Long Id, Pageable pageable);
 }
