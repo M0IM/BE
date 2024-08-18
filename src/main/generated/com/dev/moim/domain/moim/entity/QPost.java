@@ -35,6 +35,8 @@ public class QPost extends EntityPathBase<Post> {
 
     public final QMoim moim;
 
+    public final ListPath<PostBlock, QPostBlock> postBlockList = this.<PostBlock, QPostBlock>createList("postBlockList", PostBlock.class, QPostBlock.class, PathInits.DIRECT2);
+
     public final ListPath<PostImage, QPostImage> postImageList = this.<PostImage, QPostImage>createList("postImageList", PostImage.class, QPostImage.class, PathInits.DIRECT2);
 
     public final ListPath<PostLike, QPostLike> postLikeList = this.<PostLike, QPostLike>createList("postLikeList", PostLike.class, QPostLike.class, PathInits.DIRECT2);

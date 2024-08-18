@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.repository.*;
@@ -9,6 +10,7 @@ import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.CommentException;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
+import com.dev.moim.global.firebase.service.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostReportRepository postReportRepository;
     private final PostBlockRepository postBlockRepository;
+    private final UserRepository userRepository;
+    private final FcmService fcmService;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -74,6 +78,10 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         commentRepository.save(comment);
 
+        if (user.getIsPushAlarm()) {
+            fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
+        }
+
         return comment;
     }
 
@@ -95,6 +103,10 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .build();
 
         commentRepository.save(comment);
+
+        if (user.getIsPushAlarm()) {
+            fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
+        }
 
         return comment;
     }

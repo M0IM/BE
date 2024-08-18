@@ -1,5 +1,6 @@
 package com.dev.moim.domain.account.repository;
 
+import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
@@ -26,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
             "join um.userProfile up " +
             "where um.moim.id = :moimId and um.joinStatus = :joinStatus and um.id > :cursor")
     Slice<UserProfileDTO> findUserByMoimId(Long moimId, JoinStatus joinStatus, Long cursor,  Pageable pageable);
+
+    @Query("select u from UserMoim um join um.user u where um.moim = :moim")
+    List<User> findUserByMoim(Moim moim);
 }
