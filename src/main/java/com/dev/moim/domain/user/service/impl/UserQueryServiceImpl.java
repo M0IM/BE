@@ -131,5 +131,3 @@ public class UserQueryServiceImpl implements UserQueryService {
 //
 //        return ChatRoomUserListResponse(userByChatRoomId);
 //    }
-}
-
