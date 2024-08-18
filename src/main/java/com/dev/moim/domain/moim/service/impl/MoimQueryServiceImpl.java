@@ -66,7 +66,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         Slice<Moim> moimSlice;
-        if (moimRequestType.equals(MoimRequestType.ALL)) {
+        if (moimRequestType == null) {
             moimSlice = moimRepository.findByNameLikeAndIdLessThanOrderByIdDesc("%"+name+"%", cursor, PageRequest.of(0, take));
         } else {
             MoimCategory moimCategory = MoimCategory.valueOf(moimRequestType.toString());
