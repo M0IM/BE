@@ -6,6 +6,11 @@ import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.Plan;
+import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
+import com.dev.moim.domain.moim.repository.PlanRepository;
 import com.dev.moim.domain.chatting.entity.ChatRoom;
 import com.dev.moim.domain.chatting.repository.ChatRoomRepository;
 import com.dev.moim.domain.moim.entity.UserMoim;
@@ -15,23 +20,23 @@ import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
+import com.dev.moim.global.error.handler.IndividualPlanException;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.ChatRoomException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_PROFILE_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @Service
@@ -43,6 +48,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserReviewRepository userReviewRepository;
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
+    private final IndividualPlanRepository individualPlanRepository;
+    private final PlanRepository planRepository;
     private final ChatRoomRepository chatRoomRepository;
 
     @Override
@@ -73,11 +80,42 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    public UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Plan> userMoimPlanSlice = planRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
+
+        return UserDailyPlanPageDTO.toUserMoimPlan(userMoimPlanSlice);
+    }
+
+    @Override
+    public UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "date"));
+        Slice<IndividualPlan> userIndividualPlanSlice = individualPlanRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
+
+        return UserDailyPlanPageDTO.toUserIndividualPlan(userIndividualPlanSlice);
+    }
+
+    @Override
     public List<Long> findUserMoimIdListByUserId(Long userId) {
         return userMoimRepository.findByUserId(userId).stream()
                 .map(userMoim -> userMoim.getMoim().getId())
                 .toList();
     }
+
+    @Override
+    public Long findUserByPlanId(Long individualPlanId) {
+        IndividualPlan individualPlan = individualPlanRepository.findById(individualPlanId)
+                .orElseThrow(() -> new IndividualPlanException(INDIVIDUAL_PLAN_NOT_FOUND));
+
+        return individualPlan.getUser().getId();
+    }
+}
 
 //    @Override
 //    public ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId) {
@@ -94,3 +132,4 @@ public class UserQueryServiceImpl implements UserQueryService {
 //        return ChatRoomUserListResponse(userByChatRoomId);
 //    }
 }
+

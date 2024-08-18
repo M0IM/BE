@@ -18,4 +18,6 @@ public interface CalenderQueryService {
     ScheduleListDTO getSchedules(Long planId);
 
     PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size);
+
+    Boolean existsByUserIdAndPlanId(Long userId,Long planId);
 }

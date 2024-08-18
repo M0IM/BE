@@ -6,8 +6,7 @@ import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
-import com.dev.moim.global.validation.annotation.PlanValidation;
-import com.dev.moim.global.validation.annotation.UserMoimValidaton;
+import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -143,5 +142,32 @@ public class MoimCalendarController {
             @RequestBody PlanCreateDTO request
     ) {
         return null;
+    }
+
+    @Operation(summary = "모임 일정 참여 신청", description = "모임 멤버가 특정 일정에 신청하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+    })
+    @PostMapping("/{planId}")
+    public BaseResponse<Long> joinPlan(
+            @AuthUser User user,
+            @MoimValidation @UserMoimValidaton @RequestParam Long moimId,
+            @UserPlanDuplicateValidation @PlanValidation @PathVariable Long planId
+    ) {
+        return BaseResponse.onSuccess(calenderCommandService.joinPlan(user, planId));
+    }
+
+    @Operation(summary = "모임 일정 참여 신청 취소", description = "모임 멤버가 모임 일정 신청을 취소하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @DeleteMapping("/{planId}")
+    public BaseResponse<?> cancelPlanParticipation(
+            @AuthUser User user,
+            @UserMoimValidaton @MoimValidation @RequestParam Long moimId,
+            @UserPlanValidation @PlanValidation @PathVariable Long planId
+    ) {
+        calenderCommandService.cancelPlanParticipation(user, planId);
+        return BaseResponse.onSuccess(null);
     }
 }

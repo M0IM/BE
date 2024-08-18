@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
 
@@ -40,4 +41,6 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
     Slice<UserPlan> findByPlanIdWithUserAndUserMoim(@Param("planId") Long planId,
                                                     @Param("moimId") Long moimId,
                                                     Pageable pageable);
+
+    Optional<UserPlan> findByUserIdAndPlanId(Long userId, Long planId);
 }
