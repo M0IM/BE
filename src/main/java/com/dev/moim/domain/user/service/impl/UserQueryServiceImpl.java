@@ -6,8 +6,11 @@ import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
+import com.dev.moim.domain.moim.repository.PlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
@@ -17,12 +20,13 @@ import com.dev.moim.global.error.handler.IndividualPlanException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
@@ -39,6 +43,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;
+    private final PlanRepository planRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -65,6 +70,17 @@ public class UserQueryServiceImpl implements UserQueryService {
         Page<UserReview> userReviewPage = userReviewRepository.findByUserId(userId, pageRequest);
 
         return ReviewListDTO.of(userReviewPage);
+    }
+
+    @Override
+    public UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Plan> userMoimPlanSlice = planRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
+
+        return UserDailyPlanPageDTO.of(userMoimPlanSlice);
     }
 
     @Override

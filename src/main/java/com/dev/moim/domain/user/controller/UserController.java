@@ -1,6 +1,7 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
@@ -9,6 +10,7 @@ import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.ExistUserValidation;
 import com.dev.moim.global.validation.annotation.IndividualPlanValidation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -173,5 +175,21 @@ public class UserController {
     ) {
         userCommandService.updateIndividualPlan(individualPlanId, request);
         return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "특정 날짜 (유저가 참여 신청한 모임 일정) 조회", description = "특정 날짜에 예정된 유저의 (참여 신청한 모임 일정)을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/plan")
+    public BaseResponse<UserDailyPlanPageDTO> getUserDailyMoimPlan(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month,
+            @Parameter(description = "일") @RequestParam int day,
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlan(user, year, month, day, page, size));
     }
 }
