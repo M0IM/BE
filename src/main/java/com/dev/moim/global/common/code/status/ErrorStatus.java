@@ -82,10 +82,30 @@ public enum ErrorStatus implements BaseErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_002", "COMMENT를 찾을 수 없습니다."),
     BLOCK_POST(HttpStatus.FORBIDDEN, "POST_003", "해당 게시물이 차단 되어있습니다."),
 
+    // 채팅 관련 에러
+    INVALID_CHAT_SCROLL(HttpStatus.BAD_REQUEST, "CHAT4001", "더 이상 채팅이 존재하지 않습니다."),
+    CHAT_NOT_SEND(HttpStatus.BAD_REQUEST, "CHAT4002", "전송 중 오류가 발생하였습니다."),
+    INVALID_CHAT_FORMAT(HttpStatus.BAD_REQUEST, "CHAT4003", "채팅 형식이 유효하지 않습니다."),
+
+    // 채팅방 관련 에러
+    INVALID_CHATROOM_SCROLL(HttpStatus.BAD_REQUEST, "CHATROOM4001", "더 이상 채팅방이 존재하지 않습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "CHATROOM4002", "해당 채팅방이 존재하지 않습니다."),
+    ALREADY_JOIN_CHATROOM(HttpStatus.BAD_REQUEST, "CHATROOM4003", "이미 채팅방에 들어와있습니다."),
+    FIRST_JOIN_CHATROOM(HttpStatus.BAD_REQUEST, "CHATROOM4004", "채팅방에 먼저 들어와 있어야 합니다."),
+    NOT_JOIN_CHATROOM(HttpStatus.BAD_REQUEST, "CHATROOM4005", "채팅방에 가입되있지 않습니다."),
+    FAILED_ENTER_CHATROOM(HttpStatus.INTERNAL_SERVER_ERROR, "CHATROOM5001", "채팅 방 들어가기에 실패하였습니다"),
+    FAILED_EXIT_CHATROOM(HttpStatus.INTERNAL_SERVER_ERROR, "CHATROOM5002", "채팅 방 나가기에 실패하였습니다"),
+    INVALID_CHATROOM(HttpStatus.INTERNAL_SERVER_ERROR, "CHATROOM5003", "정상적인 채팅방이 아닙니다. 새로운 채팅방을 다시 생성해주세요"),
+    OVERLAP_JOIN_USER(HttpStatus.BAD_REQUEST, "CHATROOM4006", "들어오는 user와 participant의 user의 id가 같으면 안됩니다."),
+
     // FeignClient 관련
     FEIGN_400_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_001", "FeignClient 400번대 에러 발생"),
     FEIGN_500_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_002", "FeignClient 500번대 에러 발생"),
     FEIGN_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_003", "FeignClient 알 수 없는 에러 발생"),
+
+    // FCM 관련 에러
+    FCM_NOT_VALID(HttpStatus.UNAUTHORIZED, "FCM_001", "FCM 토큰이 유효하지 않습니다..")
+
     ;
 
     private final HttpStatus httpStatus;
