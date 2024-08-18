@@ -18,6 +18,7 @@ public class AlarmCommandServiceImpl implements AlarmService {
 
     @Override
     public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type) {
+
         Alarm alarm = Alarm.builder()
                 .user(receiver)
                 .content(content)
