@@ -82,6 +82,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // page 관련
     NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),
     NOT_VALID_TAKE(HttpStatus.BAD_REQUEST, "PAGE_002", "take 값이 유효하지 않습니다."),
+    NOT_VALID_PAGE(HttpStatus.BAD_REQUEST, "PAGE_003", "page 값이 유효하지 않습니다."),
+    NOT_VALID_SIZE(HttpStatus.BAD_REQUEST, "PAGE_004", "size 값이 유효하지 않습니다."),
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_001", "POST를 찾을 수 없습니다."),
