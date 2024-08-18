@@ -61,16 +61,24 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     @Override
     public MoimPreviewListDTO findMoims(MoimRequestType moimRequestType, String name, Long cursor, Integer take) {
 
+        if (name == null || name.isEmpty()) {
+            name = "%%";
+        } else {
+            name = "%" + name.trim() + "%";
+        }
+
+        System.out.println(name);
+
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
         Slice<Moim> moimSlice;
         if (moimRequestType == null) {
-            moimSlice = moimRepository.findByNameLikeAndIdLessThanOrderByIdDesc("%"+name+"%", cursor, PageRequest.of(0, take));
+            moimSlice = moimRepository.findByNameLikeAndIdLessThanOrderByIdDesc(name, cursor, PageRequest.of(0, take));
         } else {
             MoimCategory moimCategory = MoimCategory.valueOf(moimRequestType.toString());
-            moimSlice = moimRepository.findByMoimCategoryAndNameLikeAndIdLessThanOrderByIdDesc(moimCategory, "%"+name+"%", cursor, PageRequest.of(0, take));
+            moimSlice = moimRepository.findByMoimCategoryAndNameLikeAndIdLessThanOrderByIdDesc(moimCategory, name, cursor, PageRequest.of(0, take));
         }
 
         Long nextCursor = null;
