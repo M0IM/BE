@@ -47,6 +47,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> postImageList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostBlock> postBlockList = new ArrayList<>();
+
     public void updatePost(String title, String content, List<PostImage> postImages) {
         this.title = title;
         this.content = content;

@@ -29,6 +29,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final PostReportRepository postReportRepository;
+    private final PostBlockRepository postBlockRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -175,5 +176,23 @@ public class PostCommandServiceImpl implements PostCommandService {
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
+    }
+
+    @Override
+    public void blockPost(User user, PostBlockDTO postBlockDTO) {
+        Post post = postRepository.findById(postBlockDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        Optional<PostBlock> postBlock = postBlockRepository.findByUserIdAndPostId(user.getId(), postBlockDTO.postId());
+
+        if (postBlock.isPresent()) {
+            postBlockRepository.delete(postBlock.get());
+        } else {
+            PostBlock savedPostBlock = PostBlock.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+
+            postBlockRepository.save(savedPostBlock);
+        }
     }
 }

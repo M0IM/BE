@@ -5,12 +5,14 @@ import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.PostBlock;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import com.dev.moim.global.validation.annotation.CheckTakeValidation;
+import com.dev.moim.global.validation.annotation.UserMoimValidaton;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,7 +40,7 @@ public class MoimPostController {
     @GetMapping("/moims/{moimId}/posts")
     public BaseResponse<MoimPostPreviewListDTO> getMoimPostList(
             @AuthUser User user,
-            @PathVariable Long moimId,
+            @PathVariable @UserMoimValidaton Long moimId,
             @RequestParam(name = "postType") PostRequestType postRequestType,
             @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
@@ -156,6 +158,16 @@ public class MoimPostController {
     public BaseResponse<String> updatePost(@AuthUser User user, @RequestBody @Valid UpdateMoimPostDTO updateMoimPostDTO) {
         postCommandService.updatePost(user, updateMoimPostDTO);
         return BaseResponse.onSuccess("게시글이 수정 되었습니다.");
+    }
+
+    @Operation(summary = "모임 게시글 차단 API", description = "모임 게시글을 차단/차단해제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/block")
+    public BaseResponse<String> blockPost(@AuthUser User user, @RequestBody @Valid PostBlockDTO postBlockDTO) {
+        postCommandService.blockPost(user, postBlockDTO);
+        return BaseResponse.onSuccess("게시글이 차단 되었습니다.");
     }
 
 }
