@@ -129,7 +129,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
     @Override
     public PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+        PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "id"));
         Slice<UserPlan> userPlanPage = userPlanRepository.findByPlanIdWithUserAndUserMoim(planId, moimId, pageRequest);
 
         List<UserProfile> userProfileList = userPlanPage.stream()
