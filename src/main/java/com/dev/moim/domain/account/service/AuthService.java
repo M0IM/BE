@@ -125,4 +125,9 @@ public class AuthService {
 
         return new EmailVerificationResultDTO(request.email(), isCodeValid);
     }
+
+    @Transactional
+    public void fcmSignOut(User user) {
+        user.fcmSignOut();
+    }
 }

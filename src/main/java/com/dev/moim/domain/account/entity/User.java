@@ -76,4 +76,8 @@ public class User extends BaseEntity {
     public void changeEventAlarm() {
         this.isEventAlarm = !this.isEventAlarm;
     }
+
+    public void fcmSignOut() {
+        this.deviceId = null;
+    }
 }
