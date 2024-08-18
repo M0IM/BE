@@ -18,6 +18,8 @@ public interface UserQueryService {
 
     UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size);
 
+    UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size);
+
     List<Long> findUserMoimIdListByUserId(Long userId);
 
     Long findUserByPlanId(Long individualPlanId);

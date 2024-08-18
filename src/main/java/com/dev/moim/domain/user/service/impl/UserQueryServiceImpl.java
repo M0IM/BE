@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
@@ -80,7 +79,18 @@ public class UserQueryServiceImpl implements UserQueryService {
         Pageable pageable = PageRequest.of(page, size);
         Slice<Plan> userMoimPlanSlice = planRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
 
-        return UserDailyPlanPageDTO.of(userMoimPlanSlice);
+        return UserDailyPlanPageDTO.toUserMoimPlan(userMoimPlanSlice);
+    }
+
+    @Override
+    public UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "date"));
+        Slice<IndividualPlan> userIndividualPlanSlice = individualPlanRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
+
+        return UserDailyPlanPageDTO.toUserIndividualPlan(userIndividualPlanSlice);
     }
 
     @Override
