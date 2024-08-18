@@ -2,39 +2,26 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
-import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentResultDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostResultDTO;
-import com.dev.moim.domain.moim.dto.post.LikeResultDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
-import com.dev.moim.domain.moim.dto.post.PostLikeDTO;
+import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.PostBlock;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import com.dev.moim.global.validation.annotation.CheckTakeValidation;
+import com.dev.moim.global.validation.annotation.UserMoimValidaton;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -53,7 +40,7 @@ public class MoimPostController {
     @GetMapping("/moims/{moimId}/posts")
     public BaseResponse<MoimPostPreviewListDTO> getMoimPostList(
             @AuthUser User user,
-            @PathVariable Long moimId,
+            @PathVariable @UserMoimValidaton Long moimId,
             @RequestParam(name = "postType") PostRequestType postRequestType,
             @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
@@ -85,6 +72,16 @@ public class MoimPostController {
     public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
         Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
         return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
+    }
+
+    @Operation(summary = "모임 게시글 신고 API", description = "모임 게시글을 신고 / 신고 취소 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/reports")
+    public BaseResponse<String> reportMoimPost(@AuthUser User user, @RequestBody PostReportDTO postReportDTO) {
+        postCommandService.reportMoimPost(user, postReportDTO);
+        return BaseResponse.onSuccess("게시물 신고가 완료되었습니다.");
     }
 
     @Operation(summary = "댓글 무한 스크롤 API", description = "댓글을 무한 스크롤로 조회합니다. _by 제이미_")
@@ -141,6 +138,36 @@ public class MoimPostController {
     public BaseResponse<LikeResultDTO> commentLike(@AuthUser User user, @RequestBody CommentLikeDTO commentLikeDTO) {
         postCommandService.commentLike(user, commentLikeDTO);
         return BaseResponse.onSuccess(LikeResultDTO.toLikeResultDTO(postQueryService.isCommentLike(user.getId(), commentLikeDTO.commentId())));
+    }
+
+    @Operation(summary = "모임 게시글 삭제 API", description = "모임 게시글을 삭제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @DeleteMapping("/moims/posts/{postId}")
+    public BaseResponse<String> deletePost(@AuthUser User user, @PathVariable Long postId) {
+        postCommandService.deletePost(user, postId);
+        return BaseResponse.onSuccess("게시글이 삭제 되었습니다.");
+    }
+
+    @Operation(summary = "모임 게시글 수정 API", description = "모임 게시글을 수정 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PutMapping("/moims/posts")
+    public BaseResponse<String> updatePost(@AuthUser User user, @RequestBody @Valid UpdateMoimPostDTO updateMoimPostDTO) {
+        postCommandService.updatePost(user, updateMoimPostDTO);
+        return BaseResponse.onSuccess("게시글이 수정 되었습니다.");
+    }
+
+    @Operation(summary = "모임 게시글 차단 API", description = "모임 게시글을 차단/차단해제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/block")
+    public BaseResponse<String> blockPost(@AuthUser User user, @RequestBody @Valid PostBlockDTO postBlockDTO) {
+        postCommandService.blockPost(user, postBlockDTO);
+        return BaseResponse.onSuccess("게시글이 차단 되었습니다.");
     }
 
 }

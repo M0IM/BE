@@ -18,4 +18,6 @@ public interface UserCommandService {
     void deleteIndividualPlan(Long individualPlanId);
 
     void updateIndividualPlan(Long individualPlanId, CreateIndividualPlanRequestDTO request);
+
+    void sendEventAlarm(EventDTO eventDTO);
 }

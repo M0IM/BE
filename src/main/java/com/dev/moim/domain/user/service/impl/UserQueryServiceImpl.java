@@ -11,12 +11,18 @@ import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.PlanRepository;
+import com.dev.moim.domain.chatting.entity.ChatRoom;
+import com.dev.moim.domain.chatting.repository.ChatRoomRepository;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.user.dto.ChatRoomUserListResponse;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.IndividualPlanException;
+import com.dev.moim.global.common.code.status.ErrorStatus;
+import com.dev.moim.global.error.handler.ChatRoomException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
@@ -43,6 +50,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;
     private final PlanRepository planRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -108,3 +116,20 @@ public class UserQueryServiceImpl implements UserQueryService {
         return individualPlan.getUser().getId();
     }
 }
+
+//    @Override
+//    public ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId) {
+//        if (!chatRoomRepository.existsChatRoomById(chatRoomId)) {
+//            throw new ChatRoomException(ErrorStatus.CHATROOM_NOT_FOUND);
+//        }
+//
+//        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new ChatRoomException(ErrorStatus.CHATROOM_NOT_FOUND));
+//
+//        Optional<UserMoim> byUserAndMoim =  userMoimRepository.findByUserAndMoim(user, chatRoom.getMoim());
+//
+//
+//
+//        return ChatRoomUserListResponse(userByChatRoomId);
+//    }
+}
+

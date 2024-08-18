@@ -54,7 +54,7 @@ public class User extends BaseEntity {
     private UserRole userRole;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @ColumnDefault("'ON'")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
@@ -75,5 +75,9 @@ public class User extends BaseEntity {
 
     public void changeEventAlarm() {
         this.isEventAlarm = !this.isEventAlarm;
+    }
+
+    public void fcmSignOut() {
+        this.deviceId = null;
     }
 }

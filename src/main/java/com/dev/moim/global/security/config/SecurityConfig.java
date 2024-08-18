@@ -83,7 +83,8 @@ public class SecurityConfig {
             "/api/v1/auth/join/**",
             "/api/v1/auth/emails/**",
             "/api/v1/auth/reissueToken/**",
-            "/health"
+            "/health",
+            "/chat"
     };
 
     @Bean

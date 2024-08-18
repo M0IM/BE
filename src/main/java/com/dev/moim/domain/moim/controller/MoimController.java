@@ -91,7 +91,7 @@ public class MoimController {
     })
     @GetMapping("/moims")
     public BaseResponse<MoimPreviewListDTO> findMoims(
-            @RequestParam(name = "moimRequestType") MoimRequestType moimRequestType,
+            @RequestParam(name = "moimRequestType", required = false) MoimRequestType moimRequestType,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take

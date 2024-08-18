@@ -2,6 +2,7 @@ package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
+import com.dev.moim.domain.user.dto.ChatRoomUserListResponse;
 import com.dev.moim.domain.user.dto.ProfileDTO;
 import com.dev.moim.domain.user.dto.ProfileDetailDTO;
 import com.dev.moim.domain.user.dto.ReviewListDTO;
@@ -23,4 +24,6 @@ public interface UserQueryService {
     List<Long> findUserMoimIdListByUserId(Long userId);
 
     Long findUserByPlanId(Long individualPlanId);
+
+//    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

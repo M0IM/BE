@@ -7,17 +7,9 @@ import com.dev.moim.domain.moim.dto.post.CommentCommentResponseDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
 import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
 import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
-import com.dev.moim.domain.moim.entity.Comment;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.Post;
-import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.PostType;
-import com.dev.moim.domain.moim.repository.CommentLikeRepository;
-import com.dev.moim.domain.moim.repository.CommentRepository;
-import com.dev.moim.domain.moim.repository.PostLikeRepository;
-import com.dev.moim.domain.moim.repository.PostRepository;
-import com.dev.moim.domain.moim.repository.MoimRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
@@ -28,6 +20,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +32,11 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PostBlockRepository postBlockRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
@@ -52,10 +44,10 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Slice<Post> postSlices;
         if (postRequestType.equals(PostRequestType.ALL)) {
-            postSlices = postRepository.findByMoimAndIdLessThanOrderByIdDesc(moim, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByMoimAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(moim, cursor, user, PageRequest.of(0, take));
         } else {
             PostType postType = PostType.valueOf(postRequestType.toString());
-            postSlices = postRepository.findByMoimAndPostTypeAndIdLessThanOrderByIdDesc(moim, postType, cursor, PageRequest.of(0, take));
+            postSlices = postRepository.findByMoimAndPostTypeAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(moim, postType, cursor, user, PageRequest.of(0, take));
         }
 
         Long nextCursor = null;
@@ -70,7 +62,13 @@ public class PostQueryServiceImpl implements PostQueryService {
     public Post getMoimPost(User user, Long moimId, Long postId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-       if(!userMoimRepository.existsByUserAndMoim(user, moim)) {
+        Optional<PostBlock> byUserIdAndPostId = postBlockRepository.findByUserIdAndPostId(user.getId(), postId);
+
+        if (byUserIdAndPostId.isPresent()) {
+            throw new PostException(ErrorStatus.BLOCK_POST);
+        }
+
+        if(!userMoimRepository.existsByUserAndMoim(user, moim)) {
            throw new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN);
        }
 

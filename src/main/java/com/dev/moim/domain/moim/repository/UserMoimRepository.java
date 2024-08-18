@@ -24,4 +24,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     Optional<IntroduceVideoDTO> findIntroduceVideo(Long moimId);
 
     List<UserMoim> findByUserId(Long userId);
+
+    Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
 }

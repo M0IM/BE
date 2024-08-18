@@ -1,5 +1,6 @@
 package com.dev.moim.domain.account.repository;
 
+import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
@@ -12,7 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
     Optional<User> findByEmailAndProvider(String email, Provider provider);
 
     Optional<User> findByProviderIdAndProvider(String providerId, Provider provider);
@@ -26,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "join um.userProfile up " +
             "where um.moim.id = :moimId and um.joinStatus = :joinStatus and um.id > :cursor")
     Slice<UserProfileDTO> findUserByMoimId(Long moimId, JoinStatus joinStatus, Long cursor,  Pageable pageable);
+
+    @Query("select u from UserMoim um join um.user u where um.moim = :moim")
+    List<User> findUserByMoim(Moim moim);
 }
