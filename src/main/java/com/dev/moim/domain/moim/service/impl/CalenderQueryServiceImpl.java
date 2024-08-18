@@ -141,4 +141,10 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
         return PlanParticipantListPageDTO.from(userProfileList, userPlanPage);
     }
+
+    @Override
+    public Boolean existsByUserIdAndPlanId(Long userId, Long planId) {
+
+        return userPlanRepository.existsByUserIdAndPlanId(userId, planId);
+    }
 }

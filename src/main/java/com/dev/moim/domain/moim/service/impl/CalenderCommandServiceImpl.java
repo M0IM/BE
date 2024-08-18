@@ -9,6 +9,7 @@ import com.dev.moim.domain.moim.entity.UserPlan;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.PlanException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -65,5 +67,20 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         userPlanRepository.save(userPlan);
 
         return savedPlan.getId();
+    }
+
+    @Override
+    public Long joinPlan(User user, Long planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        UserPlan userPlan = UserPlan.builder()
+                .isWriter(false)
+                .user(user)
+                .plan(plan)
+                .build();
+
+        return userPlanRepository.save(userPlan).getId();
     }
 }
