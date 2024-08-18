@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_NOT_FOUND;
-import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,5 +81,14 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .build();
 
         return userPlanRepository.save(userPlan).getId();
+    }
+
+    @Override
+    public void cancelPlanParticipation(User user, Long planId) {
+
+        UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), planId)
+                .orElseThrow(() -> new PlanException(USER_NOT_PART_OF_PLAN));
+
+        userPlanRepository.delete(userPlan);
     }
 }

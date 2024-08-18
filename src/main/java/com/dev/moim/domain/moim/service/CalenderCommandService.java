@@ -8,4 +8,6 @@ public interface CalenderCommandService {
     Long createPlan(User user, PlanCreateDTO request);
 
     Long joinPlan(User user, Long planId);
+
+    void cancelPlanParticipation(User user, Long planId);
 }
