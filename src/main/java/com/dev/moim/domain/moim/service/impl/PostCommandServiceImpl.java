@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -163,5 +164,16 @@ public class PostCommandServiceImpl implements PostCommandService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
         postRepository.delete(post);
+    }
+
+    @Override
+    public void updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
+        Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
+                PostImage.builder().imageKeyName(i).post(updatePost).build()
+        ).toList();
+
+        updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
     }
 }

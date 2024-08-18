@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -145,6 +146,16 @@ public class MoimPostController {
     public BaseResponse<String> deletePost(@AuthUser User user, @PathVariable Long postId) {
         postCommandService.deletePost(user, postId);
         return BaseResponse.onSuccess("게시글이 삭제 되었습니다.");
+    }
+
+    @Operation(summary = "모임 게시글 수정 API", description = "모임 게시글을 수정 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PutMapping("/moims/posts")
+    public BaseResponse<String> updatePost(@AuthUser User user, @RequestBody @Valid UpdateMoimPostDTO updateMoimPostDTO) {
+        postCommandService.updatePost(user, updateMoimPostDTO);
+        return BaseResponse.onSuccess("게시글이 수정 되었습니다.");
     }
 
 }
