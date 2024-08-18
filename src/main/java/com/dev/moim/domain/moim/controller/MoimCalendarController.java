@@ -123,8 +123,8 @@ public class MoimCalendarController {
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
         return BaseResponse.onSuccess(calenderQueryService.getPlanParticipants(moimId, planId, page, size));
     }
