@@ -80,6 +80,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_001", "POST를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_002", "COMMENT를 찾을 수 없습니다."),
+    BLOCK_POST(HttpStatus.FORBIDDEN, "POST_003", "해당 게시물이 차단 되어있습니다."),
 
     // 채팅 관련 에러
     INVALID_CHAT_SCROLL(HttpStatus.BAD_REQUEST, "CHAT4001", "더 이상 채팅이 존재하지 않습니다."),

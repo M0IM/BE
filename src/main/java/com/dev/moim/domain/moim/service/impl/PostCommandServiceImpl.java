@@ -1,25 +1,9 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.post.CommentLikeDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateCommentDTO;
-import com.dev.moim.domain.moim.dto.post.CreateMoimPostDTO;
-import com.dev.moim.domain.moim.dto.post.PostLikeDTO;
-import com.dev.moim.domain.moim.entity.Comment;
-import com.dev.moim.domain.moim.entity.CommentLike;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.Post;
-import com.dev.moim.domain.moim.entity.PostImage;
-import com.dev.moim.domain.moim.entity.PostLike;
-import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.repository.CommentLikeRepository;
-import com.dev.moim.domain.moim.repository.CommentRepository;
-import com.dev.moim.domain.moim.repository.PostLikeRepository;
-import com.dev.moim.domain.moim.repository.PostRepository;
-import com.dev.moim.domain.moim.repository.MoimRepository;
-import com.dev.moim.domain.moim.repository.PostImageRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.dto.post.*;
+import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.CommentException;
@@ -29,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,6 +28,8 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final PostReportRepository postReportRepository;
+    private final PostBlockRepository postBlockRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -145,6 +132,67 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             commentLikeRepository.save(savedCommentLike);
+        }
+    }
+
+    @Override
+    public void reportMoimPost(User user, PostReportDTO postReportDTO) {
+
+        Post post = postRepository.findById(postReportDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        Optional<PostReport> postReport = postReportRepository.findByUserAndPost(user, post);
+
+        if (postReport.isPresent()) {
+
+            // 이미 있음.
+            postReportRepository.delete(postReport.get());
+        } else {
+
+            // 없음 -> 삭제
+            PostReport savedPostReport = PostReport.builder()
+                    .post(post)
+                    .user(user)
+                    .build();
+
+            postReportRepository.save(savedPostReport);
+        }
+
+
+    }
+
+    @Override
+    public void deletePost(User user, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        postRepository.delete(post);
+    }
+
+    @Override
+    public void updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
+        Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
+                PostImage.builder().imageKeyName(i).post(updatePost).build()
+        ).toList();
+
+        updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
+    }
+
+    @Override
+    public void blockPost(User user, PostBlockDTO postBlockDTO) {
+        Post post = postRepository.findById(postBlockDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        Optional<PostBlock> postBlock = postBlockRepository.findByUserIdAndPostId(user.getId(), postBlockDTO.postId());
+
+        if (postBlock.isPresent()) {
+            postBlockRepository.delete(postBlock.get());
+        } else {
+            PostBlock savedPostBlock = PostBlock.builder()
+                    .user(user)
+                    .post(post)
+                    .build();
+
+            postBlockRepository.save(savedPostBlock);
         }
     }
 }
