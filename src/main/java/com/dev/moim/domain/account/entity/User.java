@@ -1,15 +1,13 @@
 package com.dev.moim.domain.account.entity;
 
-import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.domain.account.entity.enums.UserRole;
-import com.dev.moim.domain.account.entity.enums.UserRank;
-import com.dev.moim.domain.account.entity.enums.UserStatus;
+import com.dev.moim.domain.account.entity.enums.*;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +44,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     @ColumnDefault("false")
     private Boolean isEventAlarm;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'FEMALE'")
+    private Gender gender;
+
+    private LocalDate birth;
 
     private double rating;
 

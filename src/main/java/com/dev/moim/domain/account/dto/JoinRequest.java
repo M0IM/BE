@@ -7,7 +7,10 @@ import com.dev.moim.global.validation.annotation.PasswordValidation;
 import com.dev.moim.global.validation.annotation.OAuthAccountValidation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.NonNull;
+
+import java.time.LocalDate;
 
 @OAuthAccountValidation
 @LocalAccountValidation
@@ -21,7 +24,7 @@ public record JoinRequest(
         String password,
         @Schema(description = "성별", defaultValue = "FEMALE", allowableValues = {"FEMALE", "MALE"})
         @NonNull Gender gender,
-        @NotBlank String birth,
+        @NotNull LocalDate birth,
         @NotBlank String residence
 ) {
 }

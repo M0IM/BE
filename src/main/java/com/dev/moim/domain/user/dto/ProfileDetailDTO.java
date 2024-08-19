@@ -3,6 +3,7 @@ package com.dev.moim.domain.user.dto;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record ProfileDetailDTO(
@@ -10,7 +11,7 @@ public record ProfileDetailDTO(
         String imageUrl,
         String nickname,
         String residence,
-        String birth,
+        LocalDate birth,
         LocalDateTime createdAt,
         double rating,
         String introduction
@@ -21,7 +22,7 @@ public record ProfileDetailDTO(
                         imageUrl,
                         userProfile.getName(),
                         userProfile.getResidence(),
-                        userProfile.getBirth(),
+                        user.getBirth(),
                         userProfile.getCreatedAt(),
                         user.getRating(),
                         userProfile.getIntroduction()

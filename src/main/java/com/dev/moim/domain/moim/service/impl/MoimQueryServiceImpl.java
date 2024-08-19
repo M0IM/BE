@@ -1,7 +1,14 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.account.entity.enums.Gender;
+import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.entity.Plan;
+import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.PostType;
+import com.dev.moim.domain.moim.repository.PlanRepository;
+import com.dev.moim.domain.moim.repository.PostRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
@@ -25,6 +32,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -35,6 +43,8 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final MoimRepository moimRepository;
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
+    private final PostRepository postRepository;
+    private final PlanRepository planRepository;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -156,5 +166,37 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         return MoimPreviewListDTO.toMoimPreviewListDTO(findMyMoims, nextCursor, moims.hasNext());
+    }
+
+    @Override
+    public MoimDetailDTO getMoimDetail(User user, Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        int reviewCount = postRepository.findByMoimAndPostType(moim, PostType.REVIEW).size();
+        List<User> users = userRepository.findUserByMoim(moim);
+        List<Plan> moims = planRepository.findByMoim(moim);
+
+        Double totalAge = 0.0;
+        Double averageAge = 0.0;
+        Long maleSize = 0L;
+        Long femaleSize = 0L;
+        Long count = 0L;
+        for(User u : users) {
+            if (u.getGender().equals(Gender.MALE)) {
+                maleSize += 1L;
+            } else {
+                femaleSize += 1L;
+            }
+            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear()));
+            count ++;
+        }
+
+        if (count > 0) {
+            averageAge = totalAge / count;
+        }
+
+
+
+        return MoimDetailDTO.toMoimDetailDTO(moim, averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
+
     }
 }
