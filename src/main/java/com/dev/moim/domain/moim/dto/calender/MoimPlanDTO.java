@@ -10,7 +10,8 @@ public record MoimPlanDTO(
         String location,
         String locationDetail,
         LocalDateTime time,
-        boolean isParticipant
+        boolean isParticipant,
+        int totalMemberCnt
 ) {
     public static MoimPlanDTO from(Plan plan, boolean isParticipant) {
         return new MoimPlanDTO(
@@ -19,7 +20,8 @@ public record MoimPlanDTO(
                 plan.getLocation(),
                 plan.getLocationDetail(),
                 plan.getDate(),
-                isParticipant
+                isParticipant,
+                plan.getMoim().getUserMoimList().size()
         );
     }
 }
