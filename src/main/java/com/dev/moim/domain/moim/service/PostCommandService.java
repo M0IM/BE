@@ -28,4 +28,6 @@ public interface PostCommandService {
     void deleteComment(User user, Long commentId);
 
     void updateComment(User user, CommentUpdateRequestDTO commentUpdateRequestDTO);
+
+    void reportComment(User user, CommentReportDTO commentReportDTO);
 }

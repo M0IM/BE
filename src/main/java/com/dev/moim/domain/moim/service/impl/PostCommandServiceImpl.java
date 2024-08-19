@@ -33,6 +33,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final PostReportRepository postReportRepository;
     private final PostBlockRepository postBlockRepository;
     private final FcmService fcmService;
+    private final CommentReportRepository commentReportRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -233,5 +234,30 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         System.out.println(commentUpdateRequestDTO.content());
         comment.update(commentUpdateRequestDTO.content());
+    }
+
+    @Override
+    public void reportComment(User user, CommentReportDTO commentReportDTO) {
+        Comment comment = commentRepository.findById(commentReportDTO.commentId()).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        if (!comment.getPost().getId().equals(commentReportDTO.postId())) {
+            throw new PostException(ErrorStatus.NOT_INCLUDE_POST);
+        }
+
+        Optional<CommentReport> commentReport = commentReportRepository.findByUserAndComment(user, comment);
+
+        if (commentReport.isPresent()) {
+            // 이미 있음.
+            commentReportRepository.delete(commentReport.get());
+        } else {
+
+            // 없음 -> 삭제
+            CommentReport savedPostReport = CommentReport.builder()
+                    .comment(comment)
+                    .user(user)
+                    .build();
+
+            commentReportRepository.save(savedPostReport);
+        }
     }
 }

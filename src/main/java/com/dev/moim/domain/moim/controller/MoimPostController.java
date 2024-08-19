@@ -187,6 +187,16 @@ public class MoimPostController {
     @PutMapping("/moims/comments")
     public BaseResponse<String> updateComment(@AuthUser User user, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
         postCommandService.updateComment(user, commentUpdateRequestDTO);
-        return BaseResponse.onSuccess("댓글이 삭제 되었습니다.");
+        return BaseResponse.onSuccess("댓글이 수정 되었습니다.");
+    }
+
+    @Operation(summary = "모임 댓글 신고 API", description = "모임 댓글을 신고 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/reports")
+    public BaseResponse<String> reportComment(@AuthUser User user, @RequestBody CommentReportDTO commentReportDTO) {
+        postCommandService.reportComment(user, commentReportDTO);
+        return BaseResponse.onSuccess("댓글이 신고 되었습니다.");
     }
 }
