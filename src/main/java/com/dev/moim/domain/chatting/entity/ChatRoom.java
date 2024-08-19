@@ -26,10 +26,7 @@ public class ChatRoom extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    private String imageKeyName;
-
     public void updateChatRoom(UpdateChatRoomRequest updateChatRoomRequest) {
         this.title = updateChatRoomRequest.getTitle();
-        this.imageKeyName = updateChatRoomRequest.getImageKeyName();
     }
 }

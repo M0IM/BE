@@ -12,7 +12,6 @@ public class ChatRoomDTO {
     @Getter
     public static class CreateChatRoomRequest {
         private String title;
-        private String imageKeyName;
         private List<Long> roomParticipantIds;
     }
 
@@ -20,7 +19,6 @@ public class ChatRoomDTO {
     public static class UpdateChatRoomRequest {
         private Long chatRoomId;
         private String title;
-        private String imageKeyName;
     }
 
     @Getter
@@ -46,7 +44,6 @@ public class ChatRoomDTO {
     public static class ChatRoomResponse {
         private Long chatRoomId;
         private String title;
-        private String imageKeyName;
     }
 
     @Getter
