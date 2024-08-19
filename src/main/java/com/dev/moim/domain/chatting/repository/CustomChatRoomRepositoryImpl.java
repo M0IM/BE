@@ -24,7 +24,7 @@ public class CustomChatRoomRepositoryImpl implements CustomChatRoomRepository {
 
 
     @Override
-    public Slice<ChatRoom> getChatRoomsByUserIdAndMoimId(Long userId, Long moimId, Long cursor, Integer take) {
+    public Slice<ChatRoom> getChatRoomsByUserId(Long userId, Long cursor, Integer take) {
         QChatRoom chatRoom = QChatRoom.chatRoom;
         QChat chat = QChat.chat;
         QUserChatRoom userChatRoom = QUserChatRoom.userChatRoom;
@@ -36,7 +36,6 @@ public class CustomChatRoomRepositoryImpl implements CustomChatRoomRepository {
                 .join(chat).on(chatRoom.id.eq(chat.chatRoom.id)) // chat과 조인
                 .join(userChatRoom).on(userChatRoom.chatRoom.id.eq(chatRoom.id)) // user_chat_room과 조인
                 .where(userChatRoom.user.id.eq(userId)) // user_id 조건
-//                        .and(chatRoom.moim.id.eq(moimId))) // family_space_id 조건
                 .groupBy(chatRoom.id) // chat_room.id로 그룹화
                 .having(chat.id.max().lt(cursor))
                 .orderBy(chat.id.max().desc()) // 마지막 채팅이 있는 것부터 내림차순 정렬
