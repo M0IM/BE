@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         Plan plan = Plan.builder()
                 .title(request.title())
-                .date(request.startTime())
+                .date(LocalDateTime.of(request.date(), request.startTime()))
                 .location(request.location())
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
@@ -109,7 +110,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         plan.updatePlan(
                 request.title(),
-                request.startTime(),
+                LocalDateTime.of(request.date(), request.startTime()),
                 request.location(),
                 request.locationDetail(),
                 request.cost()
