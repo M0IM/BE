@@ -199,4 +199,14 @@ public class MoimPostController {
         postCommandService.reportComment(user, commentReportDTO);
         return BaseResponse.onSuccess("댓글이 신고 되었습니다.");
     }
+
+    @Operation(summary = "모임 댓글 차단 API", description = "모임 댓글을 차단 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/block")
+    public BaseResponse<String> blockComment(@AuthUser User user, @RequestBody CommentBlockDTO commentBlockDTO) {
+        postCommandService.blockComment(user, commentBlockDTO);
+        return BaseResponse.onSuccess("댓글이 차단 되었습니다.");
+    }
 }

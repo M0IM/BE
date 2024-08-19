@@ -33,6 +33,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
+    private final CommentBlockRepository commentBlockRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -92,6 +93,8 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Slice<Comment> commentSlices = commentRepository.findByPostAndIdGreaterThanAndParentIsNullOrderByIdAsc(post, cursor, PageRequest.of(0, take));
 
+        List<Comment> commentBlockList = commentRepository.findByUserAndPostId(user, postId);
+
         Long nextCursor = null;
         if (!commentSlices.isLast()) {
             nextCursor = commentSlices.toList().get(commentSlices.toList().size() - 1).getId();
@@ -99,7 +102,7 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) -> {
             List<CommentCommentResponseDTO> commentCommentResponseDTOList = comment.getChildren().stream().map(commentcomment -> CommentCommentResponseDTO.toCommentCommentResponseDTO(commentcomment, isCommentLike(user.getId(), commentcomment.getId()))).toList();
-            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList);
+            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList, commentBlockList);
         }).toList();
 
         return CommentResponseListDTO.toCommentResponseListDTO(commentResponseDTOList, nextCursor, commentSlices.hasNext());

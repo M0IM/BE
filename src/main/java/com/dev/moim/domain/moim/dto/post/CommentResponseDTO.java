@@ -18,15 +18,23 @@ public record CommentResponseDTO(
         LocalDateTime createAt,
         List<CommentCommentResponseDTO> commentResponseDTOList
 ) {
-    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList) {
+    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList, List<Comment> blockComments) {
         UserMoim userMoim = comment.getUserMoim();
+
+        boolean b1 = blockComments.stream().anyMatch((b) -> {
+                    if (comment.equals(b)) {
+                        return true;
+                    }
+                    return false;
+            }
+        );
 
         return new CommentResponseDTO(
                 comment.getId(),
-                comment.getContent(),
+                b1 ? comment.getContent() : null,
                 comment.getCommentLikeList().size(),
-                userMoim == null ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
-                userMoim == null ? null : comment.getUserMoim().getUserProfile().getName(),
+                userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
+                userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
                 comment.getUpdatedAt(),
                 comment.getCreatedAt(),

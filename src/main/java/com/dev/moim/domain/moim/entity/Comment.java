@@ -38,6 +38,9 @@ public class Comment extends BaseEntity {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentReport> commentReportList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentBlock> commentBlockList = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;

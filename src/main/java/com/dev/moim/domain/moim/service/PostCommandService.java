@@ -30,4 +30,6 @@ public interface PostCommandService {
     void updateComment(User user, CommentUpdateRequestDTO commentUpdateRequestDTO);
 
     void reportComment(User user, CommentReportDTO commentReportDTO);
+
+    void blockComment(User user, CommentBlockDTO commentBlockDTO);
 }
