@@ -48,4 +48,9 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
+
+    public void delete() {
+        this.content = null;
+        this.userMoim = null;
+    }
 }

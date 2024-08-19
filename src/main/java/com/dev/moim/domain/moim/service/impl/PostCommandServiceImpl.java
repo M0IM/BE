@@ -207,4 +207,10 @@ public class PostCommandServiceImpl implements PostCommandService {
             postBlockRepository.save(savedPostBlock);
         }
     }
+
+    @Override
+    public void deleteComment(User user, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+        comment.delete();
+    }
 }

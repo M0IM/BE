@@ -170,4 +170,13 @@ public class MoimPostController {
         return BaseResponse.onSuccess("게시글이 차단 되었습니다.");
     }
 
+    @Operation(summary = "모임 댓글 삭제 API", description = "모임 댓글을 삭제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/{commentId}/delete")
+    public BaseResponse<String> deleteComment(@AuthUser User user, @PathVariable Long commentId) {
+        postCommandService.deleteComment(user, commentId);
+        return BaseResponse.onSuccess("댓글이 삭제 되었습니다.");
+    }
 }
