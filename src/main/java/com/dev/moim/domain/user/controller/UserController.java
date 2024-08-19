@@ -7,6 +7,8 @@ import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.validation.annotation.CheckPageValidation;
+import com.dev.moim.global.validation.annotation.CheckSizeValidation;
 import com.dev.moim.global.validation.annotation.ExistUserValidation;
 import com.dev.moim.global.validation.annotation.IndividualPlanValidation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,8 +84,8 @@ public class UserController {
     @GetMapping(("/reviews"))
     public BaseResponse<ReviewListDTO> getUserReviews(
             @AuthUser User user,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserReviews(user.getId(), page, size));
     }
@@ -95,8 +97,8 @@ public class UserController {
     @GetMapping(("/reviews/{userId}"))
     public BaseResponse<ReviewListDTO> getMemberReviews(
             @ExistUserValidation @PathVariable Long userId,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserReviews(userId, page, size));
     }
@@ -187,8 +189,8 @@ public class UserController {
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month,
             @Parameter(description = "일") @RequestParam int day,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlan(user, year, month, day, page, size));
     }
@@ -203,8 +205,8 @@ public class UserController {
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month,
             @Parameter(description = "일") @RequestParam int day,
-            @RequestParam(name = "page") int page,
-            @RequestParam(name = "size") int size
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlan(user, year, month, day, page, size));
     }

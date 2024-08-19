@@ -73,7 +73,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     public ReviewListDTO getUserReviews(Long userId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+        PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "id"));
         Page<UserReview> userReviewPage = userReviewRepository.findByUserId(userId, pageRequest);
 
         return ReviewListDTO.of(userReviewPage);
@@ -84,7 +84,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page-1, size);
         Slice<Plan> userMoimPlanSlice = planRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
 
         return UserDailyPlanPageDTO.toUserMoimPlan(userMoimPlanSlice);
@@ -95,7 +95,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "date"));
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "date"));
         Slice<IndividualPlan> userIndividualPlanSlice = individualPlanRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
 
         return UserDailyPlanPageDTO.toUserIndividualPlan(userIndividualPlanSlice);

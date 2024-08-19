@@ -1,26 +1,25 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.global.validation.annotation.CheckPageValidation;
+import com.dev.moim.global.common.code.status.ErrorStatus;
+import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.NOT_VALID_PAGE;
-
 @Component
 @RequiredArgsConstructor
-public class CheckPageValidator implements ConstraintValidator<CheckPageValidation, Integer> {
+public class CheckCursorValidator implements ConstraintValidator<CheckCursorValidation, Long> {
     @Override
-    public void initialize(CheckPageValidation constraintAnnotation) {
+    public void initialize(CheckCursorValidation constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
-    public boolean isValid(Integer value, ConstraintValidatorContext context) {
+    public boolean isValid(Long value, ConstraintValidatorContext context) {
         if (value <= 0) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(NOT_VALID_PAGE.toString())
+            context.buildConstraintViolationWithTemplate(ErrorStatus.NOT_VALID_CURSOR.toString())
                     .addConstraintViolation();
 
             return false;
