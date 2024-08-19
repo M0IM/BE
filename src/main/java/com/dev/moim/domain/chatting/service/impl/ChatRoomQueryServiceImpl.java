@@ -25,14 +25,14 @@ public class ChatRoomQueryServiceImpl implements ChatRoomQueryService {
     private final ChatRepository chatRepository;
 
     @Override
-    public ChatRoomResponseList getChatRoomsByUserIdAndMoimId(Long userId, Long moimId, Long cursor, Integer take) {
+    public ChatRoomResponseList getChatRoomsByUserId(Long userId, Long cursor, Integer take) {
         // 가족 공간은 유무는 어노테이션으로 처리
         
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<ChatRoom> chatRoomSlice = chatRoomRepository.getChatRoomsByUserIdAndMoimId(userId, moimId, cursor, take);
+        Slice<ChatRoom> chatRoomSlice = chatRoomRepository.getChatRoomsByUserId(userId, cursor, take);
         Long nextCursor = null;
         if (!chatRoomSlice.isLast()) {
             nextCursor = findNextCursorByChatRoom(chatRoomSlice.toList().get(chatRoomSlice.toList().size() - 1));

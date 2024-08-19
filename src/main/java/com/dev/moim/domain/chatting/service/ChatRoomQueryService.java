@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface ChatRoomQueryService {
 
-    ChatRoomDTO.ChatRoomResponseList getChatRoomsByUserIdAndMoimId(Long userId, Long moimId, Long cursor, Integer take);
+    ChatRoomDTO.ChatRoomResponseList getChatRoomsByUserId(Long userId, Long cursor, Integer take);
 
     Optional<ChatRoom> findChatRoomById(Long chatRoomId);
 }

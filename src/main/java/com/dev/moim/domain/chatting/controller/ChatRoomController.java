@@ -41,11 +41,10 @@ public class ChatRoomController {
     @GetMapping("")
     public BaseResponse<ChatRoomResponseList> getChatRooms(
             @Parameter(hidden = true) @AuthUser User user,
-            @RequestParam(name = "moimId") Long moimId,
             @Parameter(description = "처음 요청은 1로 해주세요.") @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
     ) {
-       ChatRoomResponseList chatRoomResponseList = chatRoomQueryService.getChatRoomsByUserIdAndMoimId(user.getId(), moimId, cursor, take);
+       ChatRoomResponseList chatRoomResponseList = chatRoomQueryService.getChatRoomsByUserId(user.getId(), cursor, take);
         return BaseResponse.onSuccess(chatRoomResponseList);
     }
 

@@ -6,5 +6,5 @@ import org.springframework.data.domain.Slice;
 
 public interface CustomChatRoomRepository {
 
-    Slice<ChatRoom> getChatRoomsByUserIdAndMoimId(Long userId, Long moimId, Long cursor, Integer take);
+    Slice<ChatRoom> getChatRoomsByUserId(Long userId, Long cursor, Integer take);
 }
