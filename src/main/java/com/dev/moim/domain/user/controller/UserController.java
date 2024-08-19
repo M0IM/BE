@@ -1,7 +1,9 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
+import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
@@ -20,6 +22,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Validated
 @RestController
@@ -152,6 +156,19 @@ public class UserController {
     ) {
         userCommandService.createIndividualPlan(user, request);
         return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
+    })
+    @GetMapping("/calender")
+    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getIndividualPlans(user, year, month));
     }
 
     @Operation(summary = "개인 일정 삭제", description = "개인의 일정을 삭제합니다.")

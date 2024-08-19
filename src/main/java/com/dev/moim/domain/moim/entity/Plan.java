@@ -48,4 +48,24 @@ public class Plan extends BaseEntity {
         scheduleList.add(schedule);
         schedule.assignPlan(this);
     }
+
+    public void updatePlan(
+            String title,
+            LocalDateTime date,
+            String location,
+            String locationDetail,
+            String cost) {
+        this.title = title;
+        this.date = date;
+        this.location = location;
+        this.locationDetail = locationDetail;
+        this.cost = cost;
+    }
+
+    public void updateSchedule(List<Schedule> scheduleList) {
+        this.scheduleList.clear();
+        for(Schedule schedule : scheduleList) {
+            this.addSchedule(schedule);
+        }
+    }
 }

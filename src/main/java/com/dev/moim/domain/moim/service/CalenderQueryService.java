@@ -7,15 +7,13 @@ import java.util.List;
 
 public interface CalenderQueryService {
 
-    PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month);
-
     PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month);
 
     PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month);
 
-    PlanDetailDTO getPlanDetails(User user, Long planId);
+    PlanDetailDTO getPlanDetails(User user, Long moimId, Long planId);
 
-    ScheduleListDTO getSchedules(Long planId);
+    ScheduleListDTO getSchedules(Long moiId, Long planId);
 
     PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size);
 

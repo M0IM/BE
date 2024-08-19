@@ -29,19 +29,6 @@ public class MoimCalendarController {
     private final CalenderCommandService calenderCommandService;
     private final CalenderQueryService calenderQueryService;
 
-    @Operation(summary = "개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
-    })
-    @GetMapping("/calender/individual-plans")
-    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
-            @AuthUser User user,
-            @Parameter(description = "연도") @RequestParam int year,
-            @Parameter(description = "월") @RequestParam int month
-    ) {
-        return BaseResponse.onSuccess(calenderQueryService.getIndividualPlans(user, year, month));
-    }
-
     @Operation(summary = "유저가 참여 신청한 모임 일정 조회", description = "유저가 참여 신청한 모임 일정들을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
@@ -70,7 +57,7 @@ public class MoimCalendarController {
         return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(user, moimId, year, month));
     }
 
-    @Operation(summary = "모임 새로운 일정 추가", description = "상세 스케줄, 알림 설정은 필수 입력 정보는 아닙니다.")
+    @Operation(summary = "모임 새로운 일정 생성", description = "모임의 새로운 일정을 추가합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "모임 새로운 일정 추가 성공"),
             @ApiResponse(responseCode = "MOIM_001", description = "모임을 찾을 수 없습니다."),
@@ -79,9 +66,10 @@ public class MoimCalendarController {
     @PostMapping("/{moimId}/calender")
     public BaseResponse<Long> createPlan(
             @AuthUser User user,
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @Valid @RequestBody PlanCreateDTO request
     ) {
-        return BaseResponse.onSuccess(calenderCommandService.createPlan(user, request));
+        return BaseResponse.onSuccess(calenderCommandService.createPlan(user, moimId, request));
     }
 
     @Operation(summary = "모임 일정 세부사항 조회", description = "특정 일정의 상세 내용과 일정 스케줄을 조회합니다.")
@@ -92,11 +80,11 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/plan/{planId}")
     public BaseResponse<PlanDetailDTO> getPlanDetails(
             @AuthUser User user,
-            @PathVariable Long moimId,
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId,
             @Parameter(description = "표시할 일정 스케줄 개수", example = "5") @RequestParam(defaultValue = "5") int scheduleCntLimit
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, planId));
+        return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, moimId, planId));
     }
 
     @Operation(summary = "모임 일정 스케줄 상세 조회", description = "일정 스케줄들을 조회할 수 있습니다.")
@@ -106,11 +94,10 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/plan/{planId}/schedules")
     public BaseResponse<ScheduleListDTO> getSchedules(
-            @AuthUser User user,
-            @UserMoimValidaton @PathVariable Long moimId,
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getSchedules(planId));
+        return BaseResponse.onSuccess(calenderQueryService.getSchedules(moimId, planId));
     }
 
     @Operation(summary = "모임 일정 신청자 조회", description = "일정에 참가 신청한 사용자들을 조회합니다.")
@@ -120,7 +107,6 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/plan/{planId}/participants")
     public BaseResponse<PlanParticipantListPageDTO> getPlanParticipants(
-            @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId,
             @CheckPageValidation @RequestParam(name = "page") int page,
@@ -129,45 +115,44 @@ public class MoimCalendarController {
         return BaseResponse.onSuccess(calenderQueryService.getPlanParticipants(moimId, planId, page, size));
     }
 
-    @Operation(summary = "모임 일정 수정", description = "모임 관리자 회원만 일정을 수정할 수 있습니다.")
+    @Operation(summary = "모임 일정 수정", description = "일정 작성자 회원만 일정을 수정할 수 있습니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "모임 일정 변경 성공"),
-            @ApiResponse(responseCode = "MOIM_001", description = "모임 정보를 찾을 수 없습니다."),
-            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다.")
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @PutMapping("/{planId}")
+    @PutMapping("/{moimId}/plan/{planId}")
     public BaseResponse<Long> updatePlan(
-            @AuthUser User user,
-            @PlanValidation @PathVariable Long planId,
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserPlanValidation @PlanValidation @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
     ) {
-        return null;
+        calenderCommandService.updatePlan(moimId, planId, request);
+        return BaseResponse.onSuccess(null);
     }
 
     @Operation(summary = "모임 일정 참여 신청", description = "모임 멤버가 특정 일정에 신청하는 기능입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨")
     })
-    @PostMapping("/{planId}")
+    @PostMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<Long> joinPlan(
             @AuthUser User user,
-            @MoimValidation @UserMoimValidaton @RequestParam Long moimId,
+            @MoimValidation @UserMoimValidaton @PathVariable Long moimId,
             @UserPlanDuplicateValidation @PlanValidation @PathVariable Long planId
     ) {
-        return BaseResponse.onSuccess(calenderCommandService.joinPlan(user, planId));
+        return BaseResponse.onSuccess(calenderCommandService.joinPlan(user, moimId, planId));
     }
 
     @Operation(summary = "모임 일정 참여 신청 취소", description = "모임 멤버가 모임 일정 신청을 취소하는 기능입니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @DeleteMapping("/{planId}")
+    @DeleteMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<?> cancelPlanParticipation(
             @AuthUser User user,
-            @UserMoimValidaton @MoimValidation @RequestParam Long moimId,
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @UserPlanValidation @PlanValidation @PathVariable Long planId
     ) {
-        calenderCommandService.cancelPlanParticipation(user, planId);
+        calenderCommandService.cancelPlanParticipation(user, moimId, planId);
         return BaseResponse.onSuccess(null);
     }
 }

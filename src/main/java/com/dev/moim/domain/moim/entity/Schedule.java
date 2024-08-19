@@ -37,9 +37,6 @@ public class Schedule extends BaseEntity {
     @Column(name = "start_time")
     private LocalDateTime startTime;
 
-    @Column(name = "end_time")
-    private LocalDateTime endTime;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private Plan plan;

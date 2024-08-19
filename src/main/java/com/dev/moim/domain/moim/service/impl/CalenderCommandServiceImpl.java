@@ -16,12 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CalenderCommandServiceImpl implements CalenderCommandService {
 
     private final PlanRepository planRepository;
@@ -29,15 +31,14 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     private final MoimRepository moimRepository;
 
     @Override
-    @Transactional
-    public Long createPlan(User user, PlanCreateDTO request) {
+    public Long createPlan(User user, Long moimId, PlanCreateDTO request) {
 
-        Moim moim = moimRepository.findById(request.moimId())
+        Moim moim = moimRepository.findById(moimId)
                 .orElseThrow(() -> new MoimException(MOIM_NOT_FOUND));
 
         Plan plan = Plan.builder()
                 .title(request.title())
-                .date(request.date())
+                .date(request.startTime())
                 .location(request.location())
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
@@ -69,7 +70,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     }
 
     @Override
-    public Long joinPlan(User user, Long planId) {
+    public Long joinPlan(User user, Long moimId, Long planId) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
@@ -84,11 +85,36 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     }
 
     @Override
-    public void cancelPlanParticipation(User user, Long planId) {
+    public void cancelPlanParticipation(User user, Long moidId, Long planId) {
 
         UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), planId)
                 .orElseThrow(() -> new PlanException(USER_NOT_PART_OF_PLAN));
 
         userPlanRepository.delete(userPlan);
+    }
+
+    @Override
+    public void updatePlan(Long moimId, Long planId, PlanCreateDTO request) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        List<Schedule> scheduleList = request.schedules().stream()
+                .map(schedule -> Schedule.builder()
+                        .content(schedule.title())
+                        .startTime(schedule.startTime())
+                        .plan(plan)
+                        .build())
+                .toList();
+
+        plan.updatePlan(
+                request.title(),
+                request.startTime(),
+                request.location(),
+                request.locationDetail(),
+                request.cost()
+        );
+
+        plan.updateSchedule(scheduleList);
     }
 }
