@@ -35,5 +35,5 @@ public class Chat extends BaseEntity {
 
     private String content;
 
-    private String imageKeyName;
+    private String imageUrl;
 }

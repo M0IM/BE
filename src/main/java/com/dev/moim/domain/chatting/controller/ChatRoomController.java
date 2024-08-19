@@ -30,7 +30,6 @@ public class ChatRoomController {
 
     private final ChatRoomCommandService chatRoomCommandService;
     private final ChatRoomQueryService chatRoomQueryService;
-    private final UserQueryService userQueryService;
 
     @Operation(summary = "채팅방 불러 오기 API", description = "채팅방을 무한 스크롤로 불러옵니다. hasNext가 false고 nextCursor가 null이라면 마지막 페이지입니다.")
     @ApiResponses({
