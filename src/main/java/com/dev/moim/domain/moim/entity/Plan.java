@@ -30,6 +30,8 @@ public class Plan extends BaseEntity {
     private String title;
 
     private LocalDateTime date;
+
+    private LocalDateTime startTime;
     
     private String location;
 

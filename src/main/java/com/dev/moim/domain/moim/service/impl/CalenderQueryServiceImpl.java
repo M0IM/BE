@@ -106,7 +106,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     }
 
     @Override
-    public PlanDetailDTO getPlanDetails(User user, Long planId) {
+    public PlanDetailDTO getPlanDetails(User user, Long moimId, Long planId) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new MoimException(PLAN_NOT_FOUND));
@@ -121,7 +121,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     }
 
     @Override
-    public ScheduleListDTO getSchedules(Long planId) {
+    public ScheduleListDTO getSchedules(Long moimId, Long planId) {
         List<Schedule> scheduleList = scheduleRepository.findAllByPlanId(planId);
 
         return ScheduleListDTO.of(scheduleList);
