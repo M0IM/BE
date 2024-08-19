@@ -89,12 +89,8 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
-        if (cursor == 1) {
-            cursor = Long.MAX_VALUE;
-        }
 
-
-        Slice<Comment> commentSlices = commentRepository.findByPostAndIdLessThanAndParentIsNullOrderByIdDesc(post, cursor, PageRequest.of(0, take));
+        Slice<Comment> commentSlices = commentRepository.findByPostAndIdGreaterThanAndParentIsNullOrderByIdAsc(post, cursor, PageRequest.of(0, take));
 
         Long nextCursor = null;
         if (!commentSlices.isLast()) {

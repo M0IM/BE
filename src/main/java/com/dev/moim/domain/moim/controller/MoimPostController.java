@@ -93,7 +93,7 @@ public class MoimPostController {
             @AuthUser User user,
             @PathVariable Long moimId,
             @PathVariable Long postId,
-            @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @Parameter(description = "처음 값은 0로 해주 세요.") @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
     ) {
         CommentResponseListDTO commentResponseListDTO = postQueryService.getcomments(user, moimId, postId, cursor, take);
