@@ -211,6 +211,9 @@ public class PostCommandServiceImpl implements PostCommandService {
     @Override
     public void deleteComment(User user, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+        if (!user.equals(comment.getUserMoim().getUser())){
+            throw new PostException(ErrorStatus.NOT_MY_POST);
+        }
         comment.delete();
     }
 }
