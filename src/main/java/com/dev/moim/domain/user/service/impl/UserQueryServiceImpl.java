@@ -6,7 +6,9 @@ import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
+import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
+import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
@@ -32,8 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
@@ -99,6 +104,22 @@ public class UserQueryServiceImpl implements UserQueryService {
         Slice<IndividualPlan> userIndividualPlanSlice = individualPlanRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
 
         return UserDailyPlanPageDTO.toUserIndividualPlan(userIndividualPlanSlice);
+    }
+
+    @Override
+    public PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month) {
+
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<IndividualPlan> individualPlanList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
+
+        Map<Integer, List<UserPlanDTO>> monthPlanListByDay = individualPlanList.stream()
+                .map(UserPlanDTO::of)
+                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
+
+        return new PlanMonthListDTO<>(monthPlanListByDay);
     }
 
     @Override

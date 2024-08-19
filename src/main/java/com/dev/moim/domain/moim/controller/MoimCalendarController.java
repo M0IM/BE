@@ -29,19 +29,6 @@ public class MoimCalendarController {
     private final CalenderCommandService calenderCommandService;
     private final CalenderQueryService calenderQueryService;
 
-    @Operation(summary = "개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
-    })
-    @GetMapping("/calender/individual-plans")
-    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
-            @AuthUser User user,
-            @Parameter(description = "연도") @RequestParam int year,
-            @Parameter(description = "월") @RequestParam int month
-    ) {
-        return BaseResponse.onSuccess(calenderQueryService.getIndividualPlans(user, year, month));
-    }
-
     @Operation(summary = "유저가 참여 신청한 모임 일정 조회", description = "유저가 참여 신청한 모임 일정들을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),

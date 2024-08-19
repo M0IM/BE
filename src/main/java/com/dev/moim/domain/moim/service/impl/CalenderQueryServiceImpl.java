@@ -3,7 +3,6 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
-import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
 import com.dev.moim.domain.moim.entity.UserPlan;
@@ -38,23 +37,6 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final UserPlanRepository userPlanRepository;
     private final ScheduleRepository scheduleRepository;
     private final UserMoimRepository userMoimRepository;
-    private final IndividualPlanRepository individualPlanRepository;
-
-    @Override
-    public PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month) {
-
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
-
-        List<IndividualPlan> individualPlanList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
-
-        Map<Integer, List<UserPlanDTO>> monthPlanListByDay = individualPlanList.stream()
-                .map(UserPlanDTO::of)
-                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
-
-        return new PlanMonthListDTO<>(monthPlanListByDay);
-    }
 
     @Override
     public PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month) {
