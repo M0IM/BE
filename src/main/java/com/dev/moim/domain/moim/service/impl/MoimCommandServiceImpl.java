@@ -21,6 +21,7 @@ import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.UserException;
+import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final ExitReasonRepository exitReasonRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
@@ -47,7 +49,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .introduction(createMoimDTO.introduction())
                 .location(createMoimDTO.location())
                 .moimCategory(createMoimDTO.moimCategory())
-                .introduceVideoKeyName(createMoimDTO.introduceVideoKeyName())
+                .introduceVideoKeyName(s3Service.generateStaticUrl(createMoimDTO.introduceVideoKeyName()))
                 .introduceVideoTitle(createMoimDTO.introduceVideoTitle())
                 .build();
 
@@ -69,7 +71,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         createMoimDTO.imageKeyName().forEach((image)->{
             MoimImage moimImage = MoimImage.builder()
-                    .imageKeyName(image)
+                    .imageKeyName(s3Service.generateStaticUrl(image))
                     .moim(moim)
                     .build();
 
@@ -97,7 +99,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         Moim moim = moimRepository.findById(updateMoimDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
         List<MoimImage> moimImageList = updateMoimDTO.imageKeyNames().stream().map((image)-> MoimImage.builder()
-                .imageKeyName(image)
+                .imageKeyName(s3Service.generateStaticUrl(image))
                 .moim(moim)
                 .build()
         ).toList();
