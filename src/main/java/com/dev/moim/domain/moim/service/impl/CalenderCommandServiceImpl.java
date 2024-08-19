@@ -2,7 +2,6 @@ package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanCreateDTO;
-import com.dev.moim.domain.moim.dto.calender.UpdatePlanDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
@@ -95,7 +94,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     }
 
     @Override
-    public void updatePlan(Long moimId, Long planId, UpdatePlanDTO request) {
+    public void updatePlan(Long moimId, Long planId, PlanCreateDTO request) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));

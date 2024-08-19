@@ -123,7 +123,7 @@ public class MoimCalendarController {
     public BaseResponse<Long> updatePlan(
             @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @UserPlanValidation @PlanValidation @PathVariable Long planId,
-            @RequestBody UpdatePlanDTO request
+            @RequestBody PlanCreateDTO request
     ) {
         calenderCommandService.updatePlan(moimId, planId, request);
         return BaseResponse.onSuccess(null);
