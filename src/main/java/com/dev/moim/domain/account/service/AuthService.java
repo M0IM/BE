@@ -50,12 +50,12 @@ public class AuthService {
                 .password(encodedPassword)
                 .userRole(ROLE_USER)
                 .userProfileList(new ArrayList<>())
+                .gender(request.gender())
+                .birth(request.birth())
                 .build();
 
         UserProfile userProfile = UserProfile.builder()
                 .name(request.nickname())
-                .gender(request.gender())
-                .birth(request.birth())
                 .residence(request.residence())
                 .profileType(ProfileType.MAIN)
                 .build();

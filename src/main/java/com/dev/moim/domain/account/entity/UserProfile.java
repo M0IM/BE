@@ -31,12 +31,6 @@ public class UserProfile extends BaseEntity {
 
     private String residence;
 
-    @Enumerated(EnumType.STRING)
-    @ColumnDefault("'FEMALE'")
-    private Gender gender;
-
-    private String birth;
-
     private String introduction;
 
     @ManyToOne(fetch = FetchType.LAZY)

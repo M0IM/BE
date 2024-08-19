@@ -10,6 +10,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p " +
             "WHERE p.moim = :moim " +
@@ -27,4 +29,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "ORDER BY p.id DESC")
     Slice<Post> findByMoimAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(Moim moim, Long id, User user, Pageable pageable);
 
+    List<Post> findByMoimAndPostType(Moim moim, PostType postType);
 }

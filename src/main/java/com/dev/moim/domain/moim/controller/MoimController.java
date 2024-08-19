@@ -107,8 +107,9 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}")
-    public BaseResponse<MoimDetailDTO> getMoimDetail(@PathVariable Long moimId) {
-        return BaseResponse.onSuccess(null);
+    public BaseResponse<MoimDetailDTO> getMoimDetail(@AuthUser User user, @PathVariable Long moimId) {
+        MoimDetailDTO moimDetailDTO = moimQueryService.getMoimDetail(user, moimId);
+        return BaseResponse.onSuccess(moimDetailDTO);
     }
 
     @Operation(summary = "모임 소개 영상 불러오기 API", description = "모임 소개 영상 보기. _by 제이미_")
