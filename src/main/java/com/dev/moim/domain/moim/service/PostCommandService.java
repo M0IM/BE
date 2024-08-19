@@ -26,4 +26,6 @@ public interface PostCommandService {
     void blockPost(User user, @Valid PostBlockDTO postBlockDTO);
 
     void deleteComment(User user, Long commentId);
+
+    void updateComment(User user, CommentUpdateRequestDTO commentUpdateRequestDTO);
 }

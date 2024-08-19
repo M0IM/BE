@@ -32,7 +32,6 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostReportRepository postReportRepository;
     private final PostBlockRepository postBlockRepository;
-    private final UserRepository userRepository;
     private final FcmService fcmService;
 
     @Override
@@ -215,5 +214,24 @@ public class PostCommandServiceImpl implements PostCommandService {
             throw new PostException(ErrorStatus.NOT_MY_POST);
         }
         comment.delete();
+    }
+
+    @Override
+    public void updateComment(User user, CommentUpdateRequestDTO commentUpdateRequestDTO) {
+        Comment comment = commentRepository.findById(commentUpdateRequestDTO.commentId()).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        User user2 = null;
+        try {
+            user2 = comment.getUserMoim().getUser();
+        } catch (Exception e) {
+            throw new PostException(ErrorStatus.ALREADY_COMMENT_DELETE);
+        }
+
+        if (!user.equals(user2)){
+            throw new PostException(ErrorStatus.NOT_MY_POST);
+        }
+
+        System.out.println(commentUpdateRequestDTO.content());
+        comment.update(commentUpdateRequestDTO.content());
     }
 }
