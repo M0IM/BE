@@ -32,8 +32,9 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostReportRepository postReportRepository;
     private final PostBlockRepository postBlockRepository;
-    private final UserRepository userRepository;
     private final FcmService fcmService;
+    private final CommentReportRepository commentReportRepository;
+    private final CommentBlockRepository commentBlockRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -205,6 +206,84 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             postBlockRepository.save(savedPostBlock);
+        }
+    }
+
+    @Override
+    public void deleteComment(User user, Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+        if (!user.equals(comment.getUserMoim().getUser())){
+            throw new PostException(ErrorStatus.NOT_MY_POST);
+        }
+        comment.delete();
+    }
+
+    @Override
+    public void updateComment(User user, CommentUpdateRequestDTO commentUpdateRequestDTO) {
+        Comment comment = commentRepository.findById(commentUpdateRequestDTO.commentId()).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        User user2 = null;
+        try {
+            user2 = comment.getUserMoim().getUser();
+        } catch (Exception e) {
+            throw new PostException(ErrorStatus.ALREADY_COMMENT_DELETE);
+        }
+
+        if (!user.equals(user2)){
+            throw new PostException(ErrorStatus.NOT_MY_POST);
+        }
+
+        System.out.println(commentUpdateRequestDTO.content());
+        comment.update(commentUpdateRequestDTO.content());
+    }
+
+    @Override
+    public void reportComment(User user, CommentReportDTO commentReportDTO) {
+        Comment comment = commentRepository.findById(commentReportDTO.commentId()).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        if (!comment.getPost().getId().equals(commentReportDTO.postId())) {
+            throw new PostException(ErrorStatus.NOT_INCLUDE_POST);
+        }
+
+        Optional<CommentReport> commentReport = commentReportRepository.findByUserAndComment(user, comment);
+
+        if (commentReport.isPresent()) {
+            // 이미 있음.
+            commentReportRepository.delete(commentReport.get());
+        } else {
+
+            // 없음 -> 삭제
+            CommentReport savedPostReport = CommentReport.builder()
+                    .comment(comment)
+                    .user(user)
+                    .build();
+
+            commentReportRepository.save(savedPostReport);
+        }
+    }
+
+    @Override
+    public void blockComment(User user, CommentBlockDTO commentBlockDTO) {
+        Comment comment = commentRepository.findById(commentBlockDTO.commentId()).orElseThrow(() -> new CommentException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        if (!comment.getPost().getId().equals(commentBlockDTO.postId())) {
+            throw new PostException(ErrorStatus.NOT_INCLUDE_POST);
+        }
+
+        Optional<CommentBlock> commentBlock = commentBlockRepository.findByUserAndComment(user, comment);
+
+        if (commentBlock.isPresent()) {
+            // 이미 있음.
+            commentBlockRepository.delete(commentBlock.get());
+        } else {
+
+            // 없음 -> 삭제
+            CommentBlock savedCommentBlock = CommentBlock.builder()
+                    .comment(comment)
+                    .user(user)
+                    .build();
+
+            commentBlockRepository.save(savedCommentBlock);
         }
     }
 }

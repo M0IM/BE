@@ -93,7 +93,7 @@ public class MoimPostController {
             @AuthUser User user,
             @PathVariable Long moimId,
             @PathVariable Long postId,
-            @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @Parameter(description = "처음 값은 0로 해주 세요.") @RequestParam(name = "cursor") Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
     ) {
         CommentResponseListDTO commentResponseListDTO = postQueryService.getcomments(user, moimId, postId, cursor, take);
@@ -170,4 +170,43 @@ public class MoimPostController {
         return BaseResponse.onSuccess("게시글이 차단 되었습니다.");
     }
 
+    @Operation(summary = "모임 댓글 삭제 API", description = "모임 댓글을 삭제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/{commentId}/delete")
+    public BaseResponse<String> deleteComment(@AuthUser User user, @PathVariable Long commentId) {
+        postCommandService.deleteComment(user, commentId);
+        return BaseResponse.onSuccess("댓글이 삭제 되었습니다.");
+    }
+
+    @Operation(summary = "모임 댓글 삭제 API", description = "모임 댓글을 삭제 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PutMapping("/moims/comments")
+    public BaseResponse<String> updateComment(@AuthUser User user, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+        postCommandService.updateComment(user, commentUpdateRequestDTO);
+        return BaseResponse.onSuccess("댓글이 수정 되었습니다.");
+    }
+
+    @Operation(summary = "모임 댓글 신고 API", description = "모임 댓글을 신고 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/reports")
+    public BaseResponse<String> reportComment(@AuthUser User user, @RequestBody CommentReportDTO commentReportDTO) {
+        postCommandService.reportComment(user, commentReportDTO);
+        return BaseResponse.onSuccess("댓글이 신고 되었습니다.");
+    }
+
+    @Operation(summary = "모임 댓글 차단 API", description = "모임 댓글을 차단 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/comments/block")
+    public BaseResponse<String> blockComment(@AuthUser User user, @RequestBody CommentBlockDTO commentBlockDTO) {
+        postCommandService.blockComment(user, commentBlockDTO);
+        return BaseResponse.onSuccess("댓글이 차단 되었습니다.");
+    }
 }

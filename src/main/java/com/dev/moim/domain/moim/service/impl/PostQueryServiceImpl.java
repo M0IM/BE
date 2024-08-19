@@ -33,6 +33,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
+    private final CommentBlockRepository commentBlockRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -89,12 +90,10 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
-        if (cursor == 1) {
-            cursor = Long.MAX_VALUE;
-        }
 
+        Slice<Comment> commentSlices = commentRepository.findByPostAndIdGreaterThanAndParentIsNullOrderByIdAsc(post, cursor, PageRequest.of(0, take));
 
-        Slice<Comment> commentSlices = commentRepository.findByPostAndIdLessThanAndParentIsNullOrderByIdDesc(post, cursor, PageRequest.of(0, take));
+        List<Comment> commentBlockList = commentRepository.findByUserAndPostId(user, postId);
 
         Long nextCursor = null;
         if (!commentSlices.isLast()) {
@@ -103,7 +102,7 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) -> {
             List<CommentCommentResponseDTO> commentCommentResponseDTOList = comment.getChildren().stream().map(commentcomment -> CommentCommentResponseDTO.toCommentCommentResponseDTO(commentcomment, isCommentLike(user.getId(), commentcomment.getId()))).toList();
-            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList);
+            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList, commentBlockList);
         }).toList();
 
         return CommentResponseListDTO.toCommentResponseListDTO(commentResponseDTOList, nextCursor, commentSlices.hasNext());
