@@ -11,6 +11,7 @@ import com.dev.moim.global.error.handler.CommentException;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
 import com.dev.moim.global.firebase.service.FcmService;
+import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final FcmService fcmService;
     private final CommentReportRepository commentReportRepository;
     private final CommentBlockRepository commentBlockRepository;
+    private final S3Service s3Service;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -54,7 +56,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         postRepository.save(savedPost);
 
         createMoimPostDTO.imageKeyNames().forEach((i) ->{
-                PostImage postImage = PostImage.builder().imageKeyName(i).post(savedPost).build();
+                PostImage postImage = PostImage.builder().imageKeyName(s3Service.generateStaticUrl(i)).post(savedPost).build();
                 postImageRepository.save(postImage);
             }
         );
@@ -185,7 +187,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
         List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
-                PostImage.builder().imageKeyName(i).post(updatePost).build()
+                PostImage.builder().imageKeyName(s3Service.generateStaticUrl(i)).post(updatePost).build()
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);

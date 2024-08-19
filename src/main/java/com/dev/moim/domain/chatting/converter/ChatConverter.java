@@ -20,15 +20,13 @@ public class ChatConverter {
     public static Chat toChat(MessageDTO messageDTO, User user, ChatRoom chatRoom) {
         return Chat.builder()
                 .content(messageDTO.getContent())
-                .imageKeyName(messageDTO.getImageKeyName())
+                .imageUrl(messageDTO.getImageKeyName())
                 .user(user)
                 .chatRoom(chatRoom)
                 .build();
     }
 
     public static ChatDTO.ChatListResponse toChatResponseList(List<ChatDTO.ChatResponse> chatResponses, Long nextCursor, Boolean hasNext) {
-
-        Collections.reverse(chatResponses);
 
         return ChatDTO.ChatListResponse.builder()
                 .hasNext(hasNext)
@@ -50,7 +48,7 @@ public class ChatConverter {
                 .chatId(chat.getId())
                 .senderDTO(senderDTO)
                 .content(chat.getContent() == null ? null : chat.getContent())
-                .imageKeyName(chat.getImageKeyName() == null ? null : chat.getImageKeyName())
+                .imageKeyName(chat.getImageUrl() == null ? null : chat.getImageUrl())
                 .createAt(chat.getCreatedAt())
                 .build();
     }

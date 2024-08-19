@@ -16,8 +16,6 @@ public class ChatRoomConverter {
     public static ChatRoom toChatRoom(ChatRoomDTO.CreateChatRoomRequest createChatRoomRequest) {
         return ChatRoom.builder()
                 .title(createChatRoomRequest.getTitle())
-                .imageKeyName(createChatRoomRequest.getImageKeyName())
-//                .moim(moim)
                 .build();
     }
 
@@ -55,7 +53,6 @@ public class ChatRoomConverter {
         return ChatRoomDTO.ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
                 .title(chatRoom.getTitle())
-                .imageKeyName(chatRoom.getImageKeyName())
                 .build();
     }
 }

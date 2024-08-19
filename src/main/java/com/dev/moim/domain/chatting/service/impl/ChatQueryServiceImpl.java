@@ -22,6 +22,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -34,8 +35,6 @@ public class ChatQueryServiceImpl implements ChatQueryService {
 
     private final ChatRepository chatRepository;
     private final UserChatRoomRepository userChatRoomRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final UserMoimRepository userMoimRepository;
     private final UserProfileRepository userProfileRepository;
 
     @Override
@@ -59,11 +58,11 @@ public class ChatQueryServiceImpl implements ChatQueryService {
         }
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(() -> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND));
-        List<ChatDTO.ChatResponse> chatResponses = chatSlice.stream().map((c)->
-            ChatConverter.toChatResponse(c, userProfile)
-        ).toList();
+        List<ChatDTO.ChatResponse> chatResponses = new java.util.ArrayList<>(chatSlice.stream().map((c) ->
+                ChatConverter.toChatResponse(c, userProfile)
+        ).toList());
 
-
+        Collections.reverse(chatResponses);
         return ChatConverter.toChatResponseList(chatResponses, nextCursor, chatSlice.hasNext());
     }
 

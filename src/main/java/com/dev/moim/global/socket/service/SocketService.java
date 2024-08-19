@@ -26,6 +26,7 @@ import com.dev.moim.global.error.handler.ChatRoomException;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
+import com.dev.moim.global.s3.service.S3Service;
 import com.dev.moim.global.socket.dto.ChattingDTO;
 import com.dev.moim.global.socket.handler.SocketUtil;
 import com.dev.moim.global.socket.handler.TextHandler;
@@ -53,6 +54,7 @@ public class SocketService {
     private final FcmService fcmService;
     private final UserMoimRepository userMoimRepository;
     private final UserProfileRepository userProfileRepository;
+    private final S3Service s3Service;
 
 
     // scheduler 로 chatting room 연결이 끊길 시 연결 시키는 거 고려
@@ -96,6 +98,13 @@ public class SocketService {
         if (chattingDTO.getContent() != null && chattingDTO.getImageKeyName() != null) {
             throw new ChatException(ErrorStatus.INVALID_CHAT_FORMAT);
         }
+
+        if (chattingDTO.getImageKeyName()!= null) {
+            String imageUrl = s3Service.generateStaticUrl(chattingDTO.getImageKeyName());
+            chattingDTO.setImageKeyName(imageUrl);
+        }
+
+
 
         // 채팅 방 번호로 해당 하는 채팅방 사람들의 이메일 받아오는 로직
         List<Long> userIds = userRepository.getUserIdByChatRoomId(chattingDTO.getChatRoomId());
