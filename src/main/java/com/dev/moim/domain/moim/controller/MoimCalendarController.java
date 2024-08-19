@@ -129,19 +129,19 @@ public class MoimCalendarController {
         return BaseResponse.onSuccess(calenderQueryService.getPlanParticipants(moimId, planId, page, size));
     }
 
-    @Operation(summary = "모임 일정 수정", description = "모임 관리자 회원만 일정을 수정할 수 있습니다.")
+    @Operation(summary = "모임 일정 수정", description = "일정 작성자 회원만 일정을 수정할 수 있습니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "모임 일정 변경 성공"),
-            @ApiResponse(responseCode = "MOIM_001", description = "모임 정보를 찾을 수 없습니다."),
-            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다.")
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @PutMapping("/{planId}")
+    @PutMapping("/{moimId}/plan/{planId}")
     public BaseResponse<Long> updatePlan(
             @AuthUser User user,
-            @PlanValidation @PathVariable Long planId,
-            @RequestBody PlanCreateDTO request
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserPlanValidation @PlanValidation @PathVariable Long planId,
+            @RequestBody UpdatePlanDTO request
     ) {
-        return null;
+        calenderCommandService.updatePlan(moimId, planId, request);
+        return BaseResponse.onSuccess(null);
     }
 
     @Operation(summary = "모임 일정 참여 신청", description = "모임 멤버가 특정 일정에 신청하는 기능입니다.")
