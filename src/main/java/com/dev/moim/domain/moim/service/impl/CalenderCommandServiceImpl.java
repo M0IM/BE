@@ -39,7 +39,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         Plan plan = Plan.builder()
                 .title(request.title())
-                .date(request.date())
+                .date(request.startTime())
                 .location(request.location())
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
@@ -110,7 +110,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         plan.updatePlan(
                 request.title(),
-                request.date(),
+                request.startTime(),
                 request.location(),
                 request.locationDetail(),
                 request.cost()
