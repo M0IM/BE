@@ -29,11 +29,13 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Provider provider;
 
     private String providerId;
@@ -52,14 +54,17 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'FEMALE'")
+    @Column(nullable = false)
     private Gender gender;
 
+    @Column(nullable = false)
     private LocalDate birth;
 
     private double rating;
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'ROLE_USER'")
+    @Column(nullable = false)
     private UserRole userRole;
 
     @Column(nullable = false)
@@ -69,6 +74,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'FREE'")
+    @Column(nullable = false)
     private UserRank userRank;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

@@ -31,12 +31,15 @@ public class UserProfile extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'MAIN'")
+    @Column(nullable = false)
     private ProfileType profileType;
 
+    @Column(nullable = false)
     private String name;
 
     private String imageUrl;
 
+    @Column(nullable = false)
     private String residence;
 
     private String introduction;
