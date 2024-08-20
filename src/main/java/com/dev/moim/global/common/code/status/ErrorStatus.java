@@ -53,12 +53,13 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_UNREGISTERED(HttpStatus.UNAUTHORIZED, "AUTH_028", "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
     OIDC_PUBLIC_KEY_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_029", "OIDC ID 토큰 공개키를 받아오는데 실패했습니다."),
 
-    // User 관련
-    INDIVIDUAL_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_001", "존재하지 않는 개인 일정 입니다."),
-    NOT_INDIVIDUAL_PLAN_OWNER(HttpStatus.UNAUTHORIZED, "USER_002", "해당 일정의 작성자가 아닙니다."),
-    ALREADY_PARTICIPATE_IN_PLAN(HttpStatus.BAD_REQUEST, "USER_003", "이미 해당 모임 일정에 참여 신청했습니다."),
-    USER_NOT_PART_OF_PLAN(HttpStatus.BAD_REQUEST, "USER_004", "해당 일정에 참여 신청하지 않았습니다."),
-    IS_MOIM_OWNER(HttpStatus.BAD_REQUEST, "USER_005", "모임장 권한이 있는 유저입니다. 권한을 위임해주세요."),
+    // Plan 관련
+    INDIVIDUAL_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "PLAN_001", "존재하지 않는 개인 일정 입니다."),
+    NOT_INDIVIDUAL_PLAN_OWNER(HttpStatus.UNAUTHORIZED, "PLAN_002", "해당 일정의 작성자가 아닙니다."),
+    ALREADY_PARTICIPATE_IN_PLAN(HttpStatus.BAD_REQUEST, "PLAN_003", "이미 해당 모임 일정에 참여 신청했습니다."),
+    USER_NOT_PART_OF_PLAN(HttpStatus.BAD_REQUEST, "PLAN_004", "해당 일정에 참여 신청하지 않았습니다."),
+    PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "PLAN_005", "존재하지 않는 일정입니다."),
+    PLAN_EDIT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "PLAN_006", "모임 일정 수정, 삭제 권한이 없는 유저입니다." ),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),
@@ -70,13 +71,12 @@ public enum ErrorStatus implements BaseErrorCode {
     MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_001", "모임을 찾을 수 없습니다."),
     MOIM_NOT_ADMIN(HttpStatus.UNAUTHORIZED, "MOIM_002", "모임 관리자 회원이 아닙니다."),
     INVALID_MOIM_MEMBER(HttpStatus.FORBIDDEN, "MOIM_003", "모임의 멤버가 아닙니다."),
-    PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_004", "존재하지 않는 일정입니다."),
+    IS_MOIM_OWNER(HttpStatus.BAD_REQUEST, "MOIM_004", "모임장 권한이 있는 유저입니다. 권한을 위임해주세요."),
     PLAN_WRITER_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_005", "해당 일정의 작성자를 찾을 수 없습니다."),
     USER_NOT_MOIM_JOIN(HttpStatus.UNAUTHORIZED, "MOIM_003", "모임의 회원이 아닙니다."),
     USER_NOT_MOIM_ADMIN(HttpStatus.FORBIDDEN, "MOIM_006", "모임의 관리자가 아닙니다."),
     VIDEO_ERROR(HttpStatus.NOT_FOUND, "MOIM_007", "해당 모임의 관리자가 없거나 관리자의 프로필이 존재하지 않습니다."),
     MOIM_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_008", "모임장 회원을 찾을 수 없습니다."),
-    PLAN_EDIT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "MOIM_009", "모임 일정 수정, 삭제 권한이 없는 유저입니다ㅏ." ),
 
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
