@@ -8,13 +8,11 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.ExitReason;
 import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.MoimImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.domain.moim.repository.ExitReasonRepository;
-import com.dev.moim.domain.moim.repository.MoimImageRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.service.MoimCommandService;
@@ -26,16 +24,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MoimCommandServiceImpl implements MoimCommandService {
 
     private final MoimRepository moimRepository;
-    private final MoimImageRepository moimImageRepository;
     private final UserMoimRepository userMoimRepository;
     private final ExitReasonRepository exitReasonRepository;
     private final UserProfileRepository userProfileRepository;
