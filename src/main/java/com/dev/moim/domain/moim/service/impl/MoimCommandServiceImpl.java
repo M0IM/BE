@@ -51,6 +51,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .moimCategory(createMoimDTO.moimCategory())
                 .introduceVideoKeyName(s3Service.generateStaticUrl(createMoimDTO.introduceVideoKeyName()))
                 .introduceVideoTitle(createMoimDTO.introduceVideoTitle())
+                .imageUrl(s3Service.generateStaticUrl(createMoimDTO.imageKeyName()))
                 .build();
 
         moimRepository.save(moim);
@@ -68,15 +69,6 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .build();
 
         userMoimRepository.save(userMoim);
-
-        createMoimDTO.imageKeyName().forEach((image)->{
-            MoimImage moimImage = MoimImage.builder()
-                    .imageKeyName(s3Service.generateStaticUrl(image))
-                    .moim(moim)
-                    .build();
-
-            moimImageRepository.save(moimImage);
-        });
 
         return moim;
     }
@@ -98,13 +90,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     public void modifyMoimInfo(UpdateMoimDTO updateMoimDTO) {
         Moim moim = moimRepository.findById(updateMoimDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        List<MoimImage> moimImageList = updateMoimDTO.imageKeyNames().stream().map((image)-> MoimImage.builder()
-                .imageKeyName(s3Service.generateStaticUrl(image))
-                .moim(moim)
-                .build()
-        ).toList();
-
-        moim.updateMoim(moim.getName(), moim.getIntroduction(), moim.getIntroduction(), moimImageList);
+        moim.updateMoim(moim.getName(), moim.getIntroduction(), moim.getIntroduction(), s3Service.generateStaticUrl(updateMoimDTO.imageKeyName()));
     }
 
     @Override

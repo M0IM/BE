@@ -8,7 +8,7 @@ public record CreateMoimDTO(
         String title,
         String location,
         MoimCategory moimCategory,
-        List<String> imageKeyName,
+        String imageKeyName,
         String introduceVideoKeyName,
         String introduceVideoTitle,
         String introduction

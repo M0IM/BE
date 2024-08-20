@@ -56,8 +56,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Slice<Moim> myMoims = moimRepository.findMyMoims(user, cursor, PageRequest.of(0, take));
 
         List<MoimPreviewDTO> findMyMoims = myMoims.stream().map((moim)->{
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
         Long nextCursor = null;
@@ -97,8 +96,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         List<MoimPreviewDTO> moimPreviewDTOList = moimSlice.toList().stream().map((moim) -> {
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
         return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, moimSlice.hasNext());
@@ -155,8 +153,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Slice<Moim> moims = moimRepository.findByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, take));
 
         List<MoimPreviewDTO> findMyMoims = moims.stream().map((moim)->{
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
 
@@ -186,7 +183,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             } else {
                 femaleSize += 1L;
             }
-            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear()));
+            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear())) + 1;
             count ++;
         }
 

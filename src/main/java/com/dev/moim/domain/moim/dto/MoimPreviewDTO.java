@@ -12,19 +12,19 @@ public record MoimPreviewDTO(
         String description,
         MoimCategory category,
         String address,
-        List<String> profileImageKeys,
+        String profileImageUrl,
         Integer memberCount,
         LocalDateTime createAt,
         LocalDateTime updateAt
 ) {
-    public static MoimPreviewDTO toMoimPreviewDTO(Moim moim, List<String> imageKeys) {
+    public static MoimPreviewDTO toMoimPreviewDTO(Moim moim, String imageUrl) {
         return new MoimPreviewDTO(
                 moim.getId(),
                 moim.getName(),
                 moim.getIntroduction(),
                 moim.getMoimCategory(),
                 moim.getLocation(),
-                imageKeys,
+                imageUrl,
                 moim.getUserMoimList().size(),
                 moim.getCreatedAt(),
                 moim.getUpdatedAt()
