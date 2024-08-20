@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.repository;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +30,9 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
 
     boolean existsByUserAndMoimRole(User user, MoimRole moimRole);
+
+    @Query("SELECT COUNT(um) > 0 FROM UserMoim um " +
+            "JOIN um.user u " +
+            "WHERE u = :user AND um.moim = :moim AND um.joinStatus IN :joinStatuses")
+    Boolean existsByUserAndMoimAndJoinStatuses(User user, Moim moim, List<JoinStatus> joinStatuses);
 }

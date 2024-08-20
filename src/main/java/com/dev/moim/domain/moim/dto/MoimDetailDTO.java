@@ -8,8 +8,10 @@ import java.util.List;
 
 public record MoimDetailDTO(
         Long moimId,
+        Boolean isJoin,
         String title,
         String description,
+        String profileImageUrl,
         MoimCategory category,
         Double averageAge,
         int diaryCount,
@@ -21,11 +23,13 @@ public record MoimDetailDTO(
         LocalDateTime createAt,
         LocalDateTime updateAt
 ) {
-    public static MoimDetailDTO toMoimDetailDTO(Moim moim, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, int memberCount) {
+    public static MoimDetailDTO toMoimDetailDTO(Moim moim, Boolean isJoin, String profileImageUrl, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, int memberCount) {
         return new MoimDetailDTO(
                 moim.getId(),
+                isJoin,
                 moim.getName(),
                 moim.getIntroduction(),
+                profileImageUrl,
                 moim.getMoimCategory(),
                 averageAge,
                 diaryCount,

@@ -28,6 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
             "where um.moim.id = :moimId and um.joinStatus = :joinStatus and um.id > :cursor")
     Slice<UserProfileDTO> findUserByMoimId(Long moimId, JoinStatus joinStatus, Long cursor,  Pageable pageable);
 
-    @Query("select u from UserMoim um join um.user u where um.moim = :moim")
-    List<User> findUserByMoim(Moim moim);
+    @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.joinStatus = :joinStatus")
+    List<User> findUserByMoim(Moim moim, JoinStatus joinStatus);
 }
