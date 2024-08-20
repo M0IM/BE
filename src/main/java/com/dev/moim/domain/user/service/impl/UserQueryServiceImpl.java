@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
+import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
@@ -140,6 +141,11 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean isExistEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean isMoimOwner(User user) {
+        return userMoimRepository.existsByUserAndMoimRole(user, OWNER);
     }
 }
 

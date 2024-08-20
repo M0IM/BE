@@ -6,6 +6,7 @@ import com.dev.moim.domain.account.service.AuthService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.security.annotation.ExtractToken;
+import com.dev.moim.global.validation.annotation.QuitValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -118,12 +119,11 @@ public class AuthController {
     }
 
     @DeleteMapping("/quit")
-    @Operation(summary="회원 탈퇴", description="회원 탈퇴 API입니다.")
+    @Operation(summary="회원 탈퇴", description="회원 탈퇴 API입니다. 모임장 권한을 가진 유저는 회원 탈퇴 전에 권한 위임을 진행해주세요.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    public BaseResponse<?> quit(@AuthUser User user
+    public BaseResponse<?> quit(@QuitValidation @AuthUser User user
     ) {
         authService.quit(user);
         return BaseResponse.onSuccess(null);

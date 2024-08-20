@@ -31,5 +31,7 @@ public interface UserQueryService {
 
     boolean isExistEmail(String email);
 
+    boolean isMoimOwner(User user);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
