@@ -120,12 +120,25 @@ public class MoimCalendarController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
     @PutMapping("/{moimId}/plan/{planId}")
-    public BaseResponse<Long> updatePlan(
+    public BaseResponse<?> updatePlan(
             @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
             @UserPlanValidation @PlanValidation @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
     ) {
         calenderCommandService.updatePlan(moimId, planId, request);
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "모임 일정 삭제", description = "일정 작성자 회원만 일정을 삭제할 수 있습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @DeleteMapping("/{moimId}/plan/{planId}")
+    public BaseResponse<?> deletePlan(
+            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserPlanValidation @PlanValidation @PathVariable Long planId
+    ) {
+        calenderCommandService.deletePlan(moimId, planId);
         return BaseResponse.onSuccess(null);
     }
 
