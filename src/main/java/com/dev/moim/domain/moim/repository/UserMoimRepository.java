@@ -29,4 +29,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
 
     Optional<UserMoim> findByUserIdAndMoimRole(Long userId, MoimRole moimRole);
+
+    boolean existsByUserAndMoimRole(User user, MoimRole moimRole);
 }

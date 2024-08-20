@@ -58,6 +58,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_INDIVIDUAL_PLAN_OWNER(HttpStatus.UNAUTHORIZED, "USER_002", "해당 일정의 작성자가 아닙니다."),
     ALREADY_PARTICIPATE_IN_PLAN(HttpStatus.BAD_REQUEST, "USER_003", "이미 해당 모임 일정에 참여 신청했습니다."),
     USER_NOT_PART_OF_PLAN(HttpStatus.BAD_REQUEST, "USER_004", "해당 일정에 참여 신청하지 않았습니다."),
+    IS_MOIM_OWNER(HttpStatus.BAD_REQUEST, "USER_005", "모임장 권한이 있는 유저입니다. 권한을 위임해주세요."),
 
     // Email 관련
     EMAIL_SEND_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL_001", "이메일 전송에 실패했습니다."),

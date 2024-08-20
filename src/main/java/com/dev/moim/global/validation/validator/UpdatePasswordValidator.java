@@ -1,36 +1,26 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.global.validation.annotation.PasswordValidation;
+import com.dev.moim.global.validation.annotation.UpdatePasswordValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import static com.dev.moim.domain.account.entity.enums.Provider.LOCAL;
 import static com.dev.moim.global.common.code.status.ErrorStatus.INVALID_PASSWORD;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PasswordValidator implements ConstraintValidator<PasswordValidation, JoinRequest> {
+public class UpdatePasswordValidator implements ConstraintValidator<UpdatePasswordValidation, String> {
 
     @Override
-    public void initialize(PasswordValidation constraintAnnotation) {
+    public void initialize(UpdatePasswordValidation constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
-    public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
-        if (request.provider() == LOCAL && !isPasswordValid(request.password(), context)) {
-            log.warn("회원가입 실패 : 비밀번호 조건 미충족");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isPasswordValid(String password, ConstraintValidatorContext context) {
+    public boolean isValid(String password, ConstraintValidatorContext context) {
         String passwordPattern = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\W_]).{8,16}$";
 
         if (password == null || !password.matches(passwordPattern)) {
