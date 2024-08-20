@@ -24,4 +24,6 @@ public interface MoimQueryService {
     MoimPreviewListDTO getNewMoim(Long cursor, Integer take);
 
     MoimDetailDTO getMoimDetail(User user, Long moimId);
+
+    Long findMoimOwner(Long moimId);
 }

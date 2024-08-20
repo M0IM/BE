@@ -74,6 +74,8 @@ public enum ErrorStatus implements BaseErrorCode {
     USER_NOT_MOIM_JOIN(HttpStatus.UNAUTHORIZED, "MOIM_003", "모임의 회원이 아닙니다."),
     USER_NOT_MOIM_ADMIN(HttpStatus.FORBIDDEN, "MOIM_006", "모임의 관리자가 아닙니다."),
     VIDEO_ERROR(HttpStatus.NOT_FOUND, "MOIM_007", "해당 모임의 관리자가 없거나 관리자의 프로필이 존재하지 않습니다."),
+    MOIM_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_008", "모임장 회원을 찾을 수 없습니다."),
+    PLAN_EDIT_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "MOIM_009", "모임 일정 수정, 삭제 권한이 없는 유저입니다ㅏ." ),
 
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
