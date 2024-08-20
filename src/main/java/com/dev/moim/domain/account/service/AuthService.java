@@ -127,6 +127,20 @@ public class AuthService {
     }
 
     @Transactional
+    public void quit(User user) {
+        redisUtil.deleteValue(user.getId().toString());
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updatePassword(UpdatePasswordDTO request) {
+        User user = userRepository.findByEmailAndProvider(request.email(), Provider.LOCAL)
+                        .orElseThrow(() -> new AuthException(USER_NOT_FOUND));
+
+        user.updatePassword(passwordEncoder.encode(request.password()));
+    }
+
+    @Transactional
     public void fcmSignOut(User user) {
         user.fcmSignOut();
     }

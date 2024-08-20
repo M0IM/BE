@@ -3,7 +3,7 @@ package com.dev.moim.domain.account.dto;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.global.validation.annotation.LocalAccountValidation;
-import com.dev.moim.global.validation.annotation.PasswordValidation;
+import com.dev.moim.global.validation.annotation.JoinPasswordValidation;
 import com.dev.moim.global.validation.annotation.OAuthAccountValidation;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 @OAuthAccountValidation
 @LocalAccountValidation
-@PasswordValidation
+@JoinPasswordValidation
 public record JoinRequest(
         @Schema(description = "로그인 타입", defaultValue = "KAKAO", allowableValues = {"LOCAL", "KAKAO", "APPLE", "GOOGLE"})
         @NonNull
