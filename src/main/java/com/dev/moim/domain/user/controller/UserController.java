@@ -227,6 +227,8 @@ public class UserController {
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlan(user, year, month, day, page, size));
     }
+
+
   
     @Operation(summary = "이벤트 알림 발송", description = "모든 유저에게 이벤트 알림 발송을 합니다.")
     @ApiResponses({

@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PostType;
@@ -17,6 +18,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
+import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.service.MoimQueryService;
@@ -25,6 +27,7 @@ import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PlanException;
+import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -47,6 +50,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final UserMoimRepository userMoimRepository;
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
+    private final S3Service s3Service;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -58,8 +62,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Slice<Moim> myMoims = moimRepository.findMyMoims(user, cursor, PageRequest.of(0, take));
 
         List<MoimPreviewDTO> findMyMoims = myMoims.stream().map((moim)->{
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
         Long nextCursor = null;
@@ -99,8 +102,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         List<MoimPreviewDTO> moimPreviewDTOList = moimSlice.toList().stream().map((moim) -> {
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
         return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, moimSlice.hasNext());
@@ -157,8 +159,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Slice<Moim> moims = moimRepository.findByIdLessThanOrderByIdDesc(cursor, PageRequest.of(0, take));
 
         List<MoimPreviewDTO> findMyMoims = moims.stream().map((moim)->{
-            List<String> imageKeys = moim.getMoimImages().stream().map((MoimImage::getImageKeyName)).toList();
-            return MoimPreviewDTO.toMoimPreviewDTO(moim, imageKeys);
+            return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
         }).toList();
 
 
@@ -174,8 +175,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     public MoimDetailDTO getMoimDetail(User user, Long moimId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
         int reviewCount = postRepository.findByMoimAndPostType(moim, PostType.REVIEW).size();
-        List<User> users = userRepository.findUserByMoim(moim);
+        List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
+        Boolean exists = userMoimRepository.existsByUserAndMoimAndJoinStatuses(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
@@ -188,7 +190,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             } else {
                 femaleSize += 1L;
             }
-            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear()));
+            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear())) + 1;
             count ++;
         }
 
@@ -198,7 +200,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
 
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
+        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
 
     }
 
