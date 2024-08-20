@@ -127,6 +127,12 @@ public class AuthService {
     }
 
     @Transactional
+    public void quit(User user) {
+        redisUtil.deleteValue(user.getId().toString());
+        userRepository.delete(user);
+    }
+
+    @Transactional
     public void fcmSignOut(User user) {
         user.fcmSignOut();
     }

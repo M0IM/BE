@@ -1,8 +1,10 @@
 package com.dev.moim.domain.account.controller;
 
 import com.dev.moim.domain.account.dto.*;
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.service.AuthService;
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.security.annotation.ExtractToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,6 +45,21 @@ public class AuthController {
         return BaseResponse.onSuccess(null);
     }
 
+    @PostMapping("/oAuth")
+    @Operation(summary="소셜 로그인 API", description="소셜 로그인 타입을 입력해주세요.\n [Provider] KAKAO, APPLE, GOOGLE, NAVER (개발용)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "AUTH_001", description = "신규 유저 입니다. 회원가입을 진행해주세요."),
+            @ApiResponse(responseCode = "AUTH_016", description = "지원하지 않는 로그인 provider 입니다."),
+            @ApiResponse(responseCode = "AUTH_018", description = "만료된 ID 토큰 입니다."),
+            @ApiResponse(responseCode = "AUTH_019", description = "유효하지 않은 ID 토큰 입니다."),
+    })
+    public BaseResponse<TokenResponse> oAuthLogin(
+            @RequestBody OAuthLoginRequest request
+    ) {
+        return BaseResponse.onSuccess(null);
+    }
+
     @GetMapping("/reissueToken")
     @Operation(summary="토큰 재발급 API", description="AccessToken의 유효 기간이 만료된 경우, Authorization 헤더에 RefreshToken을 담아서 요청을 보내면 AccessToken과 RefreshToken 재발급.")
     @ApiResponses(value = {
@@ -61,21 +78,6 @@ public class AuthController {
             @ExtractToken @Parameter(name = "accessToken", hidden = true) String accessToken
     ) {
         return BaseResponse.onSuccess("로그아웃 성공");
-    }
-
-    @PostMapping("/oAuth")
-    @Operation(summary="소셜 로그인 API", description="소셜 로그인 타입을 입력해주세요.\n [Provider] KAKAO, APPLE, GOOGLE, NAVER (개발용)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @ApiResponse(responseCode = "AUTH_001", description = "신규 유저 입니다. 회원가입을 진행해주세요."),
-            @ApiResponse(responseCode = "AUTH_016", description = "지원하지 않는 로그인 provider 입니다."),
-            @ApiResponse(responseCode = "AUTH_018", description = "만료된 ID 토큰 입니다."),
-            @ApiResponse(responseCode = "AUTH_019", description = "유효하지 않은 ID 토큰 입니다."),
-    })
-    public BaseResponse<TokenResponse> oAuthLogin(
-            @RequestBody OAuthLoginRequest request
-    ) {
-        return BaseResponse.onSuccess(null);
     }
 
     @PostMapping("/emails/send")
@@ -98,5 +100,18 @@ public class AuthController {
     })
     public BaseResponse<EmailVerificationResultDTO> verifyCode(@RequestBody EmailVerificationCodeDTO request) {
         return BaseResponse.onSuccess(authService.verifyCode(request));
+    }
+
+    @DeleteMapping("/quit")
+    @Operation(summary="회원 탈퇴", description="회원 탈퇴 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+
+    })
+    public BaseResponse<?> quit(
+            @AuthUser User user
+    ) {
+        authService.quit(user);
+        return BaseResponse.onSuccess(null);
     }
 }

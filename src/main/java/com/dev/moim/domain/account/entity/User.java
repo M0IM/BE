@@ -1,11 +1,14 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.*;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.UserPlan;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +21,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicInsert
+@SQLDelete(sql = "UPDATE user SET status = 'OFF', inactive_date = current_timestamp WHERE id = ?")
+@SQLRestriction(value = "status = 'ON'")
 public class User extends BaseEntity {
 
     @Id
@@ -68,6 +73,15 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserProfile> userProfileList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<UserMoim> userMoimList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<UserPlan> userPlanList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<IndividualPlan> individualPlanList = new ArrayList<>();
 
     public void updateRating(double newRating) {
         this.rating = newRating;
