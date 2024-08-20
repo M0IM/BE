@@ -84,7 +84,8 @@ public class SecurityConfig {
             "/api/v1/auth/emails/**",
             "/api/v1/auth/reissueToken/**",
             "/health",
-            "/chat"
+            "/chat",
+            "/api/v1/auth/password/**",
     };
 
     @Bean

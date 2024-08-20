@@ -13,8 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -102,14 +104,26 @@ public class AuthController {
         return BaseResponse.onSuccess(authService.verifyCode(request));
     }
 
+    @PutMapping("/password")
+    @Operation(summary="비밀번호 변경", description="비밀번호 분실 시, 이메일 검증에 성공한 경우 새로운 비밀번호로 변경할 수 있는 API입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+
+    })
+    public BaseResponse<?> updatePassword(
+            @Valid @RequestBody UpdatePasswordDTO request
+    ) {
+        authService.updatePassword(request);
+        return BaseResponse.onSuccess(null);
+    }
+
     @DeleteMapping("/quit")
     @Operation(summary="회원 탈퇴", description="회원 탈퇴 API입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
 
     })
-    public BaseResponse<?> quit(
-            @AuthUser User user
+    public BaseResponse<?> quit(@AuthUser User user
     ) {
         authService.quit(user);
         return BaseResponse.onSuccess(null);

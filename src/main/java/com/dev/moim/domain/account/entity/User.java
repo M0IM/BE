@@ -95,6 +95,8 @@ public class User extends BaseEntity {
         this.isEventAlarm = !this.isEventAlarm;
     }
 
+    public void updatePassword(String newPassword) {this.password = newPassword;}
+
     public void fcmSignOut() {
         this.deviceId = null;
     }

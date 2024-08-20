@@ -136,6 +136,11 @@ public class UserQueryServiceImpl implements UserQueryService {
 
         return individualPlan.getUser().getId();
     }
+
+    @Override
+    public boolean isExistEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
 
 //    @Override
