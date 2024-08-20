@@ -12,4 +12,6 @@ public interface CalenderCommandService {
     void cancelPlanParticipation(User user, Long moidId, Long planId);
 
     void updatePlan(Long moimId, Long planId, PlanCreateDTO request);
+
+    void deletePlan(Long moimId, Long planId);
 }

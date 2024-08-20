@@ -3,8 +3,10 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.PlanRepository;
 import com.dev.moim.domain.moim.repository.PostRepository;
@@ -24,6 +26,7 @@ import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.PlanException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_OWNER_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -196,5 +202,16 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
         return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
 
+    }
+
+    @Override
+    public Long findMoimOwner(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimRole(plan.getMoim().getId(), MoimRole.OWNER)
+                .orElseThrow(() -> new MoimException(MOIM_OWNER_NOT_FOUND));
+
+        return userMoim.getUser().getId();
     }
 }

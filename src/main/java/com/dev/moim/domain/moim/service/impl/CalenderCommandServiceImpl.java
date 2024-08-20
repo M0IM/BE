@@ -118,4 +118,12 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         plan.updateSchedule(scheduleList);
     }
+
+    @Override
+    public void deletePlan(Long moimId, Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        planRepository.delete(plan);
+    }
 }

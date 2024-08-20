@@ -30,7 +30,7 @@ public class Plan extends BaseEntity {
     private String title;
 
     private LocalDateTime date;
-    
+
     private String location;
 
     private String locationDetail;
@@ -41,8 +41,11 @@ public class Plan extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
     private List<Schedule> scheduleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.REMOVE)
+    private List<UserPlan> userPlanList = new ArrayList<>();
 
     public void addSchedule(Schedule schedule) {
         scheduleList.add(schedule);
