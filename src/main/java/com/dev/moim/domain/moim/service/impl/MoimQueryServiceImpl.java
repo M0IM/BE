@@ -24,6 +24,7 @@ import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -43,6 +44,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final UserMoimRepository userMoimRepository;
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
+    private final S3Service s3Service;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -167,8 +169,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     public MoimDetailDTO getMoimDetail(User user, Long moimId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
         int reviewCount = postRepository.findByMoimAndPostType(moim, PostType.REVIEW).size();
-        List<User> users = userRepository.findUserByMoim(moim);
+        List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
+        Boolean exists = userMoimRepository.existsByUserAndMoimAndJoinStatuses(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
@@ -191,7 +194,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
 
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
+        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
 
     }
 }
