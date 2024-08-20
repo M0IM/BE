@@ -29,5 +29,9 @@ public interface UserQueryService {
 
     Long findUserByPlanId(Long individualPlanId);
 
+    boolean isExistEmail(String email);
+
+    boolean isMoimOwner(User user);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
