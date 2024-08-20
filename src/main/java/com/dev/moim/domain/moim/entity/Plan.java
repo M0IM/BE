@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.entity;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,6 +37,10 @@ public class Plan extends BaseEntity {
     private String locationDetail;
 
     private String cost;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moim_id")

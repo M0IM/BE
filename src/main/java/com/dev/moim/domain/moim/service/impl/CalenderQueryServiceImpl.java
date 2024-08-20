@@ -133,9 +133,9 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
     @Override
     public Long findPlanWriter(Long planId) {
-        UserPlan userPlan = userPlanRepository.findByPlanIdAndIsWriter(planId, true)
+        Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_WRITER_NOT_FOUND));
 
-        return userPlan.getUser().getId();
+        return plan.getUser().getId();
     }
 }

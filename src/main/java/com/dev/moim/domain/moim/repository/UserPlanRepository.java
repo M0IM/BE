@@ -43,6 +43,4 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
                                                     Pageable pageable);
 
     Optional<UserPlan> findByUserIdAndPlanId(Long userId, Long planId);
-
-    Optional<UserPlan> findByPlanIdAndIsWriter(Long planId, boolean isWriter);
 }

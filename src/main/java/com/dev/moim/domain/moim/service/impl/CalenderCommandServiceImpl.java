@@ -44,6 +44,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
                 .scheduleList(new ArrayList<>())
+                .user(user)
                 .moim(moim)
                 .build();
 
@@ -62,7 +63,6 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         UserPlan userPlan = UserPlan.builder()
                 .user(user)
                 .plan(savedPlan)
-                .isWriter(true)
                 .build();
 
         userPlanRepository.save(userPlan);
@@ -77,7 +77,6 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
 
         UserPlan userPlan = UserPlan.builder()
-                .isWriter(false)
                 .user(user)
                 .plan(plan)
                 .build();
