@@ -14,4 +14,6 @@ public interface IndividualPlanRepository extends JpaRepository<IndividualPlan, 
     List<IndividualPlan> findByUserIdAndDateBetween(Long userID, LocalDateTime startDate, LocalDateTime endDate);
 
     Slice<IndividualPlan> findByUserAndDateBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
+
+    int countByUserAndDateBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

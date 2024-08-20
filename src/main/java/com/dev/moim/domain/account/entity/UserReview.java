@@ -19,6 +19,7 @@ public class UserReview extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Double rating;
 
     private String content;

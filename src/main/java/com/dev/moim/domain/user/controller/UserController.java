@@ -228,7 +228,19 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlan(user, year, month, day, page, size));
     }
 
-
+    @Operation(summary = "특정 날짜 (유저의 총 일정 개수) 조회", description = "특정 날짜에 예정된 (유저의 총 일정 개수)를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/user-plan-count")
+    public BaseResponse<UserDailyPlanCntDTO> getUserDailyPlanCnt (
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month,
+            @Parameter(description = "일") @RequestParam int day
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserDailyPlanCnt(user, year, month, day));
+    }
   
     @Operation(summary = "이벤트 알림 발송", description = "모든 유저에게 이벤트 알림 발송을 합니다.")
     @ApiResponses({

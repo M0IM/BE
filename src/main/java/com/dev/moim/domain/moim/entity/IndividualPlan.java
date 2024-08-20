@@ -24,6 +24,7 @@ public class IndividualPlan extends BaseEntity {
 
     private String title;
 
+    @Column(nullable = false)
     private LocalDateTime date;
 
     @ManyToOne(fetch = FetchType.LAZY)
