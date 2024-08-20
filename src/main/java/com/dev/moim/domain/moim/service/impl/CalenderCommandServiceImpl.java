@@ -58,16 +58,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
             });
         }
 
-        Plan savedPlan = planRepository.save(plan);
-
-        UserPlan userPlan = UserPlan.builder()
-                .user(user)
-                .plan(savedPlan)
-                .build();
-
-        userPlanRepository.save(userPlan);
-
-        return savedPlan.getId();
+        return planRepository.save(plan).getId();
     }
 
     @Override
