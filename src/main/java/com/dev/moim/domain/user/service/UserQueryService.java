@@ -4,10 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
 import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
-import com.dev.moim.domain.user.dto.ChatRoomUserListResponse;
-import com.dev.moim.domain.user.dto.ProfileDTO;
-import com.dev.moim.domain.user.dto.ProfileDetailDTO;
-import com.dev.moim.domain.user.dto.ReviewListDTO;
+import com.dev.moim.domain.user.dto.*;
 
 import java.util.List;
 
@@ -24,6 +21,8 @@ public interface UserQueryService {
     UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size);
 
     PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month);
+
+    UserDailyPlanCntDTO getUserDailyPlanCnt(User user, int year, int month, int day);
 
     List<Long> findUserMoimIdListByUserId(Long userId);
 
