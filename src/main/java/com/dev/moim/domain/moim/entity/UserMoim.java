@@ -67,4 +67,12 @@ public class UserMoim extends BaseEntity {
     public void updateProfileStatus (ProfileStatus profileStatus) {
         this.profileStatus = profileStatus;
     }
+
+    public void leaveOwner () {
+        this.moimRole = MoimRole.ADMIN;
+    }
+
+    public void enterOwner () {
+        this.moimRole = MoimRole.OWNER;
+    }
 }

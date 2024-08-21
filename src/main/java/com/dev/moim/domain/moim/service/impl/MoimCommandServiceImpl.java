@@ -168,4 +168,17 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             fcmService.sendNotification(user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.");
         }
     }
+
+    @Override
+    public void changeMoimLeader(User owner, ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO) {
+        Moim moim = moimRepository.findById(changeMoimLeaderRequestDTO.moimId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(owner.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoim.leaveOwner();
+
+        User target = userRepository.findById(changeMoimLeaderRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+        UserMoim targetUserMoim = userMoimRepository.findByUserIdAndMoimId(target.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        targetUserMoim.enterOwner();
+    }
 }

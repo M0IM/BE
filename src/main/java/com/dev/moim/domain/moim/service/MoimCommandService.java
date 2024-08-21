@@ -19,4 +19,6 @@ public interface MoimCommandService {
     ChangeAuthorityResponseDTO changeMemberAuthorities(User user, ChangeAuthorityRequestDTO changeAuthorityRequestDTO);
 
     void rejectMoims(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
+
+    void changeMoimLeader(User user, @Valid ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO);
 }

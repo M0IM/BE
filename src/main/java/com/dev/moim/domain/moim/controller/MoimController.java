@@ -215,4 +215,14 @@ public class MoimController {
         moimCommandService.rejectMoims(moimJoinConfirmRequestDTO);
         return BaseResponse.onSuccess("거절에 성공하였습니다.");
     }
+
+    @Operation(summary = "모임장 위임하기 API", description = "모임장을 다른 사람에게 위임합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/users/leader-change")
+    public BaseResponse<String> changeMoimLeader(@AuthUser User user, @RequestBody @Valid ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO) {
+        moimCommandService.changeMoimLeader(user, changeMoimLeaderRequestDTO);
+        return BaseResponse.onSuccess("모임장 위임에 성공하였습니다.");
+    }
 }
