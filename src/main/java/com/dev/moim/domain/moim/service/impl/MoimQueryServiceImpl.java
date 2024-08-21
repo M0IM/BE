@@ -214,7 +214,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimRole(plan.getMoim().getId(), MoimRole.OWNER)
+        UserMoim userMoim = userMoimRepository.findByMoimIdAndMoimRole(plan.getMoim().getId(), MoimRole.OWNER)
                 .orElseThrow(() -> new MoimException(MOIM_OWNER_NOT_FOUND));
 
         return userMoim.getUser().getId();
