@@ -1,6 +1,8 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
+import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.entity.*;
@@ -51,6 +53,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
     private final S3Service s3Service;
+    private final UserProfileRepository userProfileRepository;
 
     @Override
     public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
@@ -178,6 +181,8 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
         Boolean exists = userMoimRepository.existsByUserAndMoimAndJoinStatuses(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+        List<UserProfile> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
+        List<String> userImages = userProfileList.stream().map(UserProfile::getImageUrl).toList();
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
@@ -200,7 +205,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
 
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size());
+        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userImages);
 
     }
 
