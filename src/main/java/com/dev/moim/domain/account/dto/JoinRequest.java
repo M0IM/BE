@@ -21,7 +21,7 @@ public record JoinRequest(
         @NonNull
         Provider provider,
         String providerId,
-        String fcmToken,
+        @NotBlank String fcmToken,
         @NotBlank
         String nickname,
         @NotBlank
