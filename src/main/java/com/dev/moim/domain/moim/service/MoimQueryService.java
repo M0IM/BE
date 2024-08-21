@@ -26,5 +26,7 @@ public interface MoimQueryService {
 
     MoimDetailDTO getMoimDetail(User user, Long moimId);
 
+    Long findMoimOwner(Long moimId);
+
     MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take);
 }

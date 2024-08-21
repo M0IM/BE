@@ -44,6 +44,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
                 .scheduleList(new ArrayList<>())
+                .user(user)
                 .moim(moim)
                 .build();
 
@@ -57,17 +58,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
             });
         }
 
-        Plan savedPlan = planRepository.save(plan);
-
-        UserPlan userPlan = UserPlan.builder()
-                .user(user)
-                .plan(savedPlan)
-                .isWriter(true)
-                .build();
-
-        userPlanRepository.save(userPlan);
-
-        return savedPlan.getId();
+        return planRepository.save(plan).getId();
     }
 
     @Override
@@ -77,7 +68,6 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
 
         UserPlan userPlan = UserPlan.builder()
-                .isWriter(false)
                 .user(user)
                 .plan(plan)
                 .build();
@@ -117,5 +107,13 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         );
 
         plan.updateSchedule(scheduleList);
+    }
+
+    @Override
+    public void deletePlan(Long moimId, Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        planRepository.delete(plan);
     }
 }

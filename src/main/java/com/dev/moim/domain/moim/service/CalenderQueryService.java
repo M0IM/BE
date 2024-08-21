@@ -17,5 +17,7 @@ public interface CalenderQueryService {
 
     PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size);
 
-    Boolean existsByUserIdAndPlanId(Long userId,Long planId);
+    boolean existsByUserIdAndPlanId(Long userId,Long planId);
+
+    Long findPlanWriter(Long planId);
 }

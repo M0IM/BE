@@ -4,6 +4,8 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 import org.springframework.data.domain.PageRequest;
@@ -42,4 +44,13 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.id < :cursor order by um.id desc")
     Slice<JoinRequestDTO> findMyRequestMoims(User user, Long cursor, Pageable pageable);
+
+    Optional<UserMoim> findByUserIdAndMoimRole(Long userId, MoimRole moimRole);
+
+    boolean existsByUserAndMoimRole(User user, MoimRole moimRole);
+
+    @Query("SELECT COUNT(um) > 0 FROM UserMoim um " +
+            "JOIN um.user u " +
+            "WHERE u = :user AND um.moim = :moim AND um.joinStatus IN :joinStatuses")
+    Boolean existsByUserAndMoimAndJoinStatuses(User user, Moim moim, List<JoinStatus> joinStatuses);
 }

@@ -17,10 +17,8 @@ import com.dev.moim.domain.chatting.entity.ChatRoom;
 import com.dev.moim.domain.chatting.repository.ChatRoomRepository;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
-import com.dev.moim.domain.user.dto.ChatRoomUserListResponse;
-import com.dev.moim.domain.user.dto.ProfileDTO;
-import com.dev.moim.domain.user.dto.ProfileDetailDTO;
-import com.dev.moim.domain.user.dto.ReviewListDTO;
+import com.dev.moim.domain.moim.repository.UserPlanRepository;
+import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.IndividualPlanException;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -39,8 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
+import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
@@ -56,6 +56,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final IndividualPlanRepository individualPlanRepository;
     private final PlanRepository planRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserPlanRepository userPlanRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -123,6 +124,20 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    public UserDailyPlanCntDTO getUserDailyPlanCnt(User user, int year, int month, int day) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        int individualPlanCnt = individualPlanRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
+        int moimPlanCnt = planRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
+
+        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
+                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
+
+        return new UserDailyPlanCntDTO(userProfile.getName(), individualPlanCnt + moimPlanCnt);
+    }
+
+    @Override
     public List<Long> findUserMoimIdListByUserId(Long userId) {
         return userMoimRepository.findByUserId(userId).stream()
                 .map(userMoim -> userMoim.getMoim().getId())
@@ -135,6 +150,16 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .orElseThrow(() -> new IndividualPlanException(INDIVIDUAL_PLAN_NOT_FOUND));
 
         return individualPlan.getUser().getId();
+    }
+
+    @Override
+    public boolean isExistEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean isMoimOwner(User user) {
+        return userMoimRepository.existsByUserAndMoimRole(user, OWNER);
     }
 }
 

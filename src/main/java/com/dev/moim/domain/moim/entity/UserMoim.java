@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -19,6 +21,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE user_moim SET join_status = 'DELETED' WHERE id = ?")
+@SQLRestriction(value = "join_status <> 'DELETED'")
 public class UserMoim extends BaseEntity {
 
     @Id

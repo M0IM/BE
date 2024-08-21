@@ -19,4 +19,7 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     Slice<Plan> findByUserAndDateBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay, Pageable pageable);
 
     List<Plan> findByMoim(Moim moim);
+
+    @Query("SELECT COUNT(p) FROM UserPlan up JOIN up.plan p WHERE up.user = :user AND p.date BETWEEN :startOfDay AND :endOfDay")
+    int countByUserAndDateBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay);
 }

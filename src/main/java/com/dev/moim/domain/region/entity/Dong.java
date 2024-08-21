@@ -1,6 +1,5 @@
-package com.dev.moim.domain.moim.entity;
+package com.dev.moim.domain.region.entity;
 
-import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,16 +8,15 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MoimImage extends BaseEntity {
+public class Dong {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "moim_image_id")
     private Long id;
 
-    private String imageKeyName;
+    private String addrName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moim_id")
-    private Moim moim;
+    @JoinColumn(name = "parent_id")
+    private Sigungu parent;
 }

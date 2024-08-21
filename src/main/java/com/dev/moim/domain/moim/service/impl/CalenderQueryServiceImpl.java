@@ -10,6 +10,7 @@ import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.PlanException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_WRITER_NOT_FOUND;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -126,8 +128,15 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     }
 
     @Override
-    public Boolean existsByUserIdAndPlanId(Long userId, Long planId) {
-
+    public boolean existsByUserIdAndPlanId(Long userId, Long planId) {
         return userPlanRepository.existsByUserIdAndPlanId(userId, planId);
+    }
+
+    @Override
+    public Long findPlanWriter(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new PlanException(PLAN_WRITER_NOT_FOUND));
+
+        return plan.getUser().getId();
     }
 }
