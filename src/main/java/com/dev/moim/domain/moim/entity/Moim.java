@@ -41,8 +41,9 @@ public class Moim extends BaseEntity {
     @OneToMany(mappedBy = "moim")
     private List<UserMoim> userMoimList = new ArrayList<>();
 
-    public void updateMoim(String title, String location, String introduction, String moimUrl) {
+    public void updateMoim(String title, MoimCategory moimCategory, String location, String introduction, String moimUrl) {
         this.name = title;
+        this.moimCategory = moimCategory;
         this.location = location;
         this.introduction = introduction;
         this.imageUrl = moimUrl;
