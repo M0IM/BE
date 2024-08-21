@@ -46,6 +46,7 @@ public class AuthService {
         User user = User.builder()
                 .provider(request.provider())
                 .providerId(request.providerId())
+                .deviceId(request.fcmToken())
                 .email(request.email())
                 .password(encodedPassword)
                 .userRole(ROLE_USER)
