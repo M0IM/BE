@@ -100,6 +100,20 @@ public class MoimController {
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
+    @Operation(summary = "모임 가입 신청 확인하기 (신청자 기준) API", description = "모임 가입 신청 확인하기 (신청자 기준) _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/my-requests")
+    public BaseResponse<MoimJoinRequestListDTO> findMyRequestMoims(
+            @AuthUser User user,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "take") @CheckTakeValidation Integer take
+    ) {
+        MoimJoinRequestListDTO moimJoinRequestListDTO = moimQueryService.findMyRequestMoims(user, cursor, take);
+        return BaseResponse.onSuccess(moimJoinRequestListDTO);
+    }
+
 
     // 모임 스페 이스 api 나누기
     @Operation(summary = "모임 스페이스 정보 API", description = "모임 카테고리, 인원수, 성별, 설명 등을 리턴합니다. _by 제이미_")
@@ -142,7 +156,7 @@ public class MoimController {
         return BaseResponse.onSuccess("탈퇴 신청하였습니다.");
     }
 
-    @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청한 멤버들을 확인합니다. _by 제이미_")
+    @Operation(summary = "모임 가입 신청 상태 확인하기 (초기값 0으로 해주세요) API", description = "모임 가입 신청한 멤버들을 확인합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })

@@ -6,17 +6,11 @@ import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.*;
-import com.dev.moim.domain.moim.entity.ExitReason;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.MoimImage;
-import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
-import com.dev.moim.domain.moim.repository.ExitReasonRepository;
-import com.dev.moim.domain.moim.repository.MoimImageRepository;
-import com.dev.moim.domain.moim.repository.MoimRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
@@ -65,6 +59,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .joinStatus(JoinStatus.COMPLETE)
                 .profileStatus(ProfileStatus.PRIVATE)
                 .userProfile(userProfile)
+                .confirm(true)
                 .build();
 
         userMoimRepository.save(userMoim);
@@ -118,7 +113,14 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                             .moimRole(MoimRole.MEMBER)
                             .moim(moim)
                             .profileStatus(ProfileStatus.PRIVATE)
+                            .confirm(false)
                             .build();
+
+        Boolean isRequest = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+
+        if (isRequest) {
+            throw new MoimException(ErrorStatus.ALREADY_REQUEST);
+        }
 
         userMoimRepository.save(userMoim);
     }

@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -31,6 +32,9 @@ public class UserMoim extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "join_status", nullable = false)
     private JoinStatus joinStatus;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean confirm;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_status", nullable = false)

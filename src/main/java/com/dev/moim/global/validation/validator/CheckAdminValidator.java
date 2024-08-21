@@ -1,6 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.global.validation.annotation.CheckAdminValidation;
@@ -31,7 +32,7 @@ public class CheckAdminValidator implements ConstraintValidator<CheckAdminValida
     public boolean isValid(Long moimId, ConstraintValidatorContext context) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Optional<UserMoim> userMoim = userMoimRepository.findByUserIdAndMoimId(Long.valueOf(authentication.getName()), moimId);
+        Optional<UserMoim> userMoim = userMoimRepository.findByUserIdAndMoimId(Long.valueOf(authentication.getName()), moimId, JoinStatus.COMPLETE);
 
         if (userMoim.isEmpty()) {
             context.disableDefaultConstraintViolation();
