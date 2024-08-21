@@ -21,4 +21,6 @@ public interface MoimCommandService {
     void rejectMoims(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
 
     void changeMoimLeader(User user, @Valid ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO);
+
+    void findMyRequestMoimsConfirm(User user, Long moimId);
 }

@@ -190,4 +190,11 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         targetUserMoim.enterOwner();
     }
+
+    @Override
+    public void findMyRequestMoimsConfirm(User user, Long userMoimId) {
+        UserMoim userMoim = userMoimRepository.findById(userMoimId).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoim.confirm();
+    }
 }

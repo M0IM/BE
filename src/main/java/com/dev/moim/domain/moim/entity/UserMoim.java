@@ -75,4 +75,8 @@ public class UserMoim extends BaseEntity {
     public void enterOwner () {
         this.moimRole = MoimRole.OWNER;
     }
+
+    public void confirm () {
+        this.confirm = true;
+    }
 }

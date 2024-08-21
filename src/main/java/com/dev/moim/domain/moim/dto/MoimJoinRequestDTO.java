@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 
 public record MoimJoinRequestDTO(
+     Long userMoim,
      Long moimId,
      String title,
      String description,
@@ -16,6 +17,6 @@ public record MoimJoinRequestDTO(
 ) {
     public static MoimJoinRequestDTO toMoimJoinRequestDTO(JoinRequestDTO joinRequestDTO, Integer userCounts) {
         Moim moim = joinRequestDTO.getMoim();
-        return new MoimJoinRequestDTO(moim.getId(), moim.getName(), moim.getIntroduction(), moim.getMoimCategory(), moim.getLocation(), userCounts, joinRequestDTO.getUserMoim().getJoinStatus());
+        return new MoimJoinRequestDTO(joinRequestDTO.getUserMoim().getId(), moim.getId(), moim.getName(), moim.getIntroduction(), moim.getMoimCategory(), moim.getLocation(), userCounts, joinRequestDTO.getUserMoim().getJoinStatus());
     }
 }
