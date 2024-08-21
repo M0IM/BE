@@ -31,7 +31,7 @@ public record CommentResponseDTO(
 
         return new CommentResponseDTO(
                 comment.getId(),
-                b1 ? comment.getContent() : null,
+                b1 ?  null : comment.getContent(),
                 comment.getCommentLikeList().size(),
                 userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
                 userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getName(),

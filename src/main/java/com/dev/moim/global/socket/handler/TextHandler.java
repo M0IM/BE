@@ -8,6 +8,7 @@ import com.dev.moim.global.socket.service.SocketService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @RequiredArgsConstructor
+@Slf4j
 public class TextHandler extends TextWebSocketHandler {
     
     public static Map<Long, CopyOnWriteArraySet<WebSocketSession>> chatSessionRoom = new ConcurrentHashMap<>();
@@ -62,6 +64,7 @@ public class TextHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         socketUtil.exitAllSessionChatRoom(session);
+        log.info("status : " + status.getReason());
     }
 
     private MessageDTO parseMessage(TextMessage message) {

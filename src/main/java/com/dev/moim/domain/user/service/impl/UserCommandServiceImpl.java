@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
+import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
@@ -38,6 +39,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserReviewRepository userReviewRepository;
     private final S3Service s3Service;
     private final IndividualPlanRepository individualPlanRepository;
+    private final AlarmRepository alarmRepository;
 
     @Override
     public void updateInfo(User user, UpdateUserInfoDTO request) {
@@ -125,5 +127,10 @@ public class UserCommandServiceImpl implements UserCommandService {
     public void fcmSignOut(User user) {
         user.fcmSignOut();
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteAlarms(User user) {
+        alarmRepository.deleteAllByUser(user);
     }
 }

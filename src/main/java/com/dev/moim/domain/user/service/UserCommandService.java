@@ -20,4 +20,6 @@ public interface UserCommandService {
     void updateIndividualPlan(Long individualPlanId, CreateIndividualPlanRequestDTO request);
 
     void fcmSignOut(User user);
+
+    void deleteAlarms(User user);
 }
