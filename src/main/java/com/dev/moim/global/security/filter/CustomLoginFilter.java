@@ -2,6 +2,7 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -28,6 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
@@ -47,7 +49,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull HttpServletResponse response) throws AuthenticationException {
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
-        request.setAttribute("fcmToken", logInRequest.fcmToken());
+        String fcmToken = Optional.ofNullable(logInRequest.fcmToken())
+                .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
+        request.setAttribute("fcmToken", fcmToken);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(logInRequest.email(), logInRequest.password());

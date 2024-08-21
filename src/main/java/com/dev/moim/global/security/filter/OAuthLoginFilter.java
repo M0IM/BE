@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static com.dev.moim.domain.account.entity.enums.Provider.NAVER;
 import static com.dev.moim.domain.account.entity.enums.Provider.UNREGISTERED;
+import static com.dev.moim.global.common.code.status.ErrorStatus.FCM_TOKEN_REQUIRED;
 import static com.dev.moim.global.common.code.status.SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 
@@ -54,7 +55,9 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             @NonNull HttpServletResponse response) throws IOException, ServletException, AuthException {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
-        request.setAttribute("fcmToken", oAuthLoginRequest.fcmToken());
+        String fcmToken = Optional.ofNullable(oAuthLoginRequest.fcmToken())
+                .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
+        request.setAttribute("fcmToken", fcmToken);
 
         Provider provider = oAuthLoginRequest.provider();
         String token = oAuthLoginRequest.token();
