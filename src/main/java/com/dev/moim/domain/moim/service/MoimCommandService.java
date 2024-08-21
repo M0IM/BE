@@ -14,7 +14,9 @@ public interface MoimCommandService {
 
     void joinMoim(User user, Long moimId);
 
-    void acceptMoim(User user, Long moimId);
+    void acceptMoim(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
 
     ChangeAuthorityResponseDTO changeMemberAuthorities(User user, ChangeAuthorityRequestDTO changeAuthorityRequestDTO);
+
+    void rejectMoims(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
 }

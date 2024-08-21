@@ -191,8 +191,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/accept")
-    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId) {
-        moimCommandService.acceptMoim(user, moimId);
+    public BaseResponse<String> acceptMoim(@RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.acceptMoim(moimJoinConfirmRequestDTO);
         return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
     }
 
@@ -204,5 +204,15 @@ public class MoimController {
     public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
         ChangeAuthorityResponseDTO changeAuthorityResponseDTO = moimCommandService.changeMemberAuthorities(user, changeAuthorityRequestDTO);
         return BaseResponse.onSuccess(changeAuthorityResponseDTO);
+    }
+
+    @Operation(summary = "가입 승인/ 거절하기 API", description = "가입을 거절합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/users/reject")
+    public BaseResponse<String> rejectMoims(@RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.rejectMoims(moimJoinConfirmRequestDTO);
+        return BaseResponse.onSuccess("거절에 성공하였습니다.");
     }
 }

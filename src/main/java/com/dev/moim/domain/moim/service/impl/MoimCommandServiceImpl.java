@@ -126,9 +126,12 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public void acceptMoim(User user, Long moimId) {
-        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+    public void acceptMoim(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        User user = userRepository.findById(moimJoinConfirmRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+
+
+        Moim moim = moimRepository.findById(moimJoinConfirmRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
 
         userMoim.accept();
     }
@@ -144,5 +147,15 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         userMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
 
         return new ChangeAuthorityResponseDTO(targetUser.getId(), userMoim.getMoimRole());
+    }
+
+    @Override
+    public void rejectMoims(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        User user = userRepository.findById(moimJoinConfirmRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+
+        Moim moim = moimRepository.findById(moimJoinConfirmRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
+
+        userMoim.reject();
     }
 }
