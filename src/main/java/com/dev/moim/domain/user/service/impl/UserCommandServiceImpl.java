@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
+import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
@@ -44,6 +45,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final IndividualPlanRepository individualPlanRepository;
     private final AlarmService alarmService;
     private final FcmService fcmService;
+    private final AlarmRepository alarmRepository;
 
     @Override
     public void updateInfo(User user, UpdateUserInfoDTO request) {
@@ -136,5 +138,10 @@ public class UserCommandServiceImpl implements UserCommandService {
                 fcmService.sendNotification(user, eventDTO.title(), eventDTO.content());
             }
         });
+    }
+
+    @Override
+    public void deleteAlarms(User user) {
+        alarmRepository.deleteAllByUser(user);
     }
 }
