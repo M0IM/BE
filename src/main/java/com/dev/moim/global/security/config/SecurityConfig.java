@@ -86,6 +86,7 @@ public class SecurityConfig {
             "/health",
             "/chat",
             "/api/v1/auth/password/**",
+            "/api/v1/regions/**"
     };
 
     @Bean
