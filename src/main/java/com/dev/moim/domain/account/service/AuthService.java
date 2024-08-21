@@ -154,9 +154,4 @@ public class AuthService {
             userRepository.save(user);
         }
     }
-
-    @Transactional
-    public void fcmSignOut(User user) {
-        user.fcmSignOut();
-    }
 }

@@ -241,14 +241,4 @@ public class UserController {
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyPlanCnt(user, year, month, day));
     }
-  
-    @Operation(summary = "이벤트 알림 발송", description = "모든 유저에게 이벤트 알림 발송을 합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-    })
-    @GetMapping("/alarms/event")
-    public BaseResponse<String> sendEventAlarm(@AuthUser User user, @RequestBody EventDTO eventDTO) {
-        userCommandService.sendEventAlarm(eventDTO);
-        return BaseResponse.onSuccess("이벤트 알림 보내기에 성공하였습니다.");
-    }
 }

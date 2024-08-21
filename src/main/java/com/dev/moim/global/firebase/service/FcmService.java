@@ -1,7 +1,11 @@
 package com.dev.moim.global.firebase.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.service.AuthService;
+import com.dev.moim.domain.account.entity.enums.AlarmType;
+import com.dev.moim.domain.account.service.AlarmService;
+import com.dev.moim.domain.user.dto.EventDTO;
+import com.dev.moim.domain.user.service.UserCommandService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.feign.dto.DiscordMessage;
 import com.dev.moim.global.error.feign.service.DiscordClient;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -18,8 +22,19 @@ import java.util.List;
 public class FcmService {
 
     private final DiscordClient discordClient;
-    private final AuthService authService;
+    private final UserQueryService userQueryService;
+    private final AlarmService alarmService;
+    private final UserCommandService userCommandService;
 
+    public void sendEventAlarm(EventDTO eventDTO) {
+        List<User> users = userQueryService.findAllUser();
+        users.forEach(user -> {
+            if (user.getIsEventAlarm()) {
+                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT);
+                sendNotification(user, eventDTO.title(), eventDTO.content());
+            }
+        });
+    }
 
     public void sendNotification(User receiver, String title, String body) {
 
@@ -38,7 +53,7 @@ public class FcmService {
                 FirebaseMessaging.getInstance().send(message);
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
-                authService.fcmSignOut(receiver);
+                userCommandService.fcmSignOut(receiver);
                 discordClient.sendAlarm(createMessage(receiver, title, body));
             }
         }

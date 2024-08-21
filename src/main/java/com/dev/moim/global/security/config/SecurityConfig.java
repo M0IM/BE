@@ -1,6 +1,8 @@
 package com.dev.moim.global.security.config;
 
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.user.service.UserCommandService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.SuccessStatus;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
@@ -45,6 +47,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final PrincipalDetailsService principalDetailsService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -129,7 +133,7 @@ public class SecurityConfig {
         http.logout(logout -> logout
                 .logoutUrl("/api/v1/auth/logout")
                 .addLogoutHandler(
-                        new CustomLogoutHandler(jwtUtil, redisUtil))
+                        new CustomLogoutHandler(jwtUtil, redisUtil, userCommandService, userQueryService))
                 .logoutSuccessHandler((request, response, authentication) -> HttpResponseUtil.setSuccessResponse(
                         response,
                         SuccessStatus._OK,
@@ -139,7 +143,7 @@ public class SecurityConfig {
         http.addFilterAfter(
                 new LogoutFilter(
                         (request, response, authentication) -> HttpResponseUtil.setSuccessResponse(response, SuccessStatus._OK, "로그아웃 성공"),
-                        new CustomLogoutHandler(jwtUtil, redisUtil)),
+                        new CustomLogoutHandler(jwtUtil, redisUtil, userCommandService, userQueryService)),
                 JwtFilter.class);
 
         return http.build();

@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserQueryService {
 
@@ -31,6 +32,10 @@ public interface UserQueryService {
     boolean isExistEmail(String email);
 
     boolean isMoimOwner(User user);
+
+    List<User> findAllUser();
+
+    Optional<User> findUserById(Long userId);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
