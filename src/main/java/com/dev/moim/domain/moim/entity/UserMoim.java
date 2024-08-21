@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -36,6 +37,9 @@ public class UserMoim extends BaseEntity {
     @Column(name = "join_status", nullable = false)
     private JoinStatus joinStatus;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean confirm;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_status", nullable = false)
     private ProfileStatus profileStatus;
@@ -56,11 +60,27 @@ public class UserMoim extends BaseEntity {
         this.joinStatus = JoinStatus.COMPLETE;
     }
 
+    public void reject() {
+        this.joinStatus = JoinStatus.REJECT;
+    }
+
     public void changeStatus(MoimRole moimRole) {
         this.moimRole = moimRole;
     }
 
     public void updateProfileStatus (ProfileStatus profileStatus) {
         this.profileStatus = profileStatus;
+    }
+
+    public void leaveOwner () {
+        this.moimRole = MoimRole.ADMIN;
+    }
+
+    public void enterOwner () {
+        this.moimRole = MoimRole.OWNER;
+    }
+
+    public void confirm () {
+        this.confirm = true;
     }
 }

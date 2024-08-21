@@ -2,6 +2,8 @@ package com.dev.moim.domain.account.repository;
 
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimCategory;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
@@ -30,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.joinStatus = :joinStatus")
     List<User> findUserByMoim(Moim moim, JoinStatus joinStatus);
+
+    @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.moimRole = :moimRole")
+    Optional<User> findByMoimAndMoimCategory(Moim moim, MoimRole moimRole);
 }

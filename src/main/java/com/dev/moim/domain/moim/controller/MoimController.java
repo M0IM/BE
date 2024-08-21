@@ -100,6 +100,20 @@ public class MoimController {
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
+    @Operation(summary = "모임 가입 신청 확인하기 (신청자 기준) API", description = "모임 가입 신청 확인하기 (신청자 기준) _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/my-requests")
+    public BaseResponse<MoimJoinRequestListDTO> findMyRequestMoims(
+            @AuthUser User user,
+            @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+            @RequestParam(name = "take") @CheckTakeValidation Integer take
+    ) {
+        MoimJoinRequestListDTO moimJoinRequestListDTO = moimQueryService.findMyRequestMoims(user, cursor, take);
+        return BaseResponse.onSuccess(moimJoinRequestListDTO);
+    }
+
 
     // 모임 스페 이스 api 나누기
     @Operation(summary = "모임 스페이스 정보 API", description = "모임 카테고리, 인원수, 성별, 설명 등을 리턴합니다. _by 제이미_")
@@ -142,7 +156,7 @@ public class MoimController {
         return BaseResponse.onSuccess("탈퇴 신청하였습니다.");
     }
 
-    @Operation(summary = "모임 가입 신청 상태 확인하기 API", description = "모임 가입 신청한 멤버들을 확인합니다. _by 제이미_")
+    @Operation(summary = "모임 가입 신청 상태 확인하기 (초기값 0으로 해주세요) API", description = "모임 가입 신청한 멤버들을 확인합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
@@ -177,8 +191,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/accept")
-    public BaseResponse<String> acceptMoim(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId) {
-        moimCommandService.acceptMoim(user, moimId);
+    public BaseResponse<String> acceptMoim(@RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.acceptMoim(moimJoinConfirmRequestDTO);
         return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
     }
 
@@ -190,5 +204,35 @@ public class MoimController {
     public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
         ChangeAuthorityResponseDTO changeAuthorityResponseDTO = moimCommandService.changeMemberAuthorities(user, changeAuthorityRequestDTO);
         return BaseResponse.onSuccess(changeAuthorityResponseDTO);
+    }
+
+    @Operation(summary = "가입 거절하기 API", description = "가입을 거절합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/users/reject")
+    public BaseResponse<String> rejectMoims(@RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.rejectMoims(moimJoinConfirmRequestDTO);
+        return BaseResponse.onSuccess("거절에 성공하였습니다.");
+    }
+
+    @Operation(summary = "모임장 위임하기 API", description = "모임장을 다른 사람에게 위임합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/users/leader-change")
+    public BaseResponse<String> changeMoimLeader(@AuthUser User user, @RequestBody @Valid ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO) {
+        moimCommandService.changeMoimLeader(user, changeMoimLeaderRequestDTO);
+        return BaseResponse.onSuccess("모임장 위임에 성공하였습니다.");
+    }
+
+    @Operation(summary = "모임 신청자 확인 API", description = "모임 신청 확인하는 것을 없앱니다.. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/{moimId}/my-requests/confirm")
+    public BaseResponse<String> findMyRequestMoimsConfirm(@AuthUser User user, @PathVariable Long moimId) {
+        moimCommandService.findMyRequestMoimsConfirm(user, moimId);
+        return BaseResponse.onSuccess("모임 신청 확인하는 것을 없애는 데 성공 하였습니다.");
     }
 }

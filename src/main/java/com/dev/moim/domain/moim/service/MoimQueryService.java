@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.dto.MoimJoinRequestListDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
@@ -26,4 +27,6 @@ public interface MoimQueryService {
     MoimDetailDTO getMoimDetail(User user, Long moimId);
 
     Long findMoimOwner(Long moimId);
+
+    MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take);
 }

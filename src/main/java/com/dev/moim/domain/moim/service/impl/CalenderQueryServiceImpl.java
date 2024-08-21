@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
 import com.dev.moim.domain.moim.entity.UserPlan;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.error.handler.MoimException;
@@ -118,7 +119,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
         List<UserProfile> userProfileList = userPlanPage.stream()
                 .map(UserPlan::getUser)
-                .map(user -> userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId))
+                .map(user -> userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE))
                 .filter(Optional::isPresent)
                 .map(optionalUserMoim -> optionalUserMoim.get().getUserProfile())
                 .toList();
