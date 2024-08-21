@@ -21,9 +21,10 @@ public record MoimDetailDTO(
         int memberCount,
         String address,
         LocalDateTime createAt,
-        LocalDateTime updateAt
+        LocalDateTime updateAt,
+        List<String> userImages
 ) {
-    public static MoimDetailDTO toMoimDetailDTO(Moim moim, Boolean isJoin, String profileImageUrl, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, int memberCount) {
+    public static MoimDetailDTO toMoimDetailDTO(Moim moim, Boolean isJoin, String profileImageUrl, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, int memberCount, List<String> userImages) {
         return new MoimDetailDTO(
                 moim.getId(),
                 isJoin,
@@ -39,7 +40,8 @@ public record MoimDetailDTO(
                 memberCount,
                 moim.getLocation(),
                 moim.getCreatedAt(),
-                moim.getUpdatedAt()
+                moim.getUpdatedAt(),
+                userImages
         );
     }
 }
