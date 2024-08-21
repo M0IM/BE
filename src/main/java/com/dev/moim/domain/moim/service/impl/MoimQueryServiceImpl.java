@@ -5,13 +5,14 @@ import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.Plan;
+import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PostType;
-import com.dev.moim.domain.moim.repository.PlanRepository;
-import com.dev.moim.domain.moim.repository.PostRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
+import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -20,7 +21,6 @@ import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
-import com.dev.moim.domain.moim.repository.MoimRepository;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
@@ -213,5 +213,29 @@ public class MoimQueryServiceImpl implements MoimQueryService {
                 .orElseThrow(() -> new MoimException(MOIM_OWNER_NOT_FOUND));
 
         return userMoim.getUser().getId();
+    }
+
+    @Override
+    public MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take) {
+
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<JoinRequestDTO> joinRequestDTOSlice = userMoimRepository.findMyRequestMoims(user, cursor, PageRequest.of(0, take));
+
+
+        List<MoimJoinRequestDTO> moimJoinRequestDTOList = joinRequestDTOSlice.map((j) -> {
+                    List<User> users = userRepository.findUserByMoim(j.getMoim(), JoinStatus.COMPLETE);
+                    return MoimJoinRequestDTO.toMoimJoinRequestDTO(j, users.size());
+                }
+        ).toList();
+
+        Long nextCursor = null;
+        if (!joinRequestDTOSlice.isLast()) {
+            nextCursor = joinRequestDTOSlice.toList().get(joinRequestDTOSlice.toList().size() - 1).getUserMoim().getId();
+        }
+
+        return MoimJoinRequestListDTO.toMoimJoinRequestListDTO(moimJoinRequestDTOList, joinRequestDTOSlice.hasNext(), nextCursor);
     }
 }
