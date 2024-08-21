@@ -1,7 +1,10 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmType;
+import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -40,6 +43,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentBlockRepository commentBlockRepository;
     private final S3Service s3Service;
     private final UserRepository userRepository;
+    private final AlarmService alarmService;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -68,6 +72,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         if (savedPost.getPostType().equals(PostType.ANNOUNCEMENT)) {
             userByMoim.stream().forEach((u) ->{
                 if (u.getIsPushAlarm()) {
+                    alarmService.saveAlarm(user, u, "[" + moim.getName().substring(7)  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
                     fcmService.sendNotification(u, "[" + moim.getName().substring(7)  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
             });
@@ -93,7 +98,8 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         commentRepository.save(comment);
 
-        if (user.getIsPushAlarm()) {
+        if (post.getUserMoim().getUser().getIsPushAlarm()) {
+            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
             fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -119,7 +125,8 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         commentRepository.save(comment);
 
-        if (user.getIsPushAlarm()) {
+        if (parentComment.getUserMoim().getUser().getIsPushAlarm()) {
+            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
             fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
         }
 
