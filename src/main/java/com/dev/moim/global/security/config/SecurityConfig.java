@@ -15,6 +15,7 @@ import com.dev.moim.global.security.util.JwtUtil;
 import com.dev.moim.global.security.util.NaverLoginAuthenticationProvider;
 import com.dev.moim.global.security.util.OIDCAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +44,7 @@ public class SecurityConfig {
     private final NaverLoginService naverLoginService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final PrincipalDetailsService principalDetailsService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -113,11 +115,11 @@ public class SecurityConfig {
                 .anyRequest().permitAll());
 
         CustomLoginFilter customLoginFilter = new CustomLoginFilter(
-                authenticationManager(), jwtUtil, redisUtil);
+                authenticationManager(), jwtUtil, redisUtil, eventPublisher);
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
-                jwtUtil, redisUtil, authenticationManager(), userRepository);
+                jwtUtil, redisUtil, authenticationManager(), userRepository, eventPublisher);
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);

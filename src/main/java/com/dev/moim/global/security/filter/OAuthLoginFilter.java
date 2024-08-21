@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
+import com.dev.moim.global.security.event.CustomAuthenticationSuccessEvent;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.util.*;
 import jakarta.servlet.FilterChain;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -35,13 +37,15 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final RedisUtil redisUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OAuthLoginFilter(JwtUtil jwtUtil, RedisUtil redisUtil, AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public OAuthLoginFilter(JwtUtil jwtUtil, RedisUtil redisUtil, AuthenticationManager authenticationManager, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         super(new AntPathRequestMatcher("/api/v1/auth/oAuth"));
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -50,6 +54,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             @NonNull HttpServletResponse response) throws IOException, ServletException, AuthException {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
+        request.setAttribute("fcmToken", oAuthLoginRequest.fcmToken());
 
         Provider provider = oAuthLoginRequest.provider();
         String token = oAuthLoginRequest.token();
@@ -76,8 +81,9 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
             String accessToken = jwtUtil.createAccessToken(principalDetails);
             String refreshToken = jwtUtil.createRefreshToken(principalDetails);
-
             redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+
+            eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 
             HttpResponseUtil.setSuccessResponse(response, _OK, new LoginResponseDTO(accessToken, refreshToken, principalDetails.getProvider(), authResult.getName()));
         } else {

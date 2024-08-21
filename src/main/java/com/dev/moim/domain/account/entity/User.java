@@ -103,6 +103,10 @@ public class User extends BaseEntity {
 
     public void updatePassword(String newPassword) {this.password = newPassword;}
 
+    public void updateDeviceId(String fcmToken) {
+        this.deviceId = fcmToken;
+    }
+
     public void fcmSignOut() {
         this.deviceId = null;
     }
