@@ -206,7 +206,7 @@ public class MoimController {
         return BaseResponse.onSuccess(changeAuthorityResponseDTO);
     }
 
-    @Operation(summary = "가입 승인/ 거절하기 API", description = "가입을 거절합니다. _by 제이미_")
+    @Operation(summary = "가입 거절하기 API", description = "가입을 거절합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })

@@ -4,6 +4,8 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -37,6 +39,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final CommentReportRepository commentReportRepository;
     private final CommentBlockRepository commentBlockRepository;
     private final S3Service s3Service;
+    private final UserRepository userRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
@@ -60,6 +63,15 @@ public class PostCommandServiceImpl implements PostCommandService {
                 postImageRepository.save(postImage);
             }
         );
+
+        List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
+        if (savedPost.getPostType().equals(PostType.ANNOUNCEMENT)) {
+            userByMoim.stream().forEach((u) ->{
+                if (u.getIsPushAlarm()) {
+                    fcmService.sendNotification(u, "[" + moim.getName().substring(7)  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
+                }
+            });
+        }
 
         return savedPost;
     }

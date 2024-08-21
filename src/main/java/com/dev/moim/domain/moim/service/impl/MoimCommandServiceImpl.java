@@ -15,6 +15,7 @@ import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.UserException;
+import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final FcmService fcmService;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
@@ -134,6 +136,10 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
 
         userMoim.accept();
+
+        if (user.getIsPushAlarm()) {
+            fcmService.sendNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다");
+        }
     }
 
     @Override
@@ -157,5 +163,9 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
 
         userMoim.reject();
+
+        if (user.getIsPushAlarm()) {
+            fcmService.sendNotification(user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.");
+        }
     }
 }
