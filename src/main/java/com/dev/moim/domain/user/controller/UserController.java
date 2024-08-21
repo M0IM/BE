@@ -251,4 +251,14 @@ public class UserController {
         userCommandService.sendEventAlarm(eventDTO);
         return BaseResponse.onSuccess("이벤트 알림 보내기에 성공하였습니다.");
     }
+
+    @Operation(summary = "알림 삭제 API", description = "모든 알림을 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @DeleteMapping("/alarms")
+    public BaseResponse<String> deleteAlarms(@AuthUser User user) {
+        userCommandService.deleteAlarms(user);
+        return BaseResponse.onSuccess("모든 알림을 삭제하였습니다.");
+    }
 }
