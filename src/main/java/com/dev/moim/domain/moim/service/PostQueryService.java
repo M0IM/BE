@@ -18,4 +18,8 @@ public interface PostQueryService {
     CommentResponseListDTO getcomments(User user, Long moimId, Long postId, Long cursor, Integer take);
 
     Boolean isPostLike(Long userId, Long postId);
+
+    MoimPostPreviewListDTO getIntroductionPosts(Long cursor, Integer take);
+
+    Post getIntroductionPost(Long postId);
 }

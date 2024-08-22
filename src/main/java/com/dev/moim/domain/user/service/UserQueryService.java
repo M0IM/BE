@@ -39,5 +39,7 @@ public interface UserQueryService {
 
     Optional<User> findUserById(Long userId);
 
+    AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
