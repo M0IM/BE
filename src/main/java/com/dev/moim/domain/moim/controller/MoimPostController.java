@@ -209,4 +209,27 @@ public class MoimPostController {
         postCommandService.blockComment(user, commentBlockDTO);
         return BaseResponse.onSuccess("댓글이 차단 되었습니다.");
     }
+
+    @Operation(summary = "모임 소개 게시물 조회 API", description = "모임 소개 게시물 조회. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/global/posts")
+    public BaseResponse<MoimPostPreviewListDTO> getIntroductionPosts(
+                                                     @Parameter(description = "처음 값은 1로 해주 세요.") @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
+                                                     @RequestParam(name = "take") @CheckTakeValidation Integer take) {
+        MoimPostPreviewListDTO moimPostPreviewListDTO = postQueryService.getIntroductionPosts(cursor, take);
+        return BaseResponse.onSuccess(moimPostPreviewListDTO);
+    }
+
+    @Operation(summary = "모임 소개 게시물 상세 조회 API", description = "모임 소개 게시물 상세 조회. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/global/posts/{postId}")
+    public BaseResponse<MoimPostDetailDTO> getIntroductionPost(@AuthUser User user, @PathVariable Long postId) {
+        Post post = postQueryService.getIntroductionPost( postId);
+        Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
+        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
+    }
 }

@@ -14,6 +14,7 @@ import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.repository.ExitReasonRepository;
@@ -45,6 +46,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final S3Service s3Service;
     private final FcmService fcmService;
     private final AlarmService alarmService;
+    private final PostRepository postRepository;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
@@ -74,6 +76,16 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                 .build();
 
         userMoimRepository.save(userMoim);
+
+        Post savedPost = Post.builder()
+                .title(createMoimDTO.title())
+                .content(createMoimDTO.introduction())
+                .postType(PostType.GLOBAL)
+                .userMoim(userMoim)
+                .moim(moim)
+                .build();
+
+        postRepository.save(savedPost);
 
         return moim;
     }
