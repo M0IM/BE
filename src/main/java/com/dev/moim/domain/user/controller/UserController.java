@@ -140,7 +140,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping("/alarms")
+    @GetMapping("/alarms/status")
     public BaseResponse<AlarmDTO> getAlarmSetting(@AuthUser User user) {
         return BaseResponse.onSuccess(AlarmDTO.toAlarmDTO(user));
     }
@@ -260,5 +260,15 @@ public class UserController {
     public BaseResponse<String> deleteAlarms(@AuthUser User user) {
         userCommandService.deleteAlarms(user);
         return BaseResponse.onSuccess("모든 알림을 삭제하였습니다.");
+    }
+
+    @Operation(summary = "알림 목록 API", description = "알림 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping("/alarms")
+    public BaseResponse<AlarmResponseListDTO> getAlarms(@AuthUser User user, @RequestParam("cursor") Long cursor, @RequestParam("take") Integer take) {
+        AlarmResponseListDTO alarms = userQueryService.getAlarms(user, cursor, take);
+        return BaseResponse.onSuccess(alarms);
     }
 }

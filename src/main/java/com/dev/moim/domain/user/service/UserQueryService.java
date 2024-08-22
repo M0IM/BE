@@ -32,5 +32,7 @@ public interface UserQueryService {
 
     boolean isMoimOwner(User user);
 
+    AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
