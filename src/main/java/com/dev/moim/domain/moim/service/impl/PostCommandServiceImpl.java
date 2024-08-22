@@ -68,12 +68,14 @@ public class PostCommandServiceImpl implements PostCommandService {
             }
         );
 
+
         List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         if (savedPost.getPostType().equals(PostType.ANNOUNCEMENT)) {
+            String moimName = moim.getName().length() >= 7 ? moim.getName().substring(0, 7) : moim.getName();
             userByMoim.stream().forEach((u) ->{
                 if (u.getIsPushAlarm()) {
-                    alarmService.saveAlarm(user, u, "[" + moim.getName().substring(7)  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
-                    fcmService.sendNotification(u, "[" + moim.getName().substring(7)  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
+                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
+                    fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
             });
         }
