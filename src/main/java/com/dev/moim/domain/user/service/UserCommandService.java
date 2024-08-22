@@ -19,7 +19,7 @@ public interface UserCommandService {
 
     void updateIndividualPlan(Long individualPlanId, CreateIndividualPlanRequestDTO request);
 
-    void sendEventAlarm(EventDTO eventDTO);
+    void fcmSignOut(User user);
 
     void deleteAlarms(User user);
 }

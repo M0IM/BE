@@ -3,7 +3,6 @@ package com.dev.moim.domain.user.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
-import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -11,20 +10,17 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
-import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.global.error.handler.IndividualPlanException;
 import com.dev.moim.global.error.handler.UserException;
-import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PRIVATE;
@@ -43,8 +39,6 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserReviewRepository userReviewRepository;
     private final S3Service s3Service;
     private final IndividualPlanRepository individualPlanRepository;
-    private final AlarmService alarmService;
-    private final FcmService fcmService;
     private final AlarmRepository alarmRepository;
 
     @Override
@@ -130,14 +124,9 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public void sendEventAlarm(EventDTO eventDTO) {
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> {
-            if (user.getIsEventAlarm()) {
-                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT);
-                fcmService.sendNotification(user, eventDTO.title(), eventDTO.content());
-            }
-        });
+    public void fcmSignOut(User user) {
+        user.fcmSignOut();
+        userRepository.save(user);
     }
 
     @Override

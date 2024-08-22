@@ -1,5 +1,8 @@
 package com.dev.moim.global.security.filter;
 
+import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.user.service.UserCommandService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.util.JwtUtil;
@@ -14,6 +17,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import java.util.Date;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.AUTH_EXPIRED_TOKEN;
+import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -21,18 +25,25 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
         try {
             String accessToken = jwtUtil.resolveToken(request);
+            String userId = jwtUtil.getUserId(accessToken);
+
+            User user = userQueryService.findUserById(Long.valueOf(userId))
+                    .orElseThrow(() ->new AuthException(USER_NOT_FOUND));
+            userCommandService.fcmSignOut(user);
 
             Long now = new Date().getTime();
             Long expiration = jwtUtil.getExpiration(accessToken) - now;
             redisUtil.setValue(accessToken, "logout", expiration);
 
-            redisUtil.deleteValue(jwtUtil.getUserId(accessToken));
+            redisUtil.deleteValue(userId);
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
         }

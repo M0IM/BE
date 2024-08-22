@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
@@ -160,6 +159,14 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean isMoimOwner(User user) {
         return userMoimRepository.existsByUserAndMoimRole(user, OWNER);
+    }
+
+    @Override
+    public List<User> findAllUser() {return userRepository.findAll();}
+
+    @Override
+    public Optional<User> findUserById(Long userId) {
+        return userRepository.findById(userId);
     }
 }
 
