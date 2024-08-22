@@ -139,7 +139,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
         int individualPlanCnt = individualPlanRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
-        int moimPlanCnt = planRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
+        int moimPlanCnt = userPlanRepository.countPlansByUserAndDateBetween(user, startOfDay, endOfDay);
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));

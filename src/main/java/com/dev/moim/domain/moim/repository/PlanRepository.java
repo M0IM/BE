@@ -21,9 +21,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
     List<Plan> findByMoim(Moim moim);
 
-    @Query("SELECT COUNT(p) FROM UserPlan up JOIN up.plan p WHERE up.user = :user AND p.date BETWEEN :startOfDay AND :endOfDay")
-    int countByUserAndDateBetween(User user, LocalDateTime startOfDay, LocalDateTime endOfDay);
-
     @Query(value = "SELECT p.id, p.title, p.date, p.location, p.location_detail, NULL as memo, m.name as moimName, 'MOIM_PLAN' as plan_type " +
             "FROM plan p " +
             "JOIN moim m ON p.moim_id = m.id " +
