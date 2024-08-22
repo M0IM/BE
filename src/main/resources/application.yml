@@ -19,6 +19,7 @@ spring:
         format_sql: false
         use_sql_comments: true
         default_batch_fetch_size: 1000
+        dialect: org.hibernate.dialect.MySQLDialect
     database: mysql
   profiles:
     include:

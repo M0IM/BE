@@ -1,4 +1,4 @@
-package com.dev.moim.global.security.util;
+package com.dev.moim.global.util;
 
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.SuccessStatus;

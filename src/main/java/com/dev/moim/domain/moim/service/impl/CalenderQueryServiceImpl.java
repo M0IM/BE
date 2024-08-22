@@ -9,6 +9,7 @@ import com.dev.moim.domain.moim.entity.UserPlan;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
+import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PlanException;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
         List<UserPlan> userPlanList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate);
 
         Map<Integer, List<UserPlanDTO>> planListByDay = userPlanList.stream()
-                .map(userPlan -> UserPlanDTO.of(userPlan.getPlan()))
+                .map(userPlan -> UserPlanDTO.toUserMoimPlan(userPlan.getPlan()))
                 .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
 
         return new PlanMonthListDTO<>(planListByDay);

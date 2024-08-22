@@ -15,7 +15,6 @@ public class AlarmCommandServiceImpl implements AlarmService {
 
     private final AlarmRepository alarmRepository;
 
-
     @Override
     public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type) {
 

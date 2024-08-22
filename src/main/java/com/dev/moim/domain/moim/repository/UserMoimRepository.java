@@ -45,7 +45,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.id < :cursor order by um.id desc")
     Slice<JoinRequestDTO> findMyRequestMoims(User user, Long cursor, Pageable pageable);
 
-    Optional<UserMoim> findByUserIdAndMoimRole(Long userId, MoimRole moimRole);
+    Optional<UserMoim> findByMoimIdAndMoimRole(Long moimId, MoimRole moimRole);
 
     boolean existsByUserAndMoimRole(User user, MoimRole moimRole);
 

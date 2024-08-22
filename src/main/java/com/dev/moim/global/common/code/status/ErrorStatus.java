@@ -120,8 +120,8 @@ public enum ErrorStatus implements BaseErrorCode {
     FEIGN_UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FEI_003", "FeignClient 알 수 없는 에러 발생"),
 
     // FCM 관련 에러
-    FCM_NOT_VALID(HttpStatus.UNAUTHORIZED, "FCM_001", "FCM 토큰이 유효하지 않습니다..")
-
+    FCM_NOT_VALID(HttpStatus.UNAUTHORIZED, "FCM_001", "FCM 토큰이 유효하지 않습니다.."),
+    FCM_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "FCM_002", "FCM 토큰이 누락되었습니다.")
     ;
 
     private final HttpStatus httpStatus;

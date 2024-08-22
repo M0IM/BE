@@ -1,28 +1,25 @@
 package com.dev.moim.domain.user.service.impl;
 
+import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
+import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
-import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
-import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
+import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
+import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.PlanRepository;
-import com.dev.moim.domain.chatting.entity.ChatRoom;
-import com.dev.moim.domain.chatting.repository.ChatRoomRepository;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.repository.UserPlanRepository;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.IndividualPlanException;
-import com.dev.moim.global.common.code.status.ErrorStatus;
-import com.dev.moim.global.error.handler.ChatRoomException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
@@ -55,7 +51,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;
     private final PlanRepository planRepository;
-    private final ChatRoomRepository chatRoomRepository;
+    private final AlarmRepository alarmRepository;
     private final UserPlanRepository userPlanRepository;
 
     @Override
@@ -108,6 +104,20 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    public UserDailyPlanPageDTO getUserDailyPlanList(User user, int year, int month, int day, int page, int size) {
+        LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
+
+        int offset = (page-1) * size;
+        List<Object[]> userDailyPlanList = planRepository.findUserPlansAndIndividualPlans(user.getId(), startOfDay, endOfDay, size+1, offset);
+        boolean hasNext = userDailyPlanList.size() > size;
+        List<Object[]> finalList = hasNext ? userDailyPlanList.subList(0, size) : userDailyPlanList;
+        boolean isFirst = page == 1;
+
+        return UserDailyPlanPageDTO.toUserDailyPlan(finalList, isFirst, hasNext);
+    }
+
+    @Override
     public PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
@@ -117,7 +127,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         List<IndividualPlan> individualPlanList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
 
         Map<Integer, List<UserPlanDTO>> monthPlanListByDay = individualPlanList.stream()
-                .map(UserPlanDTO::of)
+                .map(UserPlanDTO::toIndividualPlan)
                 .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
 
         return new PlanMonthListDTO<>(monthPlanListByDay);
@@ -129,7 +139,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
         int individualPlanCnt = individualPlanRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
-        int moimPlanCnt = planRepository.countByUserAndDateBetween(user, startOfDay, endOfDay);
+        int moimPlanCnt = userPlanRepository.countPlansByUserAndDateBetween(user, startOfDay, endOfDay);
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
@@ -160,6 +170,33 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean isMoimOwner(User user) {
         return userMoimRepository.existsByUserAndMoimRole(user, OWNER);
+    }
+
+    @Override
+    public List<User> findAllUser() {return userRepository.findAll();}
+
+    @Override
+    public Optional<User> findUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take) {
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Alarm> alarmSlices = alarmRepository.findByUserAndIdLessThanOrderByIdDesc(user, cursor, PageRequest.of(0, take));
+
+        List<AlarmResponseDTO> alarmResponseDTOList = alarmSlices.stream().map(AlarmResponseDTO::toAlarmResponseDTO
+        ).toList();
+
+        Long nextCursor = null;
+        if (!alarmSlices.isLast()) {
+            nextCursor = alarmSlices.toList().get(alarmSlices.toList().size() - 1).getId();
+        }
+
+        return AlarmResponseListDTO.toAlarmResponseListDTO(alarmResponseDTOList, nextCursor, alarmSlices.hasNext());
     }
 }
 

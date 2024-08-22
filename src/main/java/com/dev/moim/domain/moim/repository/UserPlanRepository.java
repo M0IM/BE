@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.repository;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.UserPlan;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -43,4 +44,8 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
                                                     Pageable pageable);
 
     Optional<UserPlan> findByUserIdAndPlanId(Long userId, Long planId);
+
+    @Query("SELECT COUNT(up) FROM UserPlan up WHERE up.user = :user AND up.plan.date BETWEEN :startOfDay AND :endOfDay")
+    int countPlansByUserAndDateBetween(@Param("user") User user, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
 }

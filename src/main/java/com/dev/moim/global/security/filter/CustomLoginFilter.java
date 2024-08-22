@@ -2,12 +2,14 @@ package com.dev.moim.global.security.filter;
 
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
+import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
+import com.dev.moim.global.security.event.CustomAuthenticationSuccessEvent;
 import com.dev.moim.global.security.principal.PrincipalDetails;
-import com.dev.moim.global.security.util.HttpRequestUtil;
-import com.dev.moim.global.security.util.HttpResponseUtil;
+import com.dev.moim.global.util.HttpRequestUtil;
+import com.dev.moim.global.util.HttpResponseUtil;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
@@ -37,6 +41,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Authentication attemptAuthentication(
@@ -44,6 +49,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             @NonNull HttpServletResponse response) throws AuthenticationException {
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
+        String fcmToken = Optional.ofNullable(logInRequest.fcmToken())
+                .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
+        request.setAttribute("fcmToken", fcmToken);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 UsernamePasswordAuthenticationToken.unauthenticated(logInRequest.email(), logInRequest.password());
@@ -63,8 +71,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
-
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+
+        eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 
         HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken, principalDetails.getProvider()));
     }

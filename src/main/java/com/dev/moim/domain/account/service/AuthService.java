@@ -10,11 +10,13 @@ import com.dev.moim.global.email.EmailUtil;
 import com.dev.moim.global.error.GeneralException;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
+import com.dev.moim.global.security.event.CustomAuthenticationSuccessEvent;
 import com.dev.moim.global.security.principal.PrincipalDetails;
 import com.dev.moim.global.security.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,7 @@ public class AuthService {
         User user = User.builder()
                 .provider(request.provider())
                 .providerId(request.providerId())
+                .deviceId(request.fcmToken())
                 .email(request.email())
                 .password(encodedPassword)
                 .userRole(ROLE_USER)
@@ -141,7 +144,14 @@ public class AuthService {
     }
 
     @Transactional
-    public void fcmSignOut(User user) {
-        user.fcmSignOut();
+    @EventListener
+    public void handleAuthenticationSuccess(CustomAuthenticationSuccessEvent event) {
+        User user = event.getPrincipalDetails().user();
+        String fcmToken = event.getFcmToken();
+
+        if (fcmToken != null && !fcmToken.isEmpty()) {
+            user.updateDeviceId(fcmToken);
+            userRepository.save(user);
+        }
     }
 }

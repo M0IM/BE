@@ -2,8 +2,8 @@ package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
-import com.dev.moim.domain.moim.dto.calender.UserDailyPlanPageDTO;
-import com.dev.moim.domain.moim.dto.calender.UserPlanDTO;
+import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
+import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
@@ -140,7 +140,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping("/alarms")
+    @GetMapping("/alarms/status")
     public BaseResponse<AlarmDTO> getAlarmSetting(@AuthUser User user) {
         return BaseResponse.onSuccess(AlarmDTO.toAlarmDTO(user));
     }
@@ -156,19 +156,6 @@ public class UserController {
     ) {
         userCommandService.createIndividualPlan(user, request);
         return BaseResponse.onSuccess(null);
-    }
-
-    @Operation(summary = "개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
-    })
-    @GetMapping("/calender")
-    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
-            @AuthUser User user,
-            @Parameter(description = "연도") @RequestParam int year,
-            @Parameter(description = "월") @RequestParam int month
-    ) {
-        return BaseResponse.onSuccess(userQueryService.getIndividualPlans(user, year, month));
     }
 
     @Operation(summary = "개인 일정 삭제", description = "개인의 일정을 삭제합니다.")
@@ -196,7 +183,20 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "특정 날짜 (유저가 참여 신청한 모임 일정) 조회", description = "특정 날짜에 예정된 (유저가 참여 신청한 모임 일정)을 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월) : 개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
+    })
+    @GetMapping("/calender")
+    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getIndividualPlans(user, year, month));
+    }
+
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저가 참여 신청한 모임 일정 조회", description = "특정 날짜에 예정된 (유저가 참여 신청한 모임 일정)을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -212,7 +212,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlan(user, year, month, day, page, size));
     }
 
-    @Operation(summary = "특정 날짜 (유저의 개인 일정) 조회", description = "특정 날짜에 예정된 (유저의 개인 일정)을 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 개인 일정 조회", description = "특정 날짜에 예정된 (유저의 개인 일정)을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -228,7 +228,23 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlan(user, year, month, day, page, size));
     }
 
-    @Operation(summary = "특정 날짜 (유저의 총 일정 개수) 조회", description = "특정 날짜에 예정된 (유저의 총 일정 개수)를 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 (개인 + 모임 신청 일정) 리스트 조회", description = "특정 날짜에 예정된 (개인 + 모임 신청 일정) 리스트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/user-daily-plan")
+    public BaseResponse<UserDailyPlanPageDTO> getUserDailyPlanList(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month,
+            @Parameter(description = "일") @RequestParam int day,
+            @CheckPageValidation @RequestParam(name = "page") int page,
+            @CheckSizeValidation @RequestParam(name = "size") int size
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserDailyPlanList(user, year, month, day, page, size));
+    }
+
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 총 일정 개수 조회", description = "특정 날짜에 예정된 (유저의 총 일정 개수)를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -241,16 +257,6 @@ public class UserController {
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyPlanCnt(user, year, month, day));
     }
-  
-    @Operation(summary = "이벤트 알림 발송", description = "모든 유저에게 이벤트 알림 발송을 합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-    })
-    @GetMapping("/alarms/event")
-    public BaseResponse<String> sendEventAlarm(@AuthUser User user, @RequestBody EventDTO eventDTO) {
-        userCommandService.sendEventAlarm(eventDTO);
-        return BaseResponse.onSuccess("이벤트 알림 보내기에 성공하였습니다.");
-    }
 
     @Operation(summary = "알림 삭제 API", description = "모든 알림을 삭제합니다.")
     @ApiResponses({
@@ -260,5 +266,15 @@ public class UserController {
     public BaseResponse<String> deleteAlarms(@AuthUser User user) {
         userCommandService.deleteAlarms(user);
         return BaseResponse.onSuccess("모든 알림을 삭제하였습니다.");
+    }
+
+    @Operation(summary = "알림 목록 API", description = "알림 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping("/alarms")
+    public BaseResponse<AlarmResponseListDTO> getAlarms(@AuthUser User user, @RequestParam("cursor") Long cursor, @RequestParam("take") Integer take) {
+        AlarmResponseListDTO alarms = userQueryService.getAlarms(user, cursor, take);
+        return BaseResponse.onSuccess(alarms);
     }
 }

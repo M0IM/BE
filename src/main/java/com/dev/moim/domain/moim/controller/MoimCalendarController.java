@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
+import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
@@ -51,7 +52,7 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/calender")
     public BaseResponse<PlanMonthListDTO<PlanDayListDTO>> getMoimPlans(
             @AuthUser User user,
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month
     ) {
@@ -67,7 +68,7 @@ public class MoimCalendarController {
     @PostMapping("/{moimId}/calender")
     public BaseResponse<Long> createPlan(
             @AuthUser User user,
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @Valid @RequestBody PlanCreateDTO request
     ) {
         return BaseResponse.onSuccess(calenderCommandService.createPlan(user, moimId, request));
@@ -83,7 +84,7 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/plan/{planId}")
     public BaseResponse<PlanDetailDTO> getPlanDetails(
             @AuthUser User user,
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId,
             @Parameter(description = "표시할 일정 스케줄 개수", example = "5") @RequestParam(defaultValue = "5") int scheduleCntLimit
     ) {
@@ -99,7 +100,7 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/plan/{planId}/schedules")
     public BaseResponse<ScheduleListDTO> getSchedules(
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId
     ) {
         return BaseResponse.onSuccess(calenderQueryService.getSchedules(moimId, planId));
@@ -116,7 +117,7 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/plan/{planId}/participants")
     public BaseResponse<PlanParticipantListPageDTO> getPlanParticipants(
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @PlanValidation @PathVariable Long planId,
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
@@ -134,8 +135,8 @@ public class MoimCalendarController {
     })
     @PutMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> updatePlan(
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
-            @PlanAuthorityValidation @PlanValidation @PathVariable Long planId,
+            @UserMoimValidaton @PathVariable Long moimId,
+            @PlanAuthorityValidation @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
     ) {
         calenderCommandService.updatePlan(moimId, planId, request);
@@ -152,8 +153,8 @@ public class MoimCalendarController {
     })
     @DeleteMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> deletePlan(
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
-            @PlanAuthorityValidation @PlanValidation @PathVariable Long planId
+            @UserMoimValidaton @PathVariable Long moimId,
+            @PlanAuthorityValidation @PathVariable Long planId
     ) {
         calenderCommandService.deletePlan(moimId, planId);
         return BaseResponse.onSuccess(null);
@@ -170,8 +171,8 @@ public class MoimCalendarController {
     @PostMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<Long> joinPlan(
             @AuthUser User user,
-            @MoimValidation @UserMoimValidaton @PathVariable Long moimId,
-            @UserPlanDuplicateValidation @PlanValidation @PathVariable Long planId
+            @UserMoimValidaton @PathVariable Long moimId,
+            @UserPlanDuplicateValidation @PathVariable Long planId
     ) {
         return BaseResponse.onSuccess(calenderCommandService.joinPlan(user, moimId, planId));
     }
@@ -188,8 +189,8 @@ public class MoimCalendarController {
     @DeleteMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<?> cancelPlanParticipation(
             @AuthUser User user,
-            @UserMoimValidaton @MoimValidation @PathVariable Long moimId,
-            @UserPlanValidation @PlanValidation @PathVariable Long planId
+            @UserMoimValidaton @PathVariable Long moimId,
+            @UserPlanValidation @PathVariable Long planId
     ) {
         calenderCommandService.cancelPlanParticipation(user, moimId, planId);
         return BaseResponse.onSuccess(null);

@@ -1,6 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
+import com.dev.moim.global.validation.annotation.MoimValidation;
 import com.dev.moim.global.validation.annotation.UserMoimValidaton;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -25,7 +26,7 @@ public class UserMoimValidator implements ConstraintValidator<UserMoimValidaton,
     }
 
     @Override
-    public boolean isValid(Long moimId, ConstraintValidatorContext context) {
+    public boolean isValid(@MoimValidation Long moimId, ConstraintValidatorContext context) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

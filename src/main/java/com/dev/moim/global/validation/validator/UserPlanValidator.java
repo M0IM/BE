@@ -1,6 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.moim.service.CalenderQueryService;
+import com.dev.moim.global.validation.annotation.PlanValidation;
 import com.dev.moim.global.validation.annotation.UserPlanValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -25,7 +26,7 @@ public class UserPlanValidator implements ConstraintValidator<UserPlanValidation
     }
 
     @Override
-    public boolean isValid(Long planId, ConstraintValidatorContext context) {
+    public boolean isValid(@PlanValidation Long planId, ConstraintValidatorContext context) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
