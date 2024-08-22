@@ -27,12 +27,26 @@ public class IndividualPlan extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime date;
 
+    private String location;
+
+    private String locationDetail;
+
+    private String memo;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void updateIndividualPlan(String title, LocalDateTime date) {
+    public void updateIndividualPlan(
+            String title,
+            LocalDateTime date,
+            String location,
+            String locationDetail,
+            String memo) {
         this.title = title;
         this.date = date;
+        this.location = location;
+        this.locationDetail = locationDetail;
+        this.memo = memo;
     }
 }

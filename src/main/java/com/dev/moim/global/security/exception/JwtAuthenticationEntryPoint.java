@@ -1,7 +1,7 @@
 package com.dev.moim.global.security.exception;
 
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.util.HttpResponseUtil;
+import com.dev.moim.global.util.HttpResponseUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

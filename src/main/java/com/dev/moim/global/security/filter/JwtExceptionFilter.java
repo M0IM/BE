@@ -4,7 +4,7 @@ import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.error.handler.FeignException;
-import com.dev.moim.global.security.util.HttpResponseUtil;
+import com.dev.moim.global.util.HttpResponseUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

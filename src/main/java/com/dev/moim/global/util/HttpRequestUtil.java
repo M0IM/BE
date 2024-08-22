@@ -1,4 +1,4 @@
-package com.dev.moim.global.security.util;
+package com.dev.moim.global.util;
 
 import com.dev.moim.global.error.handler.AuthException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PRIVATE;
@@ -102,8 +103,11 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public void createIndividualPlan(User user, CreateIndividualPlanRequestDTO request) {
         IndividualPlan individualPlan = IndividualPlan.builder()
-                .title(request.content())
-                .date(request.date())
+                .title(request.title())
+                .location(request.location())
+                .locationDetail(request.locationDetail())
+                .memo(request.memo())
+                .date(LocalDateTime.of(request.date(), request.startTime()))
                 .user(user)
                 .build();
 
@@ -120,7 +124,13 @@ public class UserCommandServiceImpl implements UserCommandService {
         IndividualPlan individualPlan = individualPlanRepository.findById(individualPlanId)
                 .orElseThrow(() -> new IndividualPlanException(INDIVIDUAL_PLAN_NOT_FOUND));
 
-        individualPlan.updateIndividualPlan(request.content(), request.date());
+        individualPlan.updateIndividualPlan(
+                request.title(),
+                LocalDateTime.of(request.date(), request.startTime()),
+                request.location(),
+                request.locationDetail(),
+                request.memo()
+        );
     }
 
     @Override
