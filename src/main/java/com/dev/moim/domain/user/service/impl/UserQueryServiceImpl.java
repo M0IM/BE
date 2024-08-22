@@ -1,8 +1,10 @@
 package com.dev.moim.domain.user.service.impl;
 
+import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
+import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
@@ -51,7 +53,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;
     private final PlanRepository planRepository;
-    private final ChatRoomRepository chatRoomRepository;
+    private final AlarmRepository alarmRepository;
     private final UserPlanRepository userPlanRepository;
 
     @Override
@@ -178,6 +180,25 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public Optional<User> findUserById(Long userId) {
         return userRepository.findById(userId);
+    }
+
+    @Override
+    public AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take) {
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Alarm> alarmSlices = alarmRepository.findByUserAndIdLessThanOrderByIdDesc(user, cursor, PageRequest.of(0, take));
+
+        List<AlarmResponseDTO> alarmResponseDTOList = alarmSlices.stream().map(AlarmResponseDTO::toAlarmResponseDTO
+        ).toList();
+
+        Long nextCursor = null;
+        if (!alarmSlices.isLast()) {
+            nextCursor = alarmSlices.toList().get(alarmSlices.toList().size() - 1).getId();
+        }
+
+        return AlarmResponseListDTO.toAlarmResponseListDTO(alarmResponseDTOList, nextCursor, alarmSlices.hasNext());
     }
 }
 

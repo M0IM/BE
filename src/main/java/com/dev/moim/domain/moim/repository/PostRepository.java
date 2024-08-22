@@ -30,4 +30,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Slice<Post> findByMoimAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(Moim moim, Long id, User user, Pageable pageable);
 
     List<Post> findByMoimAndPostType(Moim moim, PostType postType);
+
+    Slice<Post> findByPostTypeAndIdLessThanOrderByIdDesc(PostType postType, Long id, Pageable pageable);
 }

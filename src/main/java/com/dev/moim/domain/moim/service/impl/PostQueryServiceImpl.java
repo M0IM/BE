@@ -33,7 +33,6 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
-    private final CommentBlockRepository commentBlockRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -84,10 +83,6 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public CommentResponseListDTO getcomments(User user, Long moimId, Long postId, Long cursor, Integer take) {
 
-        Moim moim = moimRepository.findById(moimId).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
-
         Post post = postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
 
@@ -111,5 +106,27 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public Boolean isPostLike(Long userId, Long postId) {
         return postLikeRepository.existsPostLikeByUserIdAndPostId(userId, postId);
+    }
+
+    @Override
+    public MoimPostPreviewListDTO getIntroductionPosts(Long cursor, Integer take) {
+        if (cursor == 1) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        Slice<Post> postSlices = postRepository.findByPostTypeAndIdLessThanOrderByIdDesc(PostType.GLOBAL, cursor, PageRequest.of(0, take));
+
+        Long nextCursor = null;
+        if (!postSlices.isLast()) {
+            nextCursor = postSlices.toList().get(postSlices.toList().size() - 1).getId();
+        }
+
+        return PostConverter.toMoimPostPreviewListDTO(postSlices, nextCursor);
+    }
+
+    @Override
+    public Post getIntroductionPost(Long postId) {
+
+        return postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
     }
 }
