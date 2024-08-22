@@ -58,6 +58,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
         String fcmToken = Optional.ofNullable(oAuthLoginRequest.fcmToken())
+                .filter(token -> !token.isEmpty())
                 .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
         request.setAttribute("fcmToken", fcmToken);
 
