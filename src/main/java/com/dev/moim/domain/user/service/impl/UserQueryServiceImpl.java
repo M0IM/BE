@@ -198,6 +198,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
         return AlarmResponseListDTO.toAlarmResponseListDTO(alarmResponseDTOList, nextCursor, alarmSlices.hasNext());
     }
+
 }
 
 //    @Override
