@@ -3,6 +3,7 @@ package com.dev.moim.global.security.filter;
 import com.dev.moim.domain.account.dto.LoginRequest;
 import com.dev.moim.domain.account.dto.TokenResponse;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.firebase.service.FcmQueryService;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -42,6 +43,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final ApplicationEventPublisher eventPublisher;
+    private final FcmQueryService fcmQueryService;
 
     @Override
     public Authentication attemptAuthentication(
@@ -69,11 +71,14 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
+        String fcmToken = request.getAttribute("fcmToken").toString();
+        fcmQueryService.isTokenValid("MOIM", fcmToken);
+
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
+        eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, fcmToken));
 
         HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken, principalDetails.getProvider()));
     }

@@ -6,6 +6,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.firebase.service.FcmQueryService;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.event.CustomAuthenticationSuccessEvent;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -41,14 +42,22 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final FcmQueryService fcmQueryService;
 
-    public OAuthLoginFilter(JwtUtil jwtUtil, RedisUtil redisUtil, AuthenticationManager authenticationManager, UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
+    public OAuthLoginFilter(
+            JwtUtil jwtUtil,
+            RedisUtil redisUtil,
+            AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            ApplicationEventPublisher eventPublisher,
+            FcmQueryService fcmQueryService) {
         super(new AntPathRequestMatcher("/api/v1/auth/oAuth"));
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+        this.fcmQueryService = fcmQueryService;
     }
 
     @Override
@@ -84,11 +93,14 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             User existingUser = user.get();
             PrincipalDetails principalDetails = new PrincipalDetails(existingUser);
 
+            String fcmToken = request.getAttribute("fcmToken").toString();
+            fcmQueryService.isTokenValid("MOIM", fcmToken);
+
             String accessToken = jwtUtil.createAccessToken(principalDetails);
             String refreshToken = jwtUtil.createRefreshToken(principalDetails);
             redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-            eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
+            eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, fcmToken));
 
             HttpResponseUtil.setSuccessResponse(response, _OK, new LoginResponseDTO(accessToken, refreshToken, principalDetails.getProvider(), authResult.getName()));
         } else {

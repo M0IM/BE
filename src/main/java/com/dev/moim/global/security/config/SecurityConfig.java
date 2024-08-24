@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.SuccessStatus;
+import com.dev.moim.global.firebase.service.FcmQueryService;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.config.CorsConfig;
 import com.dev.moim.global.security.exception.JwtAccessDeniedHandler;
@@ -48,6 +49,7 @@ public class SecurityConfig {
     private final ApplicationEventPublisher eventPublisher;
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
+    private final FcmQueryService fcmQueryService;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -119,11 +121,11 @@ public class SecurityConfig {
                 .anyRequest().permitAll());
 
         CustomLoginFilter customLoginFilter = new CustomLoginFilter(
-                authenticationManager(), jwtUtil, redisUtil, eventPublisher);
+                authenticationManager(), jwtUtil, redisUtil, eventPublisher, fcmQueryService);
         customLoginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
-                jwtUtil, redisUtil, authenticationManager(), userRepository, eventPublisher);
+                jwtUtil, redisUtil, authenticationManager(), userRepository, eventPublisher, fcmQueryService);
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
