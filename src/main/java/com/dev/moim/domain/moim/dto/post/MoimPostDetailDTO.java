@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostImage;
+import com.dev.moim.domain.moim.entity.enums.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ public record MoimPostDetailDTO(
         Integer commentCount,
         Integer likeCount,
         Boolean isLike,
+        PostType postType,
         List<String> imageKeyNames,
         LocalDateTime updateAt,
         LocalDateTime createAt
@@ -32,6 +34,7 @@ public record MoimPostDetailDTO(
                 post.getCommentList().size(),
                 post.getPostLikeList().size(),
                 postLike,
+                post.getPostType(),
                 imageKeyNames,
                 post.getUpdatedAt(),
                 post.getCreatedAt()
