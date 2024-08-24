@@ -3,6 +3,8 @@ package com.dev.moim.domain.moim.dto.post;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.enums.CommentStatus;
+import com.dev.moim.domain.moim.entity.enums.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +16,7 @@ public record CommentResponseDTO(
         String profileImage,
         String writer,
         Boolean isLike,
+        CommentStatus commentStatus,
         LocalDateTime updateAt,
         LocalDateTime createAt,
         List<CommentCommentResponseDTO> commentResponseDTOList
@@ -36,6 +39,7 @@ public record CommentResponseDTO(
                 userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
                 userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
+                comment.getCommentStatus(),
                 comment.getUpdatedAt(),
                 comment.getCreatedAt(),
                 commentResponseDTOList
