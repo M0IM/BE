@@ -53,6 +53,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
         String fcmToken = Optional.ofNullable(logInRequest.fcmToken())
                 .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
+        fcmQueryService.isTokenValid("MOIM", fcmToken);
         request.setAttribute("fcmToken", fcmToken);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -71,14 +72,11 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        String fcmToken = request.getAttribute("fcmToken").toString();
-        fcmQueryService.isTokenValid("MOIM", fcmToken);
-
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
         redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-        eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, fcmToken));
+        eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 
         HttpResponseUtil.setSuccessResponse(response, _OK, new TokenResponse(accessToken, refreshToken, principalDetails.getProvider()));
     }

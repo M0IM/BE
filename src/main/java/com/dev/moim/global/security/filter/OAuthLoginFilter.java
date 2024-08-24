@@ -68,6 +68,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         OAuthLoginRequest oAuthLoginRequest = HttpRequestUtil.readBody(request, OAuthLoginRequest.class);
         String fcmToken = Optional.ofNullable(oAuthLoginRequest.fcmToken())
                 .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
+        fcmQueryService.isTokenValid("MOIM", fcmToken);
         request.setAttribute("fcmToken", fcmToken);
 
         Provider provider = oAuthLoginRequest.provider();
@@ -93,14 +94,11 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
             User existingUser = user.get();
             PrincipalDetails principalDetails = new PrincipalDetails(existingUser);
 
-            String fcmToken = request.getAttribute("fcmToken").toString();
-            fcmQueryService.isTokenValid("MOIM", fcmToken);
-
             String accessToken = jwtUtil.createAccessToken(principalDetails);
             String refreshToken = jwtUtil.createRefreshToken(principalDetails);
             redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
-            eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, fcmToken));
+            eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 
             HttpResponseUtil.setSuccessResponse(response, _OK, new LoginResponseDTO(accessToken, refreshToken, principalDetails.getProvider(), authResult.getName()));
         } else {
