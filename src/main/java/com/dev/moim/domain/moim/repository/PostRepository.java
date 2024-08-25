@@ -32,4 +32,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByMoimAndPostType(Moim moim, PostType postType);
 
     Slice<Post> findByPostTypeAndIdLessThanOrderByIdDesc(PostType postType, Long id, Pageable pageable);
+
+    List<Post> findByMoimOrderByCreatedAtDesc(Moim moim, Pageable pageable);
 }

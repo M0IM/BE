@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
 import com.dev.moim.domain.moim.dto.post.*;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final PostBlockRepository postBlockRepository;
     private final ReadPostRepository readPostRepository;
     private final UserQueryService userQueryService;
+    private final UserRepository userRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -137,5 +140,19 @@ public class PostQueryServiceImpl implements PostQueryService {
     public Post getIntroductionPost(Long postId) {
 
         return postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+    }
+
+    @Override
+    public List<JoinMoimPostsResponseDTO> getPostsByJoinMoims(User user) {
+        List<Moim> moimsByUser = moimRepository.findMoimsByUser(user);
+
+        List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = moimsByUser.stream().map((m) -> {
+            List<Post> postList = postRepository.findByMoimOrderByCreatedAtDesc(m, PageRequest.of(0, 3));
+            List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
+
+            return JoinMoimPostsResponseDTO.toJoinMoimPostsResponseDTO(m.getId(), m.getName(), moimPostPreviewDTOStream);
+        }).toList();
+
+        return joinMoimPostsResponseDTOList;
     }
 }

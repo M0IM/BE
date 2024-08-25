@@ -2,12 +2,11 @@ package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
-import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostDetailDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Post;
 import org.springframework.data.domain.Slice;
+
+import java.util.List;
 
 public interface PostQueryService {
     MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take);
@@ -23,4 +22,6 @@ public interface PostQueryService {
     MoimPostPreviewListDTO getIntroductionPosts(Long cursor, Integer take);
 
     Post getIntroductionPost(Long postId);
+
+    List<JoinMoimPostsResponseDTO> getPostsByJoinMoims(User user);
 }

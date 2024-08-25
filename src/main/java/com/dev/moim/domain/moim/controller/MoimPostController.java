@@ -245,4 +245,14 @@ public class MoimPostController {
         List<User> unReadUserListByPost = userQueryService.findUnReadUserListByPost(user, moimId, postId);
         return BaseResponse.onSuccess(unReadUserListByPost);
     }
+
+    @Operation(summary = "가입된 모입 정보 최신순  API", description = "모임에는 무슨 일이 일어날까요?의 정보를 리턴합니다.. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/posts/what")
+    public BaseResponse<List<JoinMoimPostsResponseDTO>> getPostsByJoinMoims(@AuthUser User user) {
+        List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = postQueryService.getPostsByJoinMoims(user);
+        return BaseResponse.onSuccess(joinMoimPostsResponseDTOList);
+    }
 }
