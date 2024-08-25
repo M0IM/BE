@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import static com.dev.moim.domain.moim.entity.enums.JoinStatus.COMPLETE;
 import static com.dev.moim.global.common.code.status.ErrorStatus.INVALID_MOIM_MEMBER;
 
 @Slf4j
@@ -30,7 +31,7 @@ public class UserMoimValidator implements ConstraintValidator<UserMoimValidaton,
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Boolean isValidMember = userMoimRepository.existsByUserIdAndMoimId(Long.valueOf(authentication.getName()), moimId);
+        Boolean isValidMember = userMoimRepository.existsByUserIdAndMoimIdAndJoinStatus(Long.valueOf(authentication.getName()), moimId, COMPLETE);
 
         if (!isValidMember) {
             context.disableDefaultConstraintViolation();

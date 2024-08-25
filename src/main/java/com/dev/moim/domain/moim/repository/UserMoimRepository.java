@@ -5,10 +5,8 @@ import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +17,7 @@ import java.util.Optional;
 
 public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
-    Boolean existsByUserIdAndMoimId(Long userId, Long moimId);
+    Boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus);
 
     @Query("select um from UserMoim um where um.user.id = :userId and um.moim.id = :moimId and um.joinStatus = :joinStatus")
     Optional<UserMoim> findByUserIdAndMoimId(Long userId, Long moimId, JoinStatus joinStatus);
