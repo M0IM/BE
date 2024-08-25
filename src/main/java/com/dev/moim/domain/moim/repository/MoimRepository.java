@@ -22,6 +22,6 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
 
     Slice<Moim> findByIdLessThanOrderByIdDesc(Long Id, Pageable pageable);
 
-    @Query("select m from UserMoim um join um.moim m where um.user = :user")
+    @Query("select m from UserMoim um join um.moim m where um.user = :user and um.joinStatus = 'COMPLETE'")
     List<Moim> findMoimsByUser(User user);
 }
