@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class FCMQueryService {
+public class FcmQueryService {
 
     public void isTokenValid(String sender, String token) {
         Notification notification = Notification.builder()
