@@ -52,6 +52,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         LoginRequest logInRequest = HttpRequestUtil.readBody(request, LoginRequest.class);
         String fcmToken = Optional.ofNullable(logInRequest.fcmToken())
+                .filter(token -> !token.trim().isEmpty())
                 .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
         fcmQueryService.isTokenValid("MOIM", fcmToken);
         request.setAttribute("fcmToken", fcmToken);

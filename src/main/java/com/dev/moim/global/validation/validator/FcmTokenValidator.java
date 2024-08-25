@@ -1,6 +1,5 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.firebase.service.FcmQueryService;
 import com.dev.moim.global.validation.annotation.FcmTokenValidation;
@@ -27,22 +26,22 @@ public class FcmTokenValidator implements ConstraintValidator<FcmTokenValidation
     public boolean isValid(String fcmToken, ConstraintValidatorContext context) {
 
         if (fcmToken == null || fcmToken.trim().isEmpty()) {
-            addConstraintViolation(context, FCM_TOKEN_REQUIRED);
+            addConstraintViolation(context, FCM_TOKEN_REQUIRED.toString());
             return false;
         }
 
         try {
             fcmQueryService.isTokenValid("MOIM", fcmToken);
         } catch (AuthException e) {
-            addConstraintViolation(context, FCM_NOT_VALID);
+            addConstraintViolation(context, FCM_NOT_VALID.toString());
             return false;
         }
         return true;
     }
 
-    private void addConstraintViolation(ConstraintValidatorContext context, ErrorStatus errorStatus) {
+    private void addConstraintViolation(ConstraintValidatorContext context, String errorStatus) {
         context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(errorStatus.toString())
+        context.buildConstraintViolationWithTemplate(errorStatus)
                 .addConstraintViolation();
     }
 }
