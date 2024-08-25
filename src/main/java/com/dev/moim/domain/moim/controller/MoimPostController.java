@@ -8,6 +8,7 @@ import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostBlock;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.domain.moim.service.PostQueryService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
@@ -23,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "모임 게시글 관련 컨트롤러")
@@ -32,6 +35,7 @@ public class MoimPostController {
 
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
+    private final UserQueryService userQueryService;
 
     @Operation(summary = "모임 게시판 목록 API", description = "모임 게시판 목록을 조회 합니다. _by 제이미_")
     @ApiResponses({
@@ -59,9 +63,8 @@ public class MoimPostController {
             @PathVariable Long moimId,
             @PathVariable Long postId
     ) {
-        Post post = postQueryService.getMoimPost(user, moimId, postId);
-        Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
-        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
+        MoimPostDetailDTO postDetailDTO = postQueryService.getMoimPost(user, moimId, postId);
+        return BaseResponse.onSuccess(postDetailDTO);
     }
 
     @Operation(summary = "모임 게시글 작성 API", description = "모임 게시글을 작성 합니다. _by 제이미_")
@@ -231,5 +234,15 @@ public class MoimPostController {
         Post post = postQueryService.getIntroductionPost( postId);
         Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
         return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
+    }
+
+    @Operation(summary = "게시물 읽을 사람 (아직 안읽은사람) API", description = "아직 해당 공지사항을 안 읽은 사람을 리턴합니다.. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/{moimId}/posts/{postId}/users/un-read")
+    public BaseResponse<List<User>> getUnReadUsers(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @PathVariable Long postId) {
+        List<User> unReadUserListByPost = userQueryService.findUnReadUserListByPost(user, moimId, postId);
+        return BaseResponse.onSuccess(unReadUserListByPost);
     }
 }

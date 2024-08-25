@@ -97,6 +97,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_MY_POST(HttpStatus.FORBIDDEN, "POST_004", "해당 작성물이 자신의 것이 아닙니다."),
     ALREADY_COMMENT_DELETE(HttpStatus.FORBIDDEN, "POST_005", "이미 삭제된 댓글입니다."),
     NOT_INCLUDE_POST(HttpStatus.FORBIDDEN, "POST_006", "해당 댓글이 게시물에 포함되어 있지 않습니다."),
+    NOT_ANNOUNCEMENT_POST(HttpStatus.FORBIDDEN, "POST_007", "해당 게시물은 공지사항이 아닙니다."),
 
     // 채팅 관련 에러
     INVALID_CHAT_SCROLL(HttpStatus.BAD_REQUEST, "CHAT4001", "더 이상 채팅이 존재하지 않습니다."),

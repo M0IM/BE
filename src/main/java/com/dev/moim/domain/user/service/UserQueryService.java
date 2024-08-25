@@ -2,6 +2,8 @@ package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
+import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
@@ -40,6 +42,8 @@ public interface UserQueryService {
     Optional<User> findUserById(Long userId);
 
     AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take);
+
+    List<User> findUnReadUserListByPost(User user, Long moimId, Long postId);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }
