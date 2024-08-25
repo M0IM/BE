@@ -9,17 +9,21 @@ import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
+import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.PostType;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
-import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
-import com.dev.moim.domain.moim.repository.PlanRepository;
-import com.dev.moim.domain.moim.repository.UserMoimRepository;
-import com.dev.moim.domain.moim.repository.UserPlanRepository;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserQueryService;
+import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.IndividualPlanException;
+import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.PostException;
 import com.dev.moim.global.error.handler.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +57,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final PlanRepository planRepository;
     private final AlarmRepository alarmRepository;
     private final UserPlanRepository userPlanRepository;
+    private final MoimRepository moimRepository;
+    private final PostRepository postRepository;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -198,6 +204,23 @@ public class UserQueryServiceImpl implements UserQueryService {
 
         return AlarmResponseListDTO.toAlarmResponseListDTO(alarmResponseDTOList, nextCursor, alarmSlices.hasNext());
     }
+
+    @Override
+    public List<User> findUnReadUserListByPost(User user, Long moimId, Long postId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(MOIM_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        if (!post.getPostType().equals(PostType.ANNOUNCEMENT)) {
+           throw new PostException(ErrorStatus.NOT_ANNOUNCEMENT_POST);
+        }
+
+        List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
+        List<User> readUsers = userRepository.findReadUsers(user, post);
+        userByMoim.removeAll(readUsers);
+
+        return userByMoim;
+    }
+
 
 }
 

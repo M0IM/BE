@@ -1,16 +1,15 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
-import com.dev.moim.domain.moim.dto.post.CommentCommentResponseDTO;
-import com.dev.moim.domain.moim.dto.post.CommentResponseDTO;
-import com.dev.moim.domain.moim.dto.post.CommentResponseListDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
+import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostQueryService;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +33,9 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
+    private final ReadPostRepository readPostRepository;
+    private final UserQueryService userQueryService;
+    private final UserRepository userRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -59,7 +62,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     }
 
     @Override
-    public Post getMoimPost(User user, Long moimId, Long postId) {
+    public MoimPostDetailDTO getMoimPost(User user, Long moimId, Long postId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
         Optional<PostBlock> byUserIdAndPostId = postBlockRepository.findByUserIdAndPostId(user.getId(), postId);
@@ -72,7 +75,16 @@ public class PostQueryServiceImpl implements PostQueryService {
            throw new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN);
        }
 
-        return postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        if (post.getPostType().equals(PostType.ANNOUNCEMENT)) {
+            ReadPost readPost = ReadPost.builder().post(post).user(user).build();
+            readPostRepository.save(readPost);
+        }
+
+        Boolean postLike = isPostLike(user.getId(), postId);
+
+        return MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike);
     }
 
     @Override
@@ -128,5 +140,19 @@ public class PostQueryServiceImpl implements PostQueryService {
     public Post getIntroductionPost(Long postId) {
 
         return postRepository.findById(postId).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+    }
+
+    @Override
+    public List<JoinMoimPostsResponseDTO> getPostsByJoinMoims(User user) {
+        List<Moim> moimsByUser = moimRepository.findMoimsByUser(user);
+
+        List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = moimsByUser.stream().map((m) -> {
+            List<Post> postList = postRepository.findByMoimOrderByCreatedAtDesc(m, PageRequest.of(0, 3));
+            List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
+
+            return JoinMoimPostsResponseDTO.toJoinMoimPostsResponseDTO(m.getId(), m.getName(), moimPostPreviewDTOStream);
+        }).toList();
+
+        return joinMoimPostsResponseDTOList;
     }
 }

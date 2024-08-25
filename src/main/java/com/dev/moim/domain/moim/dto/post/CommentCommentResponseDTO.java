@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Comment;
+import com.dev.moim.domain.moim.entity.enums.CommentStatus;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ public record CommentCommentResponseDTO(
         String profileImage,
         String writer,
         Boolean isLike,
+        CommentStatus commentStatus,
         LocalDateTime updateAt,
         LocalDateTime createAt
 ) {
@@ -22,6 +24,7 @@ public record CommentCommentResponseDTO(
                 comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
                 comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getName(),
                 isLike,
+                comment.getCommentStatus(),
                 comment.getUpdatedAt(),
                 comment.getCreatedAt()
         );

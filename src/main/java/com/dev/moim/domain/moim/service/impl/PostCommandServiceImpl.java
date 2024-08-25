@@ -63,7 +63,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         postRepository.save(savedPost);
 
         createMoimPostDTO.imageKeyNames().forEach((i) ->{
-                PostImage postImage = PostImage.builder().imageKeyName(s3Service.generateStaticUrl(i)).post(savedPost).build();
+                PostImage postImage = PostImage.builder().imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).post(savedPost).build();
                 postImageRepository.save(postImage);
             }
         );
@@ -211,7 +211,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
         List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
-                PostImage.builder().imageKeyName(s3Service.generateStaticUrl(i)).post(updatePost).build()
+                PostImage.builder().imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).post(updatePost).build()
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
