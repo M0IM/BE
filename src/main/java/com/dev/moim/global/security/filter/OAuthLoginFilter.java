@@ -69,7 +69,7 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
         String fcmToken = Optional.ofNullable(oAuthLoginRequest.fcmToken())
                 .filter(token -> !token.trim().isEmpty())
                 .orElseThrow(() -> new AuthException(FCM_TOKEN_REQUIRED));
-        fcmQueryService.isTokenValid("MOIM", fcmToken);
+        // fcmQueryService.isTokenValid("MOIM", fcmToken);
         request.setAttribute("fcmToken", fcmToken);
 
         Provider provider = oAuthLoginRequest.provider();
