@@ -1,8 +1,10 @@
 package com.dev.moim.domain.region.controller;
 
 import com.dev.moim.domain.region.dto.RegionListDTO;
+import com.dev.moim.domain.region.dto.RegionSearchListDTO;
 import com.dev.moim.domain.region.service.RegionQueryService;
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.validation.annotation.CheckTakeValidation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +35,7 @@ public class RegionController {
     }
 
     @GetMapping("/sigungu")
-    @Operation(summary="행정구역 (시/군/구) 조회 API", description="행정구역 (시/군/구) 조회 입니다.")
+    @Operation(summary="행정구역 (시/군/구) 조회 API", description="행정구역 (시/군/구) 조회 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -44,7 +46,7 @@ public class RegionController {
     }
 
     @GetMapping("/dong")
-    @Operation(summary="행정구역 (동) 조회 API", description="행정구역 (동) 조회 입니다.")
+    @Operation(summary="행정구역 (동) 조회 API", description="행정구역 (동) 조회 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -52,5 +54,19 @@ public class RegionController {
             @Parameter(description = "상위 시/군/구 ID") @RequestParam Long parentId
             ) {
         return BaseResponse.onSuccess(regionQueryService.getDong(parentId));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary="행정구역 검색 API", description="행정구역 검색 API 입니다.")
+    @Parameter(name = "searchTerm", description = "해당 검색어가 포함된 행정구역을 조회합니다.", example = "서울특별시")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    public BaseResponse<RegionSearchListDTO> getRegions(
+            @RequestParam(name = "searchTerm") String searchTerm,
+            @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(regionQueryService.getRegions(searchTerm, cursor, take));
     }
 }
