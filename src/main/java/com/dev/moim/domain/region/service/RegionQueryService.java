@@ -1,6 +1,7 @@
 package com.dev.moim.domain.region.service;
 
 import com.dev.moim.domain.region.dto.RegionListDTO;
+import com.dev.moim.domain.region.dto.RegionSearchListDTO;
 
 public interface RegionQueryService {
 
@@ -9,4 +10,6 @@ public interface RegionQueryService {
     RegionListDTO getSigungu(Long parentId);
 
     RegionListDTO getDong(Long parentId);
+
+    RegionSearchListDTO getRegions(String searchTerm, Long cursor, Integer take);
 }
