@@ -85,8 +85,6 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             name = "%" + name.trim() + "%";
         }
 
-        System.out.println(name);
-
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
@@ -112,8 +110,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take) {
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
+    public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take, String search) {
+
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, search, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
 
         List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
@@ -126,8 +125,10 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take) {
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
+    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take, String search) {
+
+
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, search, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
 
         List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 

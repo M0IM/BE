@@ -14,9 +14,9 @@ public interface MoimQueryService {
 
     MoimPreviewListDTO findMoims(MoimRequestType moimRequestType, String name, Long cursor, Integer take);
 
-    UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take);
+    UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take, String search);
 
-    UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take);
+    UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take, String search);
 
     MoimIntroduceDTO getIntroduce(Long moimId);
 
