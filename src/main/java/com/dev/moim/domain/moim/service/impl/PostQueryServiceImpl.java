@@ -147,7 +147,7 @@ public class PostQueryServiceImpl implements PostQueryService {
         List<Moim> moimsByUser = moimRepository.findMoimsByUser(user);
 
         List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = moimsByUser.stream().map((m) -> {
-            List<Post> postList = postRepository.findByMoimOrderByCreatedAtDesc(m, PageRequest.of(0, 3));
+            List<Post> postList = postRepository.findByMoimOrderByCreatedAtDesc(PostType.GLOBAL ,m, PageRequest.of(0, 3));
             List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
 
             return JoinMoimPostsResponseDTO.toJoinMoimPostsResponseDTO(m.getId(), m.getName(), moimPostPreviewDTOStream);
