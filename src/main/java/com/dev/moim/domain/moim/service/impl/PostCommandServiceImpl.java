@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.CommentStatus;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
@@ -88,6 +89,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         Comment comment = Comment.builder()
                 .content(createCommentDTO.content())
                 .post(post)
+                .commentStatus(CommentStatus.ACTIVE)
                 .userMoim(userMoim)
                 .build();
 
@@ -115,6 +117,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .parent(parentComment)
                 .content(createCommentCommentDTO.content())
                 .post(post)
+                .commentStatus(CommentStatus.ACTIVE)
                 .userMoim(userMoim)
                 .build();
 
