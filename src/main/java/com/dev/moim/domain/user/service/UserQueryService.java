@@ -19,6 +19,8 @@ public interface UserQueryService {
 
     PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month);
 
+    PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month);
+
     PlanMonthListDTO<List<UserPlanDTO>> getUserMonthlyPlans(User user, int year, int month);
 
     UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size);
