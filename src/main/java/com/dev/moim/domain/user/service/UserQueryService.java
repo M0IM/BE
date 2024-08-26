@@ -2,8 +2,6 @@ package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
@@ -20,6 +18,8 @@ public interface UserQueryService {
     ReviewListDTO getUserReviews(Long userId, int page, int size);
 
     PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month);
+
+    PlanMonthListDTO<List<UserPlanDTO>> getUserMonthlyPlans(User user, int year, int month);
 
     UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size);
 
