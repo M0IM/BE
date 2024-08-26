@@ -50,4 +50,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Query("SELECT um.joinStatus FROM UserMoim um " +
             "WHERE um.user = :user AND um.moim = :moim AND um.joinStatus != 'REJECT'")
     JoinStatus findJoinStatusByUserAndMoim(User user, Moim moim);
+
+    @Query("select um.moimRole from  UserMoim um where um.user = :user and um.joinStatus = 'COMPLETE'")
+    Optional<MoimRole> findMoimRoleByUser(User user);
 }

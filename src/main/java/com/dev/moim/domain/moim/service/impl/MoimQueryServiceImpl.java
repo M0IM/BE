@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_OWNER_NOT_FOUND;
 import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
@@ -184,6 +185,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         JoinStatus joinStatus = userMoimRepository.findJoinStatusByUserAndMoim(user, moim);
         List<UserProfileDTO> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
         List<UserPreviewDTO> userPreviewDTOList = userProfileList.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+        Optional<MoimRole> moimRoleByUser = userMoimRepository.findMoimRoleByUser(user);
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
@@ -204,9 +206,14 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             averageAge = totalAge / count;
         }
 
+        MoimRole moimRole;
+        if (moimRoleByUser.isPresent()) {
+            moimRole = moimRoleByUser.get();
+        } else {
+            moimRole = null;
+        }
 
-
-        return MoimDetailDTO.toMoimDetailDTO(moim, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
+        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
 
     }
 
