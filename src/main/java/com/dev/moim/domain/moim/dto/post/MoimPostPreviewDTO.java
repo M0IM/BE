@@ -12,7 +12,7 @@ public record MoimPostPreviewDTO(
         Long moimId,
         String title,
         String content,
-        List<String> moimImageUrl,
+        String moimImageUrl,
         String ownerProfileImageUrl,
         String writer,
         Integer commentCount,
@@ -26,8 +26,7 @@ public record MoimPostPreviewDTO(
                 post.getMoim().getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getPostImageList() == null ? null : post.getPostImageList()
-                        .stream().map(PostImage::getImageKeyName).toList(),
+                post.getMoim().getImageUrl(),
                 post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getImageUrl(),
                 post.getUserMoim() == null ? null : post.getUserMoim().getUserProfile().getName(),
                 post.getCommentList().size(),
