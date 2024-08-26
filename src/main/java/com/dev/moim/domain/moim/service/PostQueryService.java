@@ -24,4 +24,8 @@ public interface PostQueryService {
     Post getIntroductionPost(Long postId);
 
     List<JoinMoimPostsResponseDTO> getPostsByJoinMoims(User user);
+
+    List<BlockCommentResponse> findBlockComments(User user);
+
+    List<MoimPostPreviewDTO> findBlockPosts(User user);
 }

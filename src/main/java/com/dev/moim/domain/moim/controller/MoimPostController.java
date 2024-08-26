@@ -276,4 +276,24 @@ public class MoimPostController {
         postCommandService.announcementConfirm(user, announcementRequestDTO);
         return BaseResponse.onSuccess(null);
     }
+
+    @Operation(summary = "모임 차단한 댓글 API", description = "모임 차단한 댓글을 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/posts/comments/block")
+    public BaseResponse<List<BlockCommentResponse>> findBlockComments(@AuthUser User user) {
+        List<BlockCommentResponse> blockCommentResponseList = postQueryService.findBlockComments(user);
+        return BaseResponse.onSuccess(blockCommentResponseList);
+    }
+
+    @Operation(summary = "모임 차단한 게시글 조회 API", description = "모임 차단한 게시글 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/posts/block")
+    public BaseResponse<List<MoimPostPreviewDTO>> findBlockPosts(@AuthUser User user) {
+        List<MoimPostPreviewDTO> moimPostPreviewDTOList = postQueryService.findBlockPosts(user);
+        return BaseResponse.onSuccess(moimPostPreviewDTOList);
+    }
 }

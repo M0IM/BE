@@ -150,4 +150,20 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         return joinMoimPostsResponseDTOList;
     }
+
+    @Override
+    public List<BlockCommentResponse> findBlockComments(User user) {
+
+        List<Comment> comments = commentRepository.findByBlockComment(user);
+
+        return comments.stream().map(BlockCommentResponse::toBlockCommentResponse).toList();
+    }
+
+    @Override
+    public List<MoimPostPreviewDTO> findBlockPosts(User user) {
+
+        List<Post> postList = postRepository.findBlockPost(user);
+
+        return postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
+    }
 }
