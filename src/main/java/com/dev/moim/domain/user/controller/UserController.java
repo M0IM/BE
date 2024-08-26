@@ -107,14 +107,16 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserReviews(userId, page, size));
     }
 
-    @Operation(summary = "멤버 후기 작성", description = "멤버 후기 작성을 합니다.")
+    @Operation(summary = "멤버 후기 작성", description = "유저 본인에겐 후기를 남길 수 없습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "AUTH_020", description = "존재하지 않는 사용자입니다."),
+            @ApiResponse(responseCode = "REVIEW_001", description = "유저 본인에게 리뷰를 남길 수 없습니다.")
     })
     @PostMapping("/reviews")
     public BaseResponse<CreateReviewResultDTO> postMemberReview(
             @AuthUser User user,
-            @RequestBody CreateReviewDTO createReviewDTO) {
+            @Valid @RequestBody CreateReviewDTO createReviewDTO) {
         return BaseResponse.onSuccess(userCommandService.postMemberReview(user, createReviewDTO));
     }
 

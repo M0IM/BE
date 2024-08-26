@@ -122,7 +122,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // FCM 관련 에러
     FCM_NOT_VALID(HttpStatus.UNAUTHORIZED, "FCM_001", "FCM 토큰이 유효하지 않습니다.."),
-    FCM_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "FCM_002", "FCM 토큰이 누락되었습니다.")
+    FCM_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "FCM_002", "FCM 토큰이 누락되었습니다."),
+
+    // Review 관련
+    SELF_REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_001", "유저 본인에게 리뷰를 남길 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;
