@@ -180,7 +180,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         int reviewCount = postRepository.findByMoimAndPostType(moim, PostType.REVIEW).size();
         List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
-        Boolean exists = userMoimRepository.existsByUserAndMoimAndJoinStatuses(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+        JoinStatus joinStatus = userMoimRepository.findJoinStatusByUserAndMoim(user, moim);
         List<UserProfileDTO> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
         List<UserPreviewDTO> userPreviewDTOList = userProfileList.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
@@ -205,7 +205,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
 
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
+        return MoimDetailDTO.toMoimDetailDTO(moim, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
 
     }
 

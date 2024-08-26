@@ -47,8 +47,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     boolean existsByUserAndMoimRole(User user, MoimRole moimRole);
 
-    @Query("SELECT COUNT(um) > 0 FROM UserMoim um " +
-            "JOIN um.user u " +
-            "WHERE u = :user AND um.moim = :moim AND um.joinStatus IN :joinStatuses")
-    Boolean existsByUserAndMoimAndJoinStatuses(User user, Moim moim, List<JoinStatus> joinStatuses);
+    @Query("SELECT um.joinStatus FROM UserMoim um " +
+            "WHERE um.user = :user AND um.moim = :moim AND um.joinStatus != 'REJECT'")
+    JoinStatus findJoinStatusByUserAndMoim(User user, Moim moim);
 }
