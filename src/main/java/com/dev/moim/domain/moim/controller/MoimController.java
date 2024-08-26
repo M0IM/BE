@@ -141,8 +141,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/members")
-    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
-        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembers(moimId, cursor, take);
+    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembers(moimId, cursor, take, search);
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
@@ -161,8 +161,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping ("/moims/{moimId}/requests/users")
-    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take) {
-        UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take);
+    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take, search);
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
 

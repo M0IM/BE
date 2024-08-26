@@ -14,4 +14,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("select c from CommentBlock cb join cb.user u join cb.comment c where u = :user and c.post.id = :postId")
     List<Comment> findByUserAndPostId(User user, Long postId);
+
+    @Query("select c from CommentBlock cb join cb.comment c where cb.user = :user")
+    List<Comment> findByBlockComment(User user);
 }

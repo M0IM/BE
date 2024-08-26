@@ -8,6 +8,7 @@ import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostBlock;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.domain.moim.service.PostQueryService;
+import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
@@ -241,8 +242,8 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/posts/{postId}/users/un-read")
-    public BaseResponse<List<User>> getUnReadUsers(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @PathVariable Long postId) {
-        List<User> unReadUserListByPost = userQueryService.findUnReadUserListByPost(user, moimId, postId);
+    public BaseResponse<List<UserPreviewDTO>> getUnReadUsers(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @PathVariable Long postId) {
+        List<UserPreviewDTO> unReadUserListByPost = userQueryService.findUnReadUserListByPost(user, moimId, postId);
         return BaseResponse.onSuccess(unReadUserListByPost);
     }
 
@@ -254,5 +255,45 @@ public class MoimPostController {
     public BaseResponse<List<JoinMoimPostsResponseDTO>> getPostsByJoinMoims(@AuthUser User user) {
         List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = postQueryService.getPostsByJoinMoims(user);
         return BaseResponse.onSuccess(joinMoimPostsResponseDTOList);
+    }
+
+    @Operation(summary = "게시물 공지사항 생성 API", description = "공지 사항을 생성합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/announcement")
+    public BaseResponse<Long> createAnnouncement(@AuthUser User user, @RequestBody @Valid AnnouncementRequestDTO announcementRequestDTO) {
+        Long postId = postCommandService.createAnnouncement(user, announcementRequestDTO);
+        return BaseResponse.onSuccess(postId);
+    }
+
+    @Operation(summary = "게시물 공지사항 읽음 표시하기 API", description = "공지 사항을 읽었음을 표시합니다.. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @PostMapping("/moims/posts/announcement/confirm")
+    public BaseResponse<Void> announcementConfirm(@AuthUser User user, @RequestBody @Valid AnnouncementConfirmRequestDTO announcementRequestDTO) {
+        postCommandService.announcementConfirm(user, announcementRequestDTO);
+        return BaseResponse.onSuccess(null);
+    }
+
+    @Operation(summary = "모임 차단한 댓글 API", description = "모임 차단한 댓글을 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/posts/comments/block")
+    public BaseResponse<List<BlockCommentResponse>> findBlockComments(@AuthUser User user) {
+        List<BlockCommentResponse> blockCommentResponseList = postQueryService.findBlockComments(user);
+        return BaseResponse.onSuccess(blockCommentResponseList);
+    }
+
+    @Operation(summary = "모임 차단한 게시글 조회 API", description = "모임 차단한 게시글 조회 합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/posts/block")
+    public BaseResponse<List<MoimPostPreviewDTO>> findBlockPosts(@AuthUser User user) {
+        List<MoimPostPreviewDTO> moimPostPreviewDTOList = postQueryService.findBlockPosts(user);
+        return BaseResponse.onSuccess(moimPostPreviewDTOList);
     }
 }

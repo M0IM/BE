@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.CommentStatus;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
@@ -44,9 +45,14 @@ public class PostCommandServiceImpl implements PostCommandService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final AlarmService alarmService;
+    private final ReadPostRepository readPostRepository;
 
     @Override
     public Post createMoimPost(User user, CreateMoimPostDTO createMoimPostDTO) {
+
+        if (createMoimPostDTO.postType().equals(PostType.ANNOUNCEMENT)) {
+            throw new PostException(ErrorStatus._FORBIDDEN);
+        }
 
         Moim moim = moimRepository.findById(createMoimPostDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
@@ -68,21 +74,6 @@ public class PostCommandServiceImpl implements PostCommandService {
             }
         );
 
-
-        List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
-        if (savedPost.getPostType().equals(PostType.ANNOUNCEMENT)) {
-            String name = moim.getName();
-            String moimName = (name != null && name.length() >= 7)
-                    ? name.substring(0, 7)
-                    : (name != null ? name : "");
-            userByMoim.stream().forEach((u) ->{
-                if (u.getIsPushAlarm()) {
-                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
-                    fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
-                }
-            });
-        }
-
         return savedPost;
     }
 
@@ -98,6 +89,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         Comment comment = Comment.builder()
                 .content(createCommentDTO.content())
                 .post(post)
+                .commentStatus(CommentStatus.ACTIVE)
                 .userMoim(userMoim)
                 .build();
 
@@ -125,6 +117,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                 .parent(parentComment)
                 .content(createCommentCommentDTO.content())
                 .post(post)
+                .commentStatus(CommentStatus.ACTIVE)
                 .userMoim(userMoim)
                 .build();
 
@@ -311,5 +304,60 @@ public class PostCommandServiceImpl implements PostCommandService {
 
             commentBlockRepository.save(savedCommentBlock);
         }
+    }
+
+    @Override
+    public Long createAnnouncement(User user, AnnouncementRequestDTO announcementRequestDTO) {
+        Moim moim = moimRepository.findById(announcementRequestDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        Post savedPost = Post.builder()
+                .title(announcementRequestDTO.title())
+                .content(announcementRequestDTO.content())
+                .postType(PostType.ANNOUNCEMENT)
+                .userMoim(userMoim)
+                .moim(moim)
+                .build();
+
+        postRepository.save(savedPost);
+
+        announcementRequestDTO.imageKeyNames().forEach((i) ->{
+                    PostImage postImage = PostImage.builder().imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).post(savedPost).build();
+                    postImageRepository.save(postImage);
+                }
+        );
+
+        List<User> allById = userRepository.findAllById(announcementRequestDTO.userIds());
+        List<ReadPost> readPosts = allById.stream().map((u) ->
+                ReadPost.builder().post(savedPost).user(u).isRead(false).build()
+        ).toList();
+
+        readPostRepository.saveAll(readPosts);
+
+
+        List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
+        if (savedPost.getPostType().equals(PostType.ANNOUNCEMENT)) {
+            String name = moim.getName();
+            String moimName = (name != null && name.length() >= 7)
+                    ? name.substring(0, 7)
+                    : (name != null ? name : "");
+            userByMoim.forEach((u) ->{
+                if (u.getIsPushAlarm()) {
+                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
+                    fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
+                }
+            });
+        }
+
+        return savedPost.getId();
+    }
+
+    @Override
+    public void announcementConfirm(User user, AnnouncementConfirmRequestDTO announcementRequestDTO) {
+        Post post = postRepository.findById(announcementRequestDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
+
+        ReadPost readPost = readPostRepository.findByUserAndPost(user, post).orElseThrow(() -> new PostException(ErrorStatus._FORBIDDEN));
+        readPost.read();
     }
 }

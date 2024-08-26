@@ -24,4 +24,11 @@ public class ReadPost extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isRead;
+
+    public void read() {
+        this.isRead = true;
+    }
 }

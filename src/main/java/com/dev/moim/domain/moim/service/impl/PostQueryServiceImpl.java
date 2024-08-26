@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.repository.UserRepository;
+
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
 import com.dev.moim.domain.moim.dto.post.*;
@@ -9,7 +9,7 @@ import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.PostQueryService;
-import com.dev.moim.domain.user.service.UserQueryService;
+
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostQueryServiceImpl implements PostQueryService {
 
     private final PostRepository postRepository;
@@ -34,8 +36,6 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
     private final ReadPostRepository readPostRepository;
-    private final UserQueryService userQueryService;
-    private final UserRepository userRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -76,11 +76,6 @@ public class PostQueryServiceImpl implements PostQueryService {
        }
 
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
-
-        if (post.getPostType().equals(PostType.ANNOUNCEMENT)) {
-            ReadPost readPost = ReadPost.builder().post(post).user(user).build();
-            readPostRepository.save(readPost);
-        }
 
         Boolean postLike = isPostLike(user.getId(), postId);
 
@@ -147,12 +142,28 @@ public class PostQueryServiceImpl implements PostQueryService {
         List<Moim> moimsByUser = moimRepository.findMoimsByUser(user);
 
         List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = moimsByUser.stream().map((m) -> {
-            List<Post> postList = postRepository.findByMoimOrderByCreatedAtDesc(m, PageRequest.of(0, 3));
+            List<Post> postList = postRepository.findByNotPostTypeAndMoimOrderByCreatedAtDesc(PostType.GLOBAL ,m, PageRequest.of(0, 3));
             List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
 
             return JoinMoimPostsResponseDTO.toJoinMoimPostsResponseDTO(m.getId(), m.getName(), moimPostPreviewDTOStream);
         }).toList();
 
         return joinMoimPostsResponseDTOList;
+    }
+
+    @Override
+    public List<BlockCommentResponse> findBlockComments(User user) {
+
+        List<Comment> comments = commentRepository.findByBlockComment(user);
+
+        return comments.stream().map(BlockCommentResponse::toBlockCommentResponse).toList();
+    }
+
+    @Override
+    public List<MoimPostPreviewDTO> findBlockPosts(User user) {
+
+        List<Post> postList = postRepository.findBlockPost(user);
+
+        return postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
     }
 }

@@ -14,6 +14,7 @@ import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
+import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
@@ -206,7 +207,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public List<User> findUnReadUserListByPost(User user, Long moimId, Long postId) {
+    public List<UserPreviewDTO> findUnReadUserListByPost(User user, Long moimId, Long postId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(MOIM_NOT_FOUND));
         Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
@@ -214,11 +215,12 @@ public class UserQueryServiceImpl implements UserQueryService {
            throw new PostException(ErrorStatus.NOT_ANNOUNCEMENT_POST);
         }
 
-        List<User> userByMoim = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
-        List<User> readUsers = userRepository.findReadUsers(user, post);
-        userByMoim.removeAll(readUsers);
 
-        return userByMoim;
+        List<UserProfileDTO> readUsers = userRepository.findReadUsers(post);
+
+        List<UserPreviewDTO> userPreviewDTOList = readUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+
+        return userPreviewDTOList;
     }
 
 

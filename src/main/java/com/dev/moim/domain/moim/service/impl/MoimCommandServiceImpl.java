@@ -50,14 +50,16 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
+
+
         Moim moim = Moim.builder()
                 .name(createMoimDTO.title())
                 .introduction(createMoimDTO.introduction())
                 .location(createMoimDTO.location())
                 .moimCategory(createMoimDTO.moimCategory())
-                .introduceVideoKeyName(s3Service.generateStaticUrl(createMoimDTO.introduceVideoKeyName()))
+                .introduceVideoKeyName(imageNullProcess(createMoimDTO.introduceVideoKeyName()))
                 .introduceVideoTitle(createMoimDTO.introduceVideoTitle())
-                .imageUrl(s3Service.generateStaticUrl(createMoimDTO.imageKeyName()))
+                .imageUrl(imageNullProcess(createMoimDTO.imageKeyName()))
                 .build();
 
         moimRepository.save(moim);
@@ -107,7 +109,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     public void modifyMoimInfo(UpdateMoimDTO updateMoimDTO) {
         Moim moim = moimRepository.findById(updateMoimDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        moim.updateMoim(moim.getName(), moim.getMoimCategory(), moim.getLocation(), moim.getIntroduction(), s3Service.generateStaticUrl(updateMoimDTO.imageKeyName()));
+        moim.updateMoim(moim.getName(), moim.getMoimCategory(), moim.getLocation(), moim.getIntroduction(), imageNullProcess(updateMoimDTO.imageKeyName()));
     }
 
     @Override
@@ -199,5 +201,9 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = userMoimRepository.findById(userMoimId).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoim.confirm();
+    }
+
+    private String imageNullProcess(String imageKeyName) {
+        return imageKeyName == null || imageKeyName.isEmpty() || imageKeyName.isBlank() ? null : s3Service.generateStaticUrl(imageKeyName);
     }
 }

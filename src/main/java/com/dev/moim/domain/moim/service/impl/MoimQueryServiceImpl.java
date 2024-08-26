@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_OWNER_NOT_FOUND;
 import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
@@ -85,8 +86,6 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             name = "%" + name.trim() + "%";
         }
 
-        System.out.println(name);
-
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
@@ -112,8 +111,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take) {
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
+    public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take, String search) {
+
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, search, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
 
         List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
@@ -126,8 +126,10 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take) {
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
+    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take, String search) {
+
+
+        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, search, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
 
         List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
@@ -180,9 +182,10 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         int reviewCount = postRepository.findByMoimAndPostType(moim, PostType.REVIEW).size();
         List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
-        Boolean exists = userMoimRepository.existsByUserAndMoimAndJoinStatuses(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+        JoinStatus joinStatus = userMoimRepository.findJoinStatusByUserAndMoim(user, moim);
         List<UserProfileDTO> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
         List<UserPreviewDTO> userPreviewDTOList = userProfileList.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+        Optional<MoimRole> moimRoleByUser = userMoimRepository.findMoimRoleByUser(user);
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
@@ -203,9 +206,14 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             averageAge = totalAge / count;
         }
 
+        MoimRole moimRole;
+        if (moimRoleByUser.isPresent()) {
+            moimRole = moimRoleByUser.get();
+        } else {
+            moimRole = null;
+        }
 
-
-        return MoimDetailDTO.toMoimDetailDTO(moim, exists, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
+        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
 
     }
 
