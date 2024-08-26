@@ -34,5 +34,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Slice<Post> findByPostTypeAndIdLessThanOrderByIdDesc(PostType postType, Long id, Pageable pageable);
 
     @Query("select p from Post p join p.moim m where m = :moim and p.postType != :postType")
-    List<Post> findByMoimOrderByCreatedAtDesc(PostType postType, Moim moim, Pageable pageable);
+    List<Post> findByNotPostTypeAndMoimOrderByCreatedAtDesc(PostType postType, Moim moim, Pageable pageable);
 }
