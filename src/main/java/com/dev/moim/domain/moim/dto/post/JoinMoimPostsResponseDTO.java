@@ -3,7 +3,7 @@ package com.dev.moim.domain.moim.dto.post;
 import java.util.List;
 
 public record JoinMoimPostsResponseDTO(
-        Long moimdId,
+        Long moimId,
         String moimTitle,
         List<MoimPostPreviewDTO> moimPostPreviewDTOList
 ) {
