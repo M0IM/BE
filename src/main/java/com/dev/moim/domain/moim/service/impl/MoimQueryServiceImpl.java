@@ -185,7 +185,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         JoinStatus joinStatus = userMoimRepository.findJoinStatusByUserAndMoim(user, moim);
         List<UserProfileDTO> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
         List<UserPreviewDTO> userPreviewDTOList = userProfileList.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
-        Optional<MoimRole> moimRoleByUser = userMoimRepository.findMoimRoleByUser(user);
+        Optional<MoimRole> moimRoleByUser = userMoimRepository.findMoimRoleByUserAndMoim(user, moim);
 
         Double totalAge = 0.0;
         Double averageAge = 0.0;
