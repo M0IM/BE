@@ -43,7 +43,7 @@ public interface UserQueryService {
 
     AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take);
 
-    List<User> findUnReadUserListByPost(User user, Long moimId, Long postId);
+    List<UserPreviewDTO> findUnReadUserListByPost(User user, Long moimId, Long postId);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

@@ -32,4 +32,8 @@ public interface PostCommandService {
     void reportComment(User user, CommentReportDTO commentReportDTO);
 
     void blockComment(User user, CommentBlockDTO commentBlockDTO);
+
+    Long createAnnouncement(User user, @Valid AnnouncementRequestDTO announcementRequestDTO);
+
+    void announcementConfirm(User user, @Valid AnnouncementConfirmRequestDTO announcementRequestDTO);
 }
