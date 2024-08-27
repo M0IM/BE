@@ -85,7 +85,9 @@ public class PostQueryServiceImpl implements PostQueryService {
 
         Boolean postLike = isPostLike(user.getId(), postId);
 
-        return MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike);
+        Optional<UserMoim> userMoim = userMoimRepository.findByPost(post);
+
+        return MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike, userMoim);
     }
 
     @Override
