@@ -6,6 +6,8 @@ import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostBlock;
+import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.service.PostCommandService;
 import com.dev.moim.domain.moim.service.PostQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewDTO;
@@ -26,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -37,6 +40,7 @@ public class MoimPostController {
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
     private final UserQueryService userQueryService;
+    private final UserMoimRepository userMoimRepository;
 
     @Operation(summary = "모임 게시판 목록 API", description = "모임 게시판 목록을 조회 합니다. _by 제이미_")
     @ApiResponses({
@@ -234,7 +238,8 @@ public class MoimPostController {
     public BaseResponse<MoimPostDetailDTO> getIntroductionPost(@AuthUser User user, @PathVariable Long postId) {
         Post post = postQueryService.getIntroductionPost( postId);
         Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
-        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
+        Optional<UserMoim> userMoim =  userMoimRepository.findByPost(post);
+        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike, userMoim));
     }
 
     @Operation(summary = "게시물 읽을 사람 (아직 안읽은사람) API", description = "아직 해당 공지사항을 안 읽은 사람을 리턴합니다.. _by 제이미_")

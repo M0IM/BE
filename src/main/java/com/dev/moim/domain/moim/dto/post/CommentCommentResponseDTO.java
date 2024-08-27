@@ -1,9 +1,12 @@
 package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Comment;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.CommentStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public record CommentCommentResponseDTO(
         Long commentId,
@@ -16,13 +19,21 @@ public record CommentCommentResponseDTO(
         LocalDateTime updateAt,
         LocalDateTime createAt
 ) {
-    public static CommentCommentResponseDTO toCommentCommentResponseDTO(Comment comment, Boolean isLike) {
+    public static CommentCommentResponseDTO toCommentCommentResponseDTO(Comment comment, Boolean isLike, List<Comment> blockComments, Optional<UserMoim> userMoim) {
+        boolean b1 = blockComments.stream().anyMatch((b) -> {
+                    if (comment.equals(b)) {
+                        return true;
+                    }
+                    return false;
+                }
+        );
+
         return new CommentCommentResponseDTO(
                 comment.getId(),
-                comment.getContent(),
+                b1 ? null : comment.getContent(),
                 comment.getCommentLikeList().size(),
-                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
-                comment.getUserMoim() == null ? null : comment.getUserMoim().getUserProfile().getName(),
+                userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getImageUrl(),
+                userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getName(),
                 isLike,
                 comment.getCommentStatus(),
                 comment.getUpdatedAt(),

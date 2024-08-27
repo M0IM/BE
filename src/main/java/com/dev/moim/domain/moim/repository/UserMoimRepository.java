@@ -1,7 +1,9 @@
 package com.dev.moim.domain.moim.repository;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.entity.Comment;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
@@ -53,4 +55,10 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select um.moimRole from  UserMoim um where um.user = :user and um.moim = :moim and um.joinStatus = 'COMPLETE'")
     Optional<MoimRole> findMoimRoleByUserAndMoim(User user, Moim moim);
+
+    @Query("select um from Comment c join c.userMoim um where c = :comment")
+    Optional<UserMoim> findByComment(Comment comment);
+
+    @Query("select um from Post p join p.userMoim um where p = :post")
+    Optional<UserMoim> findByPost(Post post);
 }

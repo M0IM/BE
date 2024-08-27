@@ -161,7 +161,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping ("/moims/{moimId}/requests/users")
-    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @CheckAdminValidation Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
+    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
         UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take, search);
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
