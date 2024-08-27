@@ -45,11 +45,11 @@ public class User extends BaseEntity {
     private String deviceId;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     private Boolean isPushAlarm;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     private Boolean isEventAlarm;
 
     @Enumerated(EnumType.STRING)
