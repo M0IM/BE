@@ -1,7 +1,9 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.calender.PlanDetailDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
+import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
@@ -9,10 +11,7 @@ import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
-import com.dev.moim.global.validation.annotation.CheckPageValidation;
-import com.dev.moim.global.validation.annotation.CheckSizeValidation;
-import com.dev.moim.global.validation.annotation.ExistUserValidation;
-import com.dev.moim.global.validation.annotation.IndividualPlanValidation;
+import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +33,7 @@ public class UserController {
 
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
+    private final CalenderQueryService calenderQueryService;
 
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -202,7 +202,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @GetMapping("/monthly/user-moim-plans")
+    @GetMapping("/monthly/moim-plans")
     public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getUserPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
@@ -228,8 +228,8 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @GetMapping("/user-moim-plan")
-    public BaseResponse<UserDailyPlanPageDTO> getUserDailyMoimPlan(
+    @GetMapping("/daily/moim-plans")
+    public BaseResponse<UserDailyPlanPageDTO> getUserDailyMoimPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month,
@@ -237,15 +237,15 @@ public class UserController {
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlan(user, year, month, day, page, size));
+        return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlans(user, year, month, day, page, size));
     }
 
     @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 개인 일정 리스트 조회", description = "특정 날짜에 예정된 (유저의 개인 일정)을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @GetMapping("/user-individual-plan")
-    public BaseResponse<UserDailyPlanPageDTO> getUserDailyIndividualPlan(
+    @GetMapping("/daily/individual-plans")
+    public BaseResponse<UserDailyPlanPageDTO> getUserDailyIndividualPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month,
@@ -253,15 +253,15 @@ public class UserController {
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlan(user, year, month, day, page, size));
+        return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlans(user, year, month, day, page, size));
     }
 
     @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 (개인 + 모임 신청 일정) 리스트 조회", description = "특정 날짜에 예정된 (개인 + 모임 신청 일정) 리스트를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @GetMapping("/user-daily-plan")
-    public BaseResponse<UserDailyPlanPageDTO> getUserDailyPlanList(
+    @GetMapping("/daily/total-plans")
+    public BaseResponse<UserDailyPlanPageDTO> getUserDailyPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month,
@@ -269,7 +269,7 @@ public class UserController {
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userQueryService.getUserDailyPlanList(user, year, month, day, page, size));
+        return BaseResponse.onSuccess(userQueryService.getUserDailyPlans(user, year, month, day, page, size));
     }
 
     @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 총 일정 개수 조회", description = "특정 날짜에 예정된 (유저의 총 일정 개수)를 조회합니다.")
@@ -284,6 +284,34 @@ public class UserController {
             @Parameter(description = "일") @RequestParam int day
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserDailyPlanCnt(user, year, month, day));
+    }
+
+    @Operation(summary = "유저의 개인 일정 상세 조회", description = "유저의 특정 개인 일정을 상세 조회 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "PLAN_001", description = "존재하지 않는 개인 일정 입니다."),
+            @ApiResponse(responseCode = "PLAN_002", description = "해당 일정의 작성자가 아닙니다.")
+    })
+    @GetMapping("/individual-plan/{individualPlanId}")
+    public BaseResponse<UserPlanDTO> getIndividualPlanDetail (
+            @AuthUser User user,
+            @IndividualPlanValidation @PathVariable Long individualPlanId
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getIndividualPlanDetail(user, individualPlanId));
+    }
+
+    @Operation(summary = "유저의 모임 참여 신청 일정 상세 조회", description = "유저의 특정 모임 참여 신청 일정을 상세 조회 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "PLAN_002", description = "해당 일정에 참여 신청하지 않았습니다."),
+            @ApiResponse(responseCode = "PLAN_005", description = "존재하지 않는 일정입니다.")
+    })
+    @GetMapping("/moim-plan/{userMoimPlanId}")
+    public BaseResponse<PlanDetailDTO> getUserMoimPlanDetail (
+            @AuthUser User user,
+            @UserPlanValidation @PathVariable Long userMoimPlanId
+    ) {
+        return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, userMoimPlanId));
     }
 
     @Operation(summary = "알림 삭제 API", description = "모든 알림을 삭제합니다.")

@@ -7,7 +7,7 @@ public interface CalenderQueryService {
 
     PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month);
 
-    PlanDetailDTO getPlanDetails(User user, Long moimId, Long planId);
+    PlanDetailDTO getPlanDetails(User user, Long planId);
 
     ScheduleListDTO getSchedules(Long moiId, Long planId);
 

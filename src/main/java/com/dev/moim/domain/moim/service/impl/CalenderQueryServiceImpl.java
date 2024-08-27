@@ -76,7 +76,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     }
 
     @Override
-    public PlanDetailDTO getPlanDetails(User user, Long moimId, Long planId) {
+    public PlanDetailDTO getPlanDetails(User user, Long planId) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new MoimException(PLAN_NOT_FOUND));
