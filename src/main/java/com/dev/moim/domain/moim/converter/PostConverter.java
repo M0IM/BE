@@ -17,15 +17,10 @@ public class PostConverter {
 
     private final PostQueryService postQueryService;
 
-    public static MoimPostPreviewListDTO toMoimPostPreviewListDTO(Slice<Post> postList, Long nextCursor) {
+    public static MoimPostPreviewListDTO toMoimPostPreviewListDTO(List<MoimPostPreviewDTO> moimPostPreviewDTOList,Boolean hasNext, Long nextCursor) {
 
-
-        List<MoimPostPreviewDTO> posts = postList.stream().map(PostConverter::toMoimPostPreviewDTO).toList();
-
-        return MoimPostPreviewListDTO.toMoimPostPreviewListDTO(posts, nextCursor, postList.hasNext());
+        return MoimPostPreviewListDTO.toMoimPostPreviewListDTO(moimPostPreviewDTOList, nextCursor, hasNext);
     }
 
-    public static MoimPostPreviewDTO toMoimPostPreviewDTO(Post post) {
-        return MoimPostPreviewDTO.toMoimPostPreviewDTO(post);
-    }
+
 }
