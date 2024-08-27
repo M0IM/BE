@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 
+import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.converter.PostConverter;
 import com.dev.moim.domain.moim.dto.post.*;
@@ -35,7 +36,7 @@ public class PostQueryServiceImpl implements PostQueryService {
     private final CommentLikeRepository commentLikeRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostBlockRepository postBlockRepository;
-    private final ReadPostRepository readPostRepository;
+    private final UserRepository userRepository;
 
     @Override
     public MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take) {
@@ -103,8 +104,12 @@ public class PostQueryServiceImpl implements PostQueryService {
         }
 
         List<CommentResponseDTO> commentResponseDTOList = commentSlices.stream().map((comment) -> {
-            List<CommentCommentResponseDTO> commentCommentResponseDTOList = comment.getChildren().stream().map(commentcomment -> CommentCommentResponseDTO.toCommentCommentResponseDTO(commentcomment, isCommentLike(user.getId(), commentcomment.getId()))).toList();
-            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList, commentBlockList);
+            Optional<UserMoim> commentUserMoim = userMoimRepository.findByComment(comment);
+            List<CommentCommentResponseDTO> commentCommentResponseDTOList = comment.getChildren().stream().map(commentcomment -> {
+                Optional<UserMoim> commentCommentUserMoim = userMoimRepository.findByComment(commentcomment);
+                return CommentCommentResponseDTO.toCommentCommentResponseDTO(commentcomment, isCommentLike(user.getId(), commentcomment.getId()), commentBlockList, commentCommentUserMoim);
+            }).toList();
+            return CommentResponseDTO.toCommentResponseDTO(comment, isCommentLike(user.getId(), comment.getId()), commentCommentResponseDTOList, commentBlockList, commentUserMoim);
         }).toList();
 
         return CommentResponseListDTO.toCommentResponseListDTO(commentResponseDTOList, nextCursor, commentSlices.hasNext());

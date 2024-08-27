@@ -8,6 +8,7 @@ import com.dev.moim.domain.moim.entity.enums.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record CommentResponseDTO(
         Long commentId,
@@ -21,8 +22,7 @@ public record CommentResponseDTO(
         LocalDateTime createAt,
         List<CommentCommentResponseDTO> commentResponseDTOList
 ) {
-    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList, List<Comment> blockComments) {
-        UserMoim userMoim = comment.getUserMoim();
+    public static CommentResponseDTO toCommentResponseDTO(Comment comment, Boolean isLike, List<CommentCommentResponseDTO> commentResponseDTOList, List<Comment> blockComments, Optional<UserMoim> userMoim) {
 
         boolean b1 = blockComments.stream().anyMatch((b) -> {
                     if (comment.equals(b)) {
@@ -36,8 +36,8 @@ public record CommentResponseDTO(
                 comment.getId(),
                 b1 ?  null : comment.getContent(),
                 comment.getCommentLikeList().size(),
-                userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getImageUrl(),
-                userMoim == null || b1 ? null : comment.getUserMoim().getUserProfile().getName(),
+                userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getImageUrl(),
+                userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getName(),
                 isLike,
                 comment.getCommentStatus(),
                 comment.getUpdatedAt(),
