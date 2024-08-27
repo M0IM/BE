@@ -18,10 +18,7 @@ import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
-import com.dev.moim.global.error.handler.IndividualPlanException;
-import com.dev.moim.global.error.handler.MoimException;
-import com.dev.moim.global.error.handler.PostException;
-import com.dev.moim.global.error.handler.UserException;
+import com.dev.moim.global.error.handler.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -86,7 +83,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size) {
+    public UserDailyPlanPageDTO getUserDailyMoimPlans(User user, int year, int month, int day, int page, int size) {
         LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
@@ -97,7 +94,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size) {
+    public UserDailyPlanPageDTO getUserDailyIndividualPlans(User user, int year, int month, int day, int page, int size) {
         LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
@@ -108,7 +105,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public UserDailyPlanPageDTO getUserDailyPlanList(User user, int year, int month, int day, int page, int size) {
+    public UserDailyPlanPageDTO getUserDailyPlans(User user, int year, int month, int day, int page, int size) {
         LocalDateTime startOfDay = LocalDate.of(year, month, day).atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1);
 
@@ -186,6 +183,22 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
         return new UserDailyPlanCntDTO(userProfile.getName(), individualPlanCnt + moimPlanCnt);
+    }
+
+    @Override
+    public UserPlanDTO getIndividualPlanDetail(User user, Long individualPlanId) {
+        IndividualPlan individualPlan = individualPlanRepository.findById(individualPlanId)
+                .orElseThrow(() -> new PlanException(INDIVIDUAL_PLAN_NOT_FOUND));
+
+        return UserPlanDTO.toIndividualPlan(individualPlan);
+    }
+
+    @Override
+    public UserPlanDTO getUserMoimPlanDetail(User user, Long userMoimPlanId) {
+        UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), userMoimPlanId)
+                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
+
+        return UserPlanDTO.toUserMoimPlan(userPlan.getPlan());
     }
 
     @Override

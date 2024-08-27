@@ -23,13 +23,17 @@ public interface UserQueryService {
 
     PlanMonthListDTO<List<UserPlanDTO>> getUserMonthlyPlans(User user, int year, int month);
 
-    UserDailyPlanPageDTO getUserDailyMoimPlan(User user, int year, int month, int day, int page, int size);
+    UserDailyPlanPageDTO getUserDailyMoimPlans(User user, int year, int month, int day, int page, int size);
 
-    UserDailyPlanPageDTO getUserDailyIndividualPlan(User user, int year, int month, int day, int page, int size);
+    UserDailyPlanPageDTO getUserDailyIndividualPlans(User user, int year, int month, int day, int page, int size);
 
-    UserDailyPlanPageDTO getUserDailyPlanList(User user, int year, int month, int day, int page, int size);
+    UserDailyPlanPageDTO getUserDailyPlans(User user, int year, int month, int day, int page, int size);
 
     UserDailyPlanCntDTO getUserDailyPlanCnt(User user, int year, int month, int day);
+
+    UserPlanDTO getIndividualPlanDetail(User user, Long individualPlanId);
+
+    UserPlanDTO getUserMoimPlanDetail(User user, Long userMoimPlanId);
 
     List<Long> findUserMoimIdListByUserId(Long userId);
 

@@ -72,7 +72,7 @@ public class MoimCalendarController {
             @PlanValidation @PathVariable Long planId,
             @Parameter(description = "표시할 일정 스케줄 개수", example = "5") @RequestParam(defaultValue = "5") int scheduleCntLimit
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, moimId, planId));
+        return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, planId));
     }
 
     @Operation(summary = "모임 일정 스케줄 리스트 조회", description = "특정 일정의 스케줄들을 조회할 수 있습니다.")
