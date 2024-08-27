@@ -61,4 +61,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select um from Post p join p.userMoim um where p = :post")
     Optional<UserMoim> findByPost(Post post);
+
+    List<UserMoim> findByMoimId(Long moimId);
 }
