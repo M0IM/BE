@@ -11,7 +11,7 @@ import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
 public interface MoimQueryService {
 
-    MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take);
+    MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take);
 
     MoimPreviewListDTO findMoims(MoimRequestType moimRequestType, String name, Long cursor, Integer take);
 

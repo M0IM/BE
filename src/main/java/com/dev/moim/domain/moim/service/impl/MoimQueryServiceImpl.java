@@ -56,13 +56,13 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public MoimPreviewListDTO getMyMoim(User user, Long cursor, Integer take) {
+    public MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take) {
 
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<Moim> myMoims = moimRepository.findMyMoims(user, cursor, PageRequest.of(0, take));
+        Slice<Moim> myMoims = moimRepository.findMyMoims(userId, cursor, PageRequest.of(0, take));
 
         List<MoimPreviewDTO> findMyMoims = myMoims.stream().map((moim)->{
             return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());
