@@ -1,6 +1,6 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.moim.repository.MoimRepository;
+import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.global.validation.annotation.MoimValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -15,7 +15,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_NOT_FOUND;
 @RequiredArgsConstructor
 public class MoimValidator implements ConstraintValidator<MoimValidation, Long> {
 
-    private final MoimRepository moimRepository;
+    private final MoimQueryService moimQueryService;
 
     @Override
     public void initialize(MoimValidation constraintAnnotation) {
@@ -25,7 +25,7 @@ public class MoimValidator implements ConstraintValidator<MoimValidation, Long> 
     @Override
     public boolean isValid(Long moimId, ConstraintValidatorContext context) {
 
-        boolean isValidMoim = moimRepository.existsById(moimId);
+        boolean isValidMoim = moimQueryService.existsByMoimId(moimId);
 
         if (!isValidMoim) {
             context.disableDefaultConstraintViolation();

@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.UserReview;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -262,7 +263,6 @@ public class UserQueryServiceImpl implements UserQueryService {
            throw new PostException(ErrorStatus.NOT_ANNOUNCEMENT_POST);
         }
 
-
         List<UserProfileDTO> readUsers = userRepository.findReadUsers(post);
 
         List<UserPreviewDTO> userPreviewDTOList = readUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
@@ -270,6 +270,15 @@ public class UserQueryServiceImpl implements UserQueryService {
         return userPreviewDTOList;
     }
 
+    @Override
+    public boolean existsByProviderAndProviderId(Provider provider, String providerId) {
+        return userRepository.existsByProviderAndProviderId(provider, providerId);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
 }
 

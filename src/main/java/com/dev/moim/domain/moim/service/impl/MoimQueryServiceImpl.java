@@ -40,8 +40,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_OWNER_NOT_FOUND;
-import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -250,5 +249,15 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         return MoimJoinRequestListDTO.toMoimJoinRequestListDTO(moimJoinRequestDTOList, joinRequestDTOSlice.hasNext(), nextCursor);
+    }
+
+    @Override
+    public boolean existsByMoimId(Long moimId) {
+        return moimRepository.existsById(moimId);
+    }
+
+    @Override
+    public boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus) {
+        return userMoimRepository.existsByUserIdAndMoimIdAndJoinStatus(userId, moimId, joinStatus);
     }
 }

@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.dto.MoimJoinRequestListDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
 public interface MoimQueryService {
@@ -29,4 +30,8 @@ public interface MoimQueryService {
     Long findMoimOwner(Long moimId);
 
     MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take);
+
+    boolean existsByMoimId(Long moimId);
+
+    boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus);
 }

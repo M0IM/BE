@@ -13,8 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_EDIT_UNAUTHORIZED;
-import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @Component
@@ -43,9 +42,11 @@ public class PlanAuthorityValidator implements ConstraintValidator<PlanAuthority
             }
             addConstraintViolation(context, PLAN_EDIT_UNAUTHORIZED.toString(), "userId");
             return false;
-        } catch(PlanException | MoimException e) {
-            log.info("error : {}", e.getMessage());
+        } catch(PlanException e) {
             addConstraintViolation(context, PLAN_NOT_FOUND.toString(), "planId");
+            return false;
+        } catch (MoimException e) {
+            addConstraintViolation(context, MOIM_OWNER_NOT_FOUND.toString(), "moimId");
             return false;
         }
     }

@@ -1,6 +1,8 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.global.validation.annotation.ExistUserValidation;
+import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.user.service.UserQueryService;
+import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.validation.annotation.SelfReviewValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -10,12 +12,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.SELF_REVIEW_FORBIDDEN;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SelfReviewValidator implements ConstraintValidator<SelfReviewValidation, Long> {
+
+    private final UserQueryService userQueryService;
 
     @Override
     public void initialize(SelfReviewValidation constraintAnnotation) {
@@ -23,16 +27,29 @@ public class SelfReviewValidator implements ConstraintValidator<SelfReviewValida
     }
 
     @Override
-    public boolean isValid(@ExistUserValidation Long targetUserId, ConstraintValidatorContext context) {
+    public boolean isValid(Long targetUserId, ConstraintValidatorContext context) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        try {
+           User targetUser = userQueryService.findUserById(targetUserId)
+                   .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        if (targetUserId.toString().equals(authentication.getName())) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(SELF_REVIEW_FORBIDDEN.getMessage())
-                    .addConstraintViolation();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (targetUser.getId().toString().equals(authentication.getName())) {
+                addConstraintViolation(context, SELF_REVIEW_FORBIDDEN.toString());
+                return false;
+            }
+            return true;
+        } catch (UserException e) {
+            addConstraintViolation(context, USER_NOT_FOUND.toString());
             return false;
         }
-        return true;
+    }
+
+    private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+                .addPropertyNode("userId")
+                .addConstraintViolation();
     }
 }

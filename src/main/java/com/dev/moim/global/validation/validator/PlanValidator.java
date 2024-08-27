@@ -1,6 +1,6 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.moim.repository.PlanRepository;
+import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.validation.annotation.PlanValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -15,7 +15,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
 @RequiredArgsConstructor
 public class PlanValidator implements ConstraintValidator<PlanValidation, Long> {
 
-    private final PlanRepository planRepository;
+    private final CalenderQueryService calenderQueryService;
 
     @Override
     public void initialize(PlanValidation constraintAnnotation) {
@@ -23,9 +23,9 @@ public class PlanValidator implements ConstraintValidator<PlanValidation, Long> 
     }
 
     @Override
-    public boolean isValid(Long plandId, ConstraintValidatorContext context) {
+    public boolean isValid(Long planId, ConstraintValidatorContext context) {
 
-        boolean isValidPlan = planRepository.existsById(plandId);
+        boolean isValidPlan = calenderQueryService.existsByPlanId(planId);
 
         if (!isValidPlan) {
             context.disableDefaultConstraintViolation();

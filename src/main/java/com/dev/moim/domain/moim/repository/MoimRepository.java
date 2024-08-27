@@ -3,7 +3,6 @@ package com.dev.moim.domain.moim.repository;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
-import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
