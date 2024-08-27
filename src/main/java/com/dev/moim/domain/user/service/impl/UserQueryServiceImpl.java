@@ -9,16 +9,12 @@ import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
-import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.Post;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
-import com.dev.moim.domain.moim.entity.IndividualPlan;
-import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
@@ -39,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
@@ -126,7 +123,6 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     public PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month) {
-
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
@@ -138,6 +134,44 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
 
         return new PlanMonthListDTO<>(monthPlanListByDay);
+    }
+
+    @Override
+    public PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<UserPlan> userPlanList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate);
+
+        Map<Integer, List<UserPlanDTO>> planListByDay = userPlanList.stream()
+                .map(userPlan -> UserPlanDTO.toUserMoimPlan(userPlan.getPlan()))
+                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
+
+        return new PlanMonthListDTO<>(planListByDay);
+    }
+
+    @Override
+    public PlanMonthListDTO<List<UserPlanDTO>> getUserMonthlyPlans(User user, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        List<UserPlanDTO> userMoimPlanDTOList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate).stream()
+                .map(userPlan -> UserPlanDTO.toUserMoimPlan(userPlan.getPlan()))
+                .toList();
+
+        List<UserPlanDTO> individualPlanDTOList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate).stream()
+                .map(UserPlanDTO::toIndividualPlan)
+                .toList();
+
+        List<UserPlanDTO> userMonthlyPlanDTOList = Stream.concat(userMoimPlanDTOList.stream(), individualPlanDTOList.stream())
+                .toList();
+
+        Map<Integer, List<UserPlanDTO>> userMonthlyPlanListByDay = userMonthlyPlanDTOList.stream()
+                .collect(Collectors.groupingBy(plan -> plan.time().getDayOfMonth()));
+
+        return new PlanMonthListDTO<>(userMonthlyPlanListByDay);
     }
 
     @Override

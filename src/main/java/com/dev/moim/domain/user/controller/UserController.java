@@ -185,11 +185,11 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "특정 날짜 (연, 월) : 개인 일정 조회", description = "유저의 개인 일정들을 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월) : 개인 일정 리스트 조회", description = "유저의 개인 일정들을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
     })
-    @GetMapping("/calender")
+    @GetMapping("/monthly/individual-plans")
     public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getIndividualPlans(
             @AuthUser User user,
             @Parameter(description = "연도") @RequestParam int year,
@@ -198,7 +198,33 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getIndividualPlans(user, year, month));
     }
 
-    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저가 참여 신청한 모임 일정 조회", description = "특정 날짜에 예정된 (유저가 참여 신청한 모임 일정)을 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월) : 유저가 참여 신청한 모임 일정 리스트 조회", description = "유저가 참여 신청한 모임 일정들을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/monthly/user-moim-plans")
+    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getUserPlans(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserPlans(user, year, month));
+    }
+
+    @Operation(summary = "특정 날짜 (연, 월) : 모든 타입 일정 리스트 조회", description = "유저의 모든 타입 일정들 (참여 신청한 모임 일정 + 개인 일정) 을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "유저 일정 조회 성공"),
+    })
+    @GetMapping("/monthly/total-plans")
+    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getUserMonthlyPlans(
+            @AuthUser User user,
+            @Parameter(description = "연도") @RequestParam int year,
+            @Parameter(description = "월") @RequestParam int month
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserMonthlyPlans(user, year, month));
+    }
+
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저가 참여 신청한 모임 일정 리스트 조회", description = "특정 날짜에 예정된 (유저가 참여 신청한 모임 일정)을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -214,7 +240,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyMoimPlan(user, year, month, day, page, size));
     }
 
-    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 개인 일정 조회", description = "특정 날짜에 예정된 (유저의 개인 일정)을 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 개인 일정 리스트 조회", description = "특정 날짜에 예정된 (유저의 개인 일정)을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })

@@ -4,7 +4,6 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
-import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
@@ -18,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -29,19 +26,6 @@ public class MoimCalendarController {
 
     private final CalenderCommandService calenderCommandService;
     private final CalenderQueryService calenderQueryService;
-
-    @Operation(summary = "유저가 참여 신청한 모임 일정 조회", description = "유저가 참여 신청한 모임 일정들을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
-    })
-    @GetMapping("/calender/user-moim-plans")
-    public BaseResponse<PlanMonthListDTO<List<UserPlanDTO>>> getUserPlans(
-            @AuthUser User user,
-            @Parameter(description = "연도") @RequestParam int year,
-            @Parameter(description = "월") @RequestParam int month
-    ) {
-        return BaseResponse.onSuccess(calenderQueryService.getUserPlans(user, year, month));
-    }
 
     @Operation(summary = "모임 (월) 일정 조회", description = "달력에서 특정 연도, 월에 등록되어 있는 일정들을 조회합니다. 모임에 참여하는 멤버만 조회 가능 합니다.")
     @ApiResponses(value = {

@@ -2,13 +2,8 @@ package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
-import com.dev.moim.domain.user.dto.UserPlanDTO;
-
-import java.util.List;
 
 public interface CalenderQueryService {
-
-    PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month);
 
     PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month);
 
