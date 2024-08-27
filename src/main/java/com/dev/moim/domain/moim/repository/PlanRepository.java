@@ -24,7 +24,8 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     @Query(value = "SELECT p.id, p.title, p.date, p.location, p.location_detail, NULL as memo, m.name as moimName, 'MOIM_PLAN' as plan_type " +
             "FROM plan p " +
             "JOIN moim m ON p.moim_id = m.id " +
-            "WHERE p.user_id = :userId " +
+            "JOIN user_plan up ON p.id = up.plan_id " +
+            "WHERE up.user_id = :userId " +
             "AND p.date BETWEEN :startOfDay AND :endOfDay " +
             "UNION " +
             "SELECT ip.id, ip.title, ip.date, ip.location, ip.location_detail, ip.memo, NULL as moimName, 'INDIVIDUAL_PLAN' as plan_type " +
