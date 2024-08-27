@@ -10,10 +10,7 @@ import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
-import com.dev.moim.global.validation.annotation.CheckAdminValidation;
-import com.dev.moim.global.validation.annotation.CheckCursorValidation;
-import com.dev.moim.global.validation.annotation.CheckTakeValidation;
-import com.dev.moim.global.validation.annotation.UserMoimValidaton;
+import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,7 +62,21 @@ public class MoimController {
     })
     @GetMapping("/moims/me")
     public BaseResponse<MoimPreviewListDTO> getMyMoim(@AuthUser User user, @CheckCursorValidation Long cursor, @CheckTakeValidation Integer take) {
-        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getMyMoim(user, cursor, take);
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(user.getId(), cursor, take);
+        return BaseResponse.onSuccess(moimPreviewListDTO);
+    }
+
+    // 다른 멤버 모임
+    @Operation(summary = "다른 멤버가 활동 중인 모임 확인 API", description = "다른 멤버가 활동 중인 모임을 확인 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/list/{userId}")
+    public BaseResponse<MoimPreviewListDTO> getUserMoim(
+            @ExistUserValidation @PathVariable Long userId,
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(userId, cursor, take);
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
     
