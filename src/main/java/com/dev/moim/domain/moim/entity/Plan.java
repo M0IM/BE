@@ -46,7 +46,7 @@ public class Plan extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> scheduleList = new ArrayList<>();
 
     @OneToMany(mappedBy = "plan", cascade = CascadeType.REMOVE)
