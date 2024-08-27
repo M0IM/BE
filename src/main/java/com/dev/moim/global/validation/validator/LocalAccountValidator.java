@@ -1,7 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.validation.annotation.LocalAccountValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -17,7 +17,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.EMAIL_DUPLICATI
 @RequiredArgsConstructor
 public class LocalAccountValidator implements ConstraintValidator<LocalAccountValidation, JoinRequest> {
 
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
 
     @Override
     public void initialize(LocalAccountValidation constraintAnnotation) {}
@@ -31,7 +31,7 @@ public class LocalAccountValidator implements ConstraintValidator<LocalAccountVa
     }
 
     private boolean validateEmailDuplication(String email, ConstraintValidatorContext context) {
-        if (userRepository.existsByEmail(email)) {
+        if (userQueryService.existsByEmail(email)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(EMAIL_DUPLICATION.toString())
                     .addPropertyNode("email")

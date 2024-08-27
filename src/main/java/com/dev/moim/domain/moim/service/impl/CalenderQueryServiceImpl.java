@@ -124,4 +124,9 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
         return plan.getUser().getId();
     }
+
+    @Override
+    public boolean existsByPlanId(Long planId) {
+        return planRepository.existsById(planId);
+    }
 }

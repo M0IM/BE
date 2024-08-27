@@ -1,6 +1,7 @@
 package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
@@ -50,6 +51,10 @@ public interface UserQueryService {
     AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take);
 
     List<UserPreviewDTO> findUnReadUserListByPost(User user, Long moimId, Long postId);
+
+    boolean existsByProviderAndProviderId(Provider provider, String providerId);
+
+    boolean existsByEmail(String email);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

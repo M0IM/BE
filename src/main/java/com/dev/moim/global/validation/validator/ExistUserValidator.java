@@ -1,7 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.validation.annotation.ExistUserValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -16,7 +16,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
 @RequiredArgsConstructor
 public class ExistUserValidator implements ConstraintValidator<ExistUserValidation, Long> {
 
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
 
     @Override
     public void initialize(ExistUserValidation constraintAnnotation) {
@@ -25,7 +25,7 @@ public class ExistUserValidator implements ConstraintValidator<ExistUserValidati
 
     @Override
     public boolean isValid(Long userId, ConstraintValidatorContext context) {
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userQueryService.findUserById(userId);
 
         if (user.isEmpty()){
             context.disableDefaultConstraintViolation();

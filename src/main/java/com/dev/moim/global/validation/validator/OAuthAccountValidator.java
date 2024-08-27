@@ -1,7 +1,7 @@
 package com.dev.moim.global.validation.validator;
 
 import com.dev.moim.domain.account.dto.JoinRequest;
-import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.validation.annotation.OAuthAccountValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -18,7 +18,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.PROVIDER_ID_NOT
 @RequiredArgsConstructor
 public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountValidation, JoinRequest> {
 
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
 
     @Override
     public void initialize(OAuthAccountValidation constraintAnnotation) {}
@@ -54,7 +54,7 @@ public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountVa
     }
 
     private boolean isProviderIdDuplicated(JoinRequest request, ConstraintValidatorContext context) {
-        boolean isDuplicated = userRepository.existsByProviderAndProviderId(request.provider(), request.providerId());
+        boolean isDuplicated = userQueryService.existsByProviderAndProviderId(request.provider(), request.providerId());
         if (isDuplicated) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(OAUTH_ACCOUNT_DUPLICATION.toString())

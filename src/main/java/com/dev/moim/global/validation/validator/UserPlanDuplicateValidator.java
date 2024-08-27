@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.ALREADY_PARTICIPATE_IN_PLAN;
+import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
 
 @Slf4j
 @Component
@@ -27,20 +28,27 @@ public class UserPlanDuplicateValidator implements ConstraintValidator<UserPlanD
     @Override
     public boolean isValid(Long planId, ConstraintValidatorContext context) {
 
+        boolean isValidPlan = calenderQueryService.existsByPlanId(planId);
+        if (!isValidPlan) {
+            addConstraintViolation(context, PLAN_NOT_FOUND.toString());
+            return false;
+        }
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Boolean alreadyParticipate = calenderQueryService.existsByUserIdAndPlanId(
-                Long.valueOf(authentication.getName()),
-                planId);
-
+        boolean alreadyParticipate = calenderQueryService.existsByUserIdAndPlanId(
+                Long.valueOf(authentication.getName()), planId);
         if (alreadyParticipate) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ALREADY_PARTICIPATE_IN_PLAN.toString())
-                    .addPropertyNode("userId")
-                    .addPropertyNode("planId")
-                    .addConstraintViolation();
+            addConstraintViolation(context, ALREADY_PARTICIPATE_IN_PLAN.toString());
             return false;
         }
         return true;
+    }
+
+    private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+                .addPropertyNode("planId")
+                .addConstraintViolation();
     }
 }

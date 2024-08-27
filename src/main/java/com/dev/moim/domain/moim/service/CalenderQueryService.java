@@ -16,4 +16,6 @@ public interface CalenderQueryService {
     boolean existsByUserIdAndPlanId(Long userId,Long planId);
 
     Long findPlanWriter(Long planId);
+
+    boolean existsByPlanId(Long planId);
 }

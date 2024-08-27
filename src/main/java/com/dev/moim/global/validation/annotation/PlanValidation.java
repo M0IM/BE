@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = PlanValidator.class)
-@Target({ElementType.PARAMETER})
+@Target({ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PlanValidation {
     String message() default "존재하지 않는 일정입니다.";
