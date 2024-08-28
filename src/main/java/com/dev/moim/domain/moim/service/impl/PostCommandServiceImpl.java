@@ -202,7 +202,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public void updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
+    public Post updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
         Post updatePost = postRepository.findById(updateMoimPostDTO.postId())
                 .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
@@ -220,6 +220,8 @@ public class PostCommandServiceImpl implements PostCommandService {
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
+
+        return updatePost;
     }
 
     @Override
