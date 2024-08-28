@@ -2,8 +2,8 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
-import com.dev.moim.domain.moim.dto.task.TodoAssigneeListForAdminDTO;
 import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
+import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
@@ -83,13 +83,28 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "MOIM_012", description = "user moim을 찾을 수 없습니다.")
     })
     @GetMapping("/{moimId}/todo/{todoId}/admin/assignee-list")
-    public BaseResponse<TodoAssigneeListForAdminDTO> getTodoAssigneeListForAdmin(
+    public BaseResponse<TodoPageDTO> getTodoAssigneeListForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
-            @RequestParam(name = "cursor") Long cursor,
+            @RequestParam(name = "cursor", required = false) Long cursor,
             @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTodoAssigneeListForAdmin(todoId, cursor, take));
+    }
+
+    @Operation(summary = "특정 모임의 todo 리스트 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 todo 리스트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+    })
+    @GetMapping("/{moimId}/todo")
+    public BaseResponse<TodoPageDTO> getMoimTodoListForAdmin(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @RequestParam(name = "cursor", required = false) Long cursor,
+            @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getMoimTodoListForAdmin(moimId, cursor, take));
     }
 }

@@ -13,9 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
@@ -63,4 +65,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     Optional<UserMoim> findByPost(Post post);
 
     List<UserMoim> findByMoimId(Long moimId);
+
+    @Query("SELECT um FROM UserMoim um WHERE um.moim.id = :moimId AND um.user.id IN :userIds")
+    List<UserMoim> findByMoimIdAndUserIds(@Param("moimId") Long moimId, @Param("userIds") Set<Long> userIds);
 }

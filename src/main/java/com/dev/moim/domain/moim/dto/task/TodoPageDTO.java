@@ -2,8 +2,8 @@ package com.dev.moim.domain.moim.dto.task;
 
 import java.util.List;
 
-public record TodoAssigneeListForAdminDTO(
-        List<TodoAssigneeDetailDTO> todoAssigneeDetailDTOList,
+public record TodoPageDTO(
+        List<?> list,
         Long nextCursor,
         Boolean hasNext
 ) {
