@@ -15,7 +15,7 @@ public record TodoDTO(
         MoimRole writerMoimRole
 ) {
 
-    public static TodoDTO of(Todo todo, UserMoim userMoim) {
+    public static TodoDTO forAdmin(Todo todo, UserMoim userMoim) {
         return new TodoDTO(
                 todo.getId(),
                 todo.getTitle(),
@@ -23,6 +23,17 @@ public record TodoDTO(
                 userMoim.getUserProfile().getName(),
                 userMoim.getUserProfile().getImageUrl(),
                 userMoim.getMoimRole()
+        );
+    }
+
+    public static TodoDTO forSpecificAdmin(Todo todo) {
+        return new TodoDTO(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getDueDate(),
+                null,
+                null,
+                null
         );
     }
 }

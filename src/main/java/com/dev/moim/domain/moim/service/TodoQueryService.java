@@ -14,6 +14,8 @@ public interface TodoQueryService {
 
     TodoPageDTO getMoimTodoListForAdmin(Long moimId, Long cursor, Integer take);
 
+    TodoPageDTO getMoimTodoListBySpecificAdmin(User user, Long moimId, Long cursor, Integer take);
+
     boolean existsByUserIdAndTodoId(Long userId, Long todoId);
 
     boolean existsByTodoId(Long todoId);

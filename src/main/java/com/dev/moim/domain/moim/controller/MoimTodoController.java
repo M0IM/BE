@@ -98,7 +98,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
     })
-    @GetMapping("/{moimId}/todo")
+    @GetMapping("/{moimId}/todo/admin")
     public BaseResponse<TodoPageDTO> getMoimTodoListForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
@@ -106,5 +106,20 @@ public class MoimTodoController {
             @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getMoimTodoListForAdmin(moimId, cursor, take));
+    }
+
+    @Operation(summary = "특정 모임 관리자 회원이 부여한 todo 리스트 조회 (모임 관리자)", description = "특정 관리자 회원이 특정 모임에서 자신이 부여한 todo 리스트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+    })
+    @GetMapping("/{moimId}/todo/admin/self")
+    public BaseResponse<TodoPageDTO> getMoimTodoListBySpecificAdmin(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @RequestParam(name = "cursor", required = false) Long cursor,
+            @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getMoimTodoListBySpecificAdmin(user, moimId, cursor, take));
     }
 }

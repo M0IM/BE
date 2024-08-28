@@ -12,4 +12,7 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     @Query("SELECT t FROM Todo t WHERE t.moim.id = :moimId AND t.id < :cursor ORDER BY t.id DESC")
     Slice<Todo> findByMoimIdAndCursorLessThan(Long moimId, Long cursor, Pageable pageable);
+
+    @Query("SELECT t FROM Todo t WHERE t.writer.id = :writerId AND t.moim.id = :moimId AND t.id < :cursor ORDER BY t.id DESC")
+    Slice<Todo> findByWriterIdAndMoimIdAndCursorLessThan(Long writerId, Long moimId, Long cursor, Pageable pageable);
 }

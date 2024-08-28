@@ -6,7 +6,6 @@ import com.dev.moim.domain.moim.dto.task.TodoDTO;
 import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.*;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.TodoRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.repository.UserTodoRepository;
@@ -106,7 +105,6 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public TodoPageDTO getMoimTodoListForAdmin(Long moimId, Long cursor, Integer take) {
 
-
         Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
@@ -123,7 +121,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 .map(todo -> {
                     Long writerId = todo.getWriter().getId();
                     UserMoim userMoim = userMoimMap.get(writerId);
-                    return TodoDTO.of(todo, userMoim);
+                    return TodoDTO.forAdmin(todo, userMoim);
                 })
                 .toList();
 
@@ -132,6 +130,22 @@ public class TodoQueryServiceImpl implements TodoQueryService {
         return new TodoPageDTO(todoDTOList, nextCursor, todoSlice.hasNext());
     }
 
+    @Override
+    public TodoPageDTO getMoimTodoListBySpecificAdmin(User user, Long moimId, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
+        Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
+
+        Slice<Todo> todoSlice = todoRepository.findByWriterIdAndMoimIdAndCursorLessThan(user.getId(), moimId, startCursor, pageable);
+
+        List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
+                .map(TodoDTO::forSpecificAdmin)
+                .toList();
+
+        Long nextCursor = todoSlice.hasNext() ? todoSlice.getContent().get(todoSlice.getNumberOfElements() - 1).getId() : null;
+
+        return new TodoPageDTO(todoDTOList, nextCursor, todoSlice.hasNext());
+    }
 
     @Override
     public boolean existsByUserIdAndTodoId(Long userId, Long todoId) {
