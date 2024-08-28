@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -202,10 +203,20 @@ public class PostCommandServiceImpl implements PostCommandService {
 
     @Override
     public void updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
-        Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+        Post updatePost = postRepository.findById(updateMoimPostDTO.postId())
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
-        List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
-                PostImage.builder().imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).post(updatePost).build()
+        // imageKeyNames()의 반환값이 null인지 체크
+        List<String> imageKeyNames = updateMoimPostDTO.imageKeyNames();
+        if (imageKeyNames == null) {
+            imageKeyNames = Collections.emptyList(); // 빈 리스트로 초기화
+        }
+
+        List<PostImage> imageList = imageKeyNames.stream().map(i ->
+                PostImage.builder()
+                        .imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i))
+                        .post(updatePost)
+                        .build()
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
