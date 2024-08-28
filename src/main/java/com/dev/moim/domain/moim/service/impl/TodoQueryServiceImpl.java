@@ -27,7 +27,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     private final TodoRepository todoRepository;
 
     @Override
-    public TodoDetailDTO getAssigneeTodoDetail(User user, Long todoId) {
+    public TodoDetailDTO getTotalDetailForAssignee(User user, Long todoId) {
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
@@ -42,6 +42,22 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 userTodo.getStatus()
+        );
+    }
+
+    @Override
+    public TodoDetailDTO getTodoDetailForAdmin(Long todoId) {
+
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        return new TodoDetailDTO(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getContent(),
+                todo.getDueDate(),
+                todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
+                null
         );
     }
 

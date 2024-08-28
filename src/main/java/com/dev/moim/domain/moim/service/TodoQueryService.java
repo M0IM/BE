@@ -5,7 +5,9 @@ import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 
 public interface TodoQueryService {
 
-    TodoDetailDTO getAssigneeTodoDetail(User user, Long todoId);
+    TodoDetailDTO getTotalDetailForAssignee(User user, Long todoId);
+
+    TodoDetailDTO getTodoDetailForAdmin(Long todoId);
 
     boolean existsByUserIdAndTodoId(Long userId, Long todoId);
 

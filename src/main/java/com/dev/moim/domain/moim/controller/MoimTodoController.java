@@ -45,17 +45,34 @@ public class MoimTodoController {
         return BaseResponse.onSuccess(todoCommandService.createTodo(user, moimId, request));
     }
 
-    @Operation(summary = "유저 할당된 todo 상세 조회", description = "유저가 자신에게 할당된 특정 todo를 상세 조회할 수 있는 기능입니다.")
+    @Operation(summary = "todo 상세 조회 (할당된 유저)", description = "유저가 자신에게 할당된 특정 todo의 세부사항을 상세 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다.")
     })
-    @PostMapping("/{moimId}/todo/{todoId}")
-    public BaseResponse<TodoDetailDTO> getAssigneeTodoDetail(
+    @GetMapping("/{moimId}/todo/{todoId}/assignee")
+    public BaseResponse<TodoDetailDTO> getTodoDetailForAssignee(
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
             @TodoAssigneeValidation @PathVariable Long todoId
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getAssigneeTodoDetail(user, todoId));
+        return BaseResponse.onSuccess(todoQueryService.getTotalDetailForAssignee(user, todoId));
+    }
+
+    @Operation(summary = "todo 상세 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 특정 todo의 세부사항을 상세 조회합니다. ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다.")
+    })
+    @GetMapping("/{moimId}/todo/{todoId}/admin/detail")
+    public BaseResponse<TodoDetailDTO> getTodoDetailForAdmin(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @TodoValidation @PathVariable Long todoId
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getTodoDetailForAdmin(todoId));
     }
 }
