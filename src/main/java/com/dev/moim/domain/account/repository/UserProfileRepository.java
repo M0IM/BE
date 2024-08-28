@@ -16,6 +16,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
     Optional<UserProfile> findByUserIdAndProfileType(Long userId, ProfileType profileType);
 
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.moim = :moim and um.joinStatus = :joinStatus and up.imageUrl is not null")
+    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.moim = :moim and um.joinStatus = :joinStatus")
     List<UserProfileDTO> findRandomProfile(Moim moim, JoinStatus joinStatus, Pageable pageable);
 }
