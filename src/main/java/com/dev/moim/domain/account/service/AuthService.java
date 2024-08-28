@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static com.dev.moim.domain.account.entity.enums.UserRole.ROLE_USER;
@@ -52,6 +53,7 @@ public class AuthService {
                 .email(request.email())
                 .password(encodedPassword)
                 .userRole(ROLE_USER)
+                .lastAlarmTime(LocalDateTime.now())
                 .userProfileList(new ArrayList<>())
                 .gender(request.gender())
                 .birth(request.birth())

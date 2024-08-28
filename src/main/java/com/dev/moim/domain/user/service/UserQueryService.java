@@ -56,5 +56,7 @@ public interface UserQueryService {
 
     boolean existsByEmail(String email);
 
+    Integer countAlarm(User user);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

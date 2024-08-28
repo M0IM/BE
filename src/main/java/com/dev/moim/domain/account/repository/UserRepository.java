@@ -1,5 +1,6 @@
 package com.dev.moim.domain.account.repository;
 
+import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -11,6 +12,7 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -43,4 +45,11 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from ReadPost rp join UserMoim um on rp.user = um.user join um.userProfile up where um.joinStatus = 'COMPLETE' and rp.post = :post and rp.isRead = false")
     List<UserProfileDTO> findReadUsers(Post post);
+
+    @Query("select a from Alarm a join a.user u where u.lastAlarmTime < a.createdAt")
+    List<Alarm> findAlarmByUser(User user);
+
+    @Modifying
+    @Query("update User u set u.deviceId = null where u = :user")
+    void updateFcmTokenByUser(User user);
 }

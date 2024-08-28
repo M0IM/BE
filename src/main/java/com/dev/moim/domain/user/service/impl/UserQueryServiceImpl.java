@@ -241,6 +241,8 @@ public class UserQueryServiceImpl implements UserQueryService {
             cursor = Long.MAX_VALUE;
         }
 
+        user.updateAlarmTime();
+
         Slice<Alarm> alarmSlices = alarmRepository.findByUserAndIdLessThanOrderByIdDesc(user, cursor, PageRequest.of(0, take));
 
         List<AlarmResponseDTO> alarmResponseDTOList = alarmSlices.stream().map(AlarmResponseDTO::toAlarmResponseDTO
@@ -278,6 +280,12 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Integer countAlarm(User user) {
+        List<Alarm> alarmByUser = userRepository.findAlarmByUser(user);
+        return alarmByUser.size();
     }
 
 }

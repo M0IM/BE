@@ -21,5 +21,7 @@ public interface UserCommandService {
 
     void fcmSignOut(User user);
 
+    void notDeadLockFcmSignOut(User user);
+
     void deleteAlarms(User user);
 }

@@ -42,6 +42,9 @@ public class User extends BaseEntity {
 
     private LocalDateTime inactive_date;
 
+    @Column(nullable = false)
+    private LocalDateTime lastAlarmTime;
+
     private String deviceId;
 
     @Column(nullable = false)
@@ -109,5 +112,9 @@ public class User extends BaseEntity {
 
     public void fcmSignOut() {
         this.deviceId = null;
+    }
+
+    public void updateAlarmTime() {
+        this.lastAlarmTime = LocalDateTime.now();
     }
 }

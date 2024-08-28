@@ -1,5 +1,6 @@
 package com.dev.moim.domain.account.entity;
 
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -28,6 +29,11 @@ public class Alarm extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private AlarmType alarmType;
+
+    @Enumerated(EnumType.STRING)
+    private AlarmDetailType alarmDetailType;
+
+    private Long targetId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
