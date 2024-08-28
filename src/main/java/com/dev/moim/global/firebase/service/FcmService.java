@@ -13,8 +13,10 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,6 +27,7 @@ public class FcmService {
     private final UserQueryService userQueryService;
     private final AlarmService alarmService;
     private final UserCommandService userCommandService;
+    private final Environment environment;
 
     public void sendEventAlarm(EventDTO eventDTO) {
         List<User> users = userQueryService.findAllUser();
@@ -44,9 +47,12 @@ public class FcmService {
                     .setBody(body)
                     .build();
 
+            Integer count = userQueryService.countAlarm(receiver);
+
             Message message = Message.builder()
                     .setToken(receiver.getDeviceId())
                     .setNotification(notification)
+                    .putData("count", count.toString())
                     .build();
 
             try {
@@ -54,7 +60,9 @@ public class FcmService {
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
                 userCommandService.fcmSignOut(receiver);
-                discordClient.sendAlarm(createMessage(receiver, title, body));
+                if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
+                    discordClient.sendAlarm(createMessage(receiver, title, body));
+                }
             }
         }
     }

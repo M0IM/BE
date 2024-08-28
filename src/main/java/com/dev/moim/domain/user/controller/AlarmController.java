@@ -1,7 +1,9 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.user.dto.AlarmCountResponseDTO;
 import com.dev.moim.domain.user.dto.EventDTO;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.security.annotation.AuthUser;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlarmController {
 
     private final FcmService fcmService;
+    private final UserQueryService userQueryService;
 
     @Operation(summary = "이벤트 알림 발송", description = "모든 유저에게 이벤트 알림 발송을 합니다.")
     @ApiResponses({
@@ -31,5 +34,15 @@ public class AlarmController {
     public BaseResponse<String> sendEventAlarm(@AuthUser User user, @RequestBody EventDTO eventDTO) {
         fcmService.sendEventAlarm(eventDTO);
         return BaseResponse.onSuccess("이벤트 알림 보내기에 성공하였습니다.");
+    }
+
+    @Operation(summary = "알림 남은 숫자 조회", description = "알림 남은 숫자 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @GetMapping("/alarms/count")
+    public BaseResponse<AlarmCountResponseDTO> sendEventAlarm(@AuthUser User user) {
+        Integer count = userQueryService.countAlarm(user);
+        return BaseResponse.onSuccess(AlarmCountResponseDTO.toAlarmCountResponseDTO(count));
     }
 }

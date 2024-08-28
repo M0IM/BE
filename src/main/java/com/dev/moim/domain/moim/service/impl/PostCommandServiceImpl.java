@@ -82,7 +82,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         Moim moim = moimRepository.findById(createCommentDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post post = postRepository.findById(createCommentDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
