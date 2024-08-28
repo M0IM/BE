@@ -101,7 +101,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         exitReasonRepository.save(exitReason);
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoimRepository.delete(userMoim);
     }
@@ -160,7 +160,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             throw new UserException(ErrorStatus.USER_NOT_FOUND);
         });
         Moim moim = moimRepository.findById(changeAuthorityRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(targetUser, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(targetUser.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
 

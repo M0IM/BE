@@ -57,7 +57,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         Moim moim = moimRepository.findById(createMoimPostDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post savedPost = Post.builder()
                 .title(createMoimPostDTO.title())
@@ -108,7 +108,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     public Comment createCommentComment(User user, CreateCommentCommentDTO createCommentCommentDTO) {
         Moim moim = moimRepository.findById(createCommentCommentDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post post = postRepository.findById(createCommentCommentDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
@@ -253,7 +253,6 @@ public class PostCommandServiceImpl implements PostCommandService {
             throw new PostException(ErrorStatus.NOT_MY_POST);
         }
 
-        System.out.println(commentUpdateRequestDTO.content());
         comment.update(commentUpdateRequestDTO.content());
     }
 
@@ -311,7 +310,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     public Long createAnnouncement(User user, AnnouncementRequestDTO announcementRequestDTO) {
         Moim moim = moimRepository.findById(announcementRequestDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post savedPost = Post.builder()
                 .title(announcementRequestDTO.title())
