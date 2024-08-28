@@ -118,7 +118,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     public void modifyMoimInfo(UpdateMoimDTO updateMoimDTO) {
         Moim moim = moimRepository.findById(updateMoimDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        moim.updateMoim(moim.getName(), moim.getMoimCategory(), moim.getLocation(), moim.getIntroduction(), imageNullProcess(updateMoimDTO.imageKeyName()));
+        moim.updateMoim(updateMoimDTO.title(), updateMoimDTO.moimCategory(), updateMoimDTO.address(), updateMoimDTO.description(), imageNullProcess(updateMoimDTO.imageKeyName()));
     }
 
     @Override
