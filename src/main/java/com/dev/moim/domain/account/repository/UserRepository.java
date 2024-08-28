@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long>, CustomUserRepository {
     Optional<User> findByEmailAndProvider(String email, Provider provider);
@@ -41,6 +42,9 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.moimRole = :moimRole")
     Optional<User> findByMoimAndMoimCategory(Moim moim, MoimRole moimRole);
 
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from ReadPost rp join UserMoim um on rp.user = um.user join um.userProfile up where um.joinStatus = 'COMPLETE' and rp.post = :post and rp.isRead = false")
-    List<UserProfileDTO> findReadUsers(Post post);
+    @Query("select rp.user.id from ReadPost rp where rp.post = :post and rp.isRead = false")
+    Set<Long> findReadUserId(Post post);
+
+    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.user.id in :userIds and um.joinStatus = 'COMPLETE'")
+    List<UserProfileDTO> findReadUsersProfileByUsersId(Set<Long> userIds);
 }

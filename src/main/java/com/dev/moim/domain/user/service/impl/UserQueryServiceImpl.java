@@ -32,6 +32,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -263,7 +264,10 @@ public class UserQueryServiceImpl implements UserQueryService {
            throw new PostException(ErrorStatus.NOT_ANNOUNCEMENT_POST);
         }
 
-        List<UserProfileDTO> readUsers = userRepository.findReadUsers(post);
+        Set<Long> readUsersId = userRepository.findReadUserId(post);
+        System.out.println(readUsersId);
+
+        List<UserProfileDTO> readUsers = userRepository.findReadUsersProfileByUsersId(readUsersId);
 
         List<UserPreviewDTO> userPreviewDTOList = readUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
