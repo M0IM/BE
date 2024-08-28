@@ -125,7 +125,11 @@ public enum ErrorStatus implements BaseErrorCode {
     FCM_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "FCM_002", "FCM 토큰이 누락되었습니다."),
 
     // Review 관련
-    SELF_REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_001", "유저 본인에게 리뷰를 남길 수 없습니다.")
+    SELF_REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_001", "유저 본인에게 리뷰를 남길 수 없습니다."),
+
+    // Todo 관련
+    TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "TODO_001", "Todo를 찾을 수 없습니다."),
+    NOT_TODO_ASSIGNEE(HttpStatus.UNAUTHORIZED, "TODO_002", "해당 유저에게 부여된 todo가 아닙니다.")
     ;
 
     private final HttpStatus httpStatus;

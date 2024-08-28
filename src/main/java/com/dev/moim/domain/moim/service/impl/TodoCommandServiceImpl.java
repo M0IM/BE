@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
+import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 import com.dev.moim.domain.moim.repository.MoimRepository;
@@ -11,6 +12,7 @@ import com.dev.moim.domain.moim.repository.TodoRepository;
 import com.dev.moim.domain.moim.repository.UserTodoRepository;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.TodoException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.MOIM_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
