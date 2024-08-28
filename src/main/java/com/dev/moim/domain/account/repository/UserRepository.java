@@ -52,6 +52,6 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     @Query("select rp.user.id from ReadPost rp where rp.post = :post and rp.isRead = false")
     Set<Long> findReadUserId(Post post);
 
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.user.id in :userIds and um.joinStatus = 'COMPLETE'")
-    List<UserProfileDTO> findReadUsersProfileByUsersId(Set<Long> userIds);
+    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.user.id in :userIds and um.moim = :moim and um.joinStatus = 'COMPLETE'")
+    List<UserProfileDTO> findReadUsersProfileByUsersId(Set<Long> userIds, Moim moim);
 }
