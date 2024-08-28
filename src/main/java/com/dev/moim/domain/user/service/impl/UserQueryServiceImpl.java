@@ -11,6 +11,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
@@ -73,7 +74,9 @@ public class UserQueryServiceImpl implements UserQueryService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(userId, MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl());
+        int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
+
+        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl(), participateMoimCnt);
     }
 
     @Override
