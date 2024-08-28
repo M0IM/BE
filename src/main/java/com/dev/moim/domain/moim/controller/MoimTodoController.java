@@ -2,15 +2,13 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
+import com.dev.moim.domain.moim.dto.task.TodoAssigneeListForAdminDTO;
 import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.AuthUser;
-import com.dev.moim.global.validation.annotation.CheckAdminValidation;
-import com.dev.moim.global.validation.annotation.TodoAssigneeValidation;
-import com.dev.moim.global.validation.annotation.TodoValidation;
-import com.dev.moim.global.validation.annotation.UserMoimValidaton;
+import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -74,5 +72,24 @@ public class MoimTodoController {
             @TodoValidation @PathVariable Long todoId
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTodoDetailForAdmin(todoId));
+    }
+
+    // TODO: cursor 초기값 확인 (현재 방식 : 초기값 null)
+    @Operation(summary = "todo 할당받은 멤버 리스트 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 특정 todo를 할당받은 멤버 리스트를 조회합니다. ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "MOIM_012", description = "user moim을 찾을 수 없습니다.")
+    })
+    @GetMapping("/{moimId}/todo/{todoId}/admin/assignee-list")
+    public BaseResponse<TodoAssigneeListForAdminDTO> getTodoAssigneeListForAdmin(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @TodoValidation @PathVariable Long todoId,
+            @RequestParam(name = "cursor") Long cursor,
+            @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getTodoAssigneeListForAdmin(todoId, cursor, take));
     }
 }
