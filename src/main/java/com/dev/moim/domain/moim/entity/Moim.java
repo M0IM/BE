@@ -38,8 +38,11 @@ public class Moim extends BaseEntity {
 
     private String imageUrl;
 
-    @OneToMany(mappedBy = "moim")
+    @OneToMany(mappedBy = "moim", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserMoim> userMoimList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "moim", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExitReason> exitReasonList = new ArrayList<>();
 
     public void updateMoim(String title, MoimCategory moimCategory, String location, String introduction, String moimUrl) {
         this.name = title;

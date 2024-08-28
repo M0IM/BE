@@ -104,6 +104,14 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoimRepository.delete(userMoim);
+
+        userMoimRepository.flush();
+
+        List<UserMoim> byUserIdAndMoimId = userMoimRepository.findByMoimId(moim.getId(), JoinStatus.COMPLETE);
+
+        if (byUserIdAndMoimId.isEmpty()) {
+            moimRepository.delete(moim);
+        }
     }
 
     @Override
@@ -145,6 +153,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
 
         userMoim.accept();
+        userMoim.confirm();
 
         Optional<User> owner = userRepository.findByMoimAndMoimCategory(moim, MoimRole.OWNER);
 
