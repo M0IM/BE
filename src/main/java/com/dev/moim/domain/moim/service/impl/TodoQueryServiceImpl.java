@@ -173,4 +173,10 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     public boolean existsByTodoId(Long todoId) {
         return todoRepository.existsById(todoId);
     }
+
+    @Override
+    public UserTodo findByUserIdAndTodoId(Long userId, Long todoId) {
+        return userTodoRepository.findByUserIdAndTodoId(userId, todoId)
+                .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE));
+    }
 }

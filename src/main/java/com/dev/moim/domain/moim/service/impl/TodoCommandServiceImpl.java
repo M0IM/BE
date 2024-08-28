@@ -3,6 +3,8 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
+import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
+import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 import com.dev.moim.domain.moim.repository.MoimRepository;
@@ -11,6 +13,7 @@ import com.dev.moim.domain.moim.repository.TodoRepository;
 import com.dev.moim.domain.moim.repository.UserTodoRepository;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
+import com.dev.moim.global.error.handler.TodoException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,5 +72,16 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         userTodoRepository.saveAll(userTodoList);
 
         return todo.getId();
+    }
+
+    @Override
+    public UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request) {
+
+        UserTodo userTodo = userTodoRepository.findByUserIdAndTodoId(user.getId(), todoId)
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        userTodo.updateStatus(request.todoStatus());
+
+        return UpdateTodoStatusResponseDTO.of(userTodo);
     }
 }

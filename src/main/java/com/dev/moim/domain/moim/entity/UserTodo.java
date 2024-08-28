@@ -30,4 +30,8 @@ public class UserTodo extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_id")
     private Todo todo;
+
+    public void updateStatus(TodoStatus todoStatus) {
+        this.status = todoStatus;
+    }
 }

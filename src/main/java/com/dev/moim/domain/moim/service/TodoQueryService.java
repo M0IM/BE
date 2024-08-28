@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
+import com.dev.moim.domain.moim.entity.UserTodo;
 
 public interface TodoQueryService {
 
@@ -21,4 +22,6 @@ public interface TodoQueryService {
     boolean existsByUserIdAndTodoId(Long userId, Long todoId);
 
     boolean existsByTodoId(Long todoId);
+
+    UserTodo findByUserIdAndTodoId(Long userId, Long todoId);
 }

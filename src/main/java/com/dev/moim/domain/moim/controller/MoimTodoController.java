@@ -1,9 +1,7 @@
 package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
-import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
-import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
+import com.dev.moim.domain.moim.dto.task.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
@@ -134,5 +132,23 @@ public class MoimTodoController {
             @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(user, cursor, take));
+    }
+
+    @Operation(summary = "부여된 todo 상태 업데이트", description = "회원이 자신에게 부여된 todo의 상태를 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_003", description = "업데이트 요청한 todo status가 기존 status와 동일합니다.")
+    })
+    @PutMapping("/moims/{moimId}/todos/{todoId}")
+    public BaseResponse<UpdateTodoStatusResponseDTO> updateUserTodoStatus(
+            @AuthUser User user,
+            @UserMoimValidaton @PathVariable Long moimId,
+            @TodoAssigneeValidation @PathVariable Long todoId,
+            @Valid @RequestBody UpdateTodoStatusDTO request
+    ) {
+        return BaseResponse.onSuccess(todoCommandService.updateUserTodoStatus(user, todoId, request));
     }
 }
