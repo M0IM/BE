@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/moims")
-@Tag(name = "모임 todo 관련 컨트롤러")
+@RequestMapping("/api/v1")
+@Tag(name = "todo 관련 컨트롤러")
 public class MoimTodoController {
 
     private final TodoCommandService todoCommandService;
@@ -34,7 +34,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
     })
-    @PostMapping("/{moimId}/todo")
+    @PostMapping("/moims/{moimId}/todos")
     public BaseResponse<Long> createTodo(
             @AuthUser User user,
             @CheckAdminValidation @UserMoimValidaton @PathVariable Long moimId,
@@ -50,7 +50,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다.")
     })
-    @GetMapping("/{moimId}/todo/{todoId}/assignee")
+    @GetMapping("/moims/{moimId}/todos/{todoId}/for-me")
     public BaseResponse<TodoDetailDTO> getTodoDetailForAssignee(
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
@@ -65,7 +65,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다.")
     })
-    @GetMapping("/{moimId}/todo/{todoId}/admin/detail")
+    @GetMapping("/moims/{moimId}/todos/{todoId}/admins/detail")
     public BaseResponse<TodoDetailDTO> getTodoDetailForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
@@ -82,7 +82,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "MOIM_012", description = "user moim을 찾을 수 없습니다.")
     })
-    @GetMapping("/{moimId}/todo/{todoId}/admin/assignee-list")
+    @GetMapping("/moims/{moimId}/todos/{todoId}/admins/assignee-list")
     public BaseResponse<TodoPageDTO> getTodoAssigneeListForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
@@ -98,7 +98,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
     })
-    @GetMapping("/{moimId}/todo/admin")
+    @GetMapping("/moims/{moimId}/todos/admins")
     public BaseResponse<TodoPageDTO> getMoimTodoListForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
@@ -113,13 +113,26 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
     })
-    @GetMapping("/{moimId}/todo/admin/self")
-    public BaseResponse<TodoPageDTO> getMoimTodoListBySpecificAdmin(
+    @GetMapping("/moims/{moimId}/todos/by-me")
+    public BaseResponse<TodoPageDTO> getSpecificMoimTodoListByMe(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
             @RequestParam(name = "cursor", required = false) Long cursor,
             @RequestParam(name = "take") Integer take
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getMoimTodoListBySpecificAdmin(user, moimId, cursor, take));
+        return BaseResponse.onSuccess(todoQueryService.getSpecificMoimTodoListByMe(user, moimId, cursor, take));
+    }
+
+    @Operation(summary = "자신이 부여한 todo 리스트 조회", description = "회원이 자신이 부여한 todo 리스트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    @GetMapping("/todos/by-me")
+    public BaseResponse<TodoPageDTO> getTodoListByMe(
+            @AuthUser User user,
+            @RequestParam(name = "cursor", required = false) Long cursor,
+            @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(user, cursor, take));
     }
 }

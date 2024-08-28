@@ -121,7 +121,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 .map(todo -> {
                     Long writerId = todo.getWriter().getId();
                     UserMoim userMoim = userMoimMap.get(writerId);
-                    return TodoDTO.forAdmin(todo, userMoim);
+                    return TodoDTO.forMoimAdmins(todo, userMoim);
                 })
                 .toList();
 
@@ -131,12 +131,29 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public TodoPageDTO getMoimTodoListBySpecificAdmin(User user, Long moimId, Long cursor, Integer take) {
+    public TodoPageDTO getSpecificMoimTodoListByMe(User user, Long moimId, Long cursor, Integer take) {
 
         Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
         Slice<Todo> todoSlice = todoRepository.findByWriterIdAndMoimIdAndCursorLessThan(user.getId(), moimId, startCursor, pageable);
+
+        List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
+                .map(TodoDTO::forSpecificAdmin)
+                .toList();
+
+        Long nextCursor = todoSlice.hasNext() ? todoSlice.getContent().get(todoSlice.getNumberOfElements() - 1).getId() : null;
+
+        return new TodoPageDTO(todoDTOList, nextCursor, todoSlice.hasNext());
+    }
+
+    @Override
+    public TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
+        Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
+
+        Slice<Todo> todoSlice = todoRepository.findByWriterIdAndCursorLessThan(user.getId(), startCursor, pageable);
 
         List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
                 .map(TodoDTO::forSpecificAdmin)

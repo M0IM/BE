@@ -12,17 +12,21 @@ public record TodoDTO(
         LocalDateTime dueDate,
         String writerNickname,
         String writerProfileImageUrl,
-        MoimRole writerMoimRole
+        MoimRole writerMoimRole,
+        Long moimId,
+        String moimName
 ) {
 
-    public static TodoDTO forAdmin(Todo todo, UserMoim userMoim) {
+    public static TodoDTO forMoimAdmins(Todo todo, UserMoim userMoim) {
         return new TodoDTO(
                 todo.getId(),
                 todo.getTitle(),
                 todo.getDueDate(),
                 userMoim.getUserProfile().getName(),
                 userMoim.getUserProfile().getImageUrl(),
-                userMoim.getMoimRole()
+                userMoim.getMoimRole(),
+                todo.getMoim().getId(),
+                todo.getMoim().getName()
         );
     }
 
@@ -33,7 +37,9 @@ public record TodoDTO(
                 todo.getDueDate(),
                 null,
                 null,
-                null
+                null,
+                todo.getMoim().getId(),
+                todo.getMoim().getName()
         );
     }
 }
