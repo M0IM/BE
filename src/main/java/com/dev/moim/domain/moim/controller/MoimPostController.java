@@ -163,9 +163,9 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PutMapping("/moims/posts")
-    public BaseResponse<String> updatePost(@AuthUser User user, @RequestBody @Valid UpdateMoimPostDTO updateMoimPostDTO) {
-        postCommandService.updatePost(user, updateMoimPostDTO);
-        return BaseResponse.onSuccess("게시글이 수정 되었습니다.");
+    public BaseResponse<UpdatePostResponseDTO> updatePost(@AuthUser User user, @RequestBody @Valid UpdateMoimPostDTO updateMoimPostDTO) {
+        Post post = postCommandService.updatePost(user, updateMoimPostDTO);
+        return BaseResponse.onSuccess(UpdatePostResponseDTO.toUpdatePostResponseDTO(post));
     }
 
     @Operation(summary = "모임 게시글 차단 API", description = "모임 게시글을 차단/차단해제 합니다. _by 제이미_")
