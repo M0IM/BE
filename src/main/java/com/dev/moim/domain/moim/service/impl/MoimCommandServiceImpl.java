@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -100,7 +101,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         exitReasonRepository.save(exitReason);
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoimRepository.delete(userMoim);
 
@@ -157,7 +158,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         Optional<User> owner = userRepository.findByMoimAndMoimCategory(moim, MoimRole.OWNER);
 
         if (user.getIsPushAlarm()) {
-            alarmService.saveAlarm(owner.get(), user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH);
+            alarmService.saveAlarm(owner.get(), user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId());
             fcmService.sendNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다");
         }
     }
@@ -168,7 +169,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             throw new UserException(ErrorStatus.USER_NOT_FOUND);
         });
         Moim moim = moimRepository.findById(changeAuthorityRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(targetUser, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(targetUser.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
 
@@ -187,7 +188,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         Optional<User> owner = userRepository.findByMoimAndMoimCategory(moim, MoimRole.OWNER);
 
         if (user.getIsPushAlarm()) {
-            alarmService.saveAlarm(owner.get(), user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.", AlarmType.PUSH );
+            alarmService.saveAlarm(owner.get(), user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId());
             fcmService.sendNotification(user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.");
         }
     }

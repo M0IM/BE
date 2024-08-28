@@ -2,6 +2,7 @@ package com.dev.moim.domain.account.service;
 
 import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +17,15 @@ public class AlarmCommandServiceImpl implements AlarmService {
     private final AlarmRepository alarmRepository;
 
     @Override
-    public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type) {
+    public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type, AlarmDetailType alarmDetailType, Long targetId) {
 
         Alarm alarm = Alarm.builder()
                 .user(receiver)
                 .content(content)
                 .title(title)
                 .writerId(sender.getId())
+                .alarmDetailType(alarmDetailType)
+                .targetId(targetId)
                 .alarmType(type)
                 .build();
 
