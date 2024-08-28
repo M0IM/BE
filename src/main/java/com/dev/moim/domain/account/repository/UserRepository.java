@@ -12,6 +12,7 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -47,4 +48,8 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select a from Alarm a join a.user u where u.lastAlarmTime < a.createdAt")
     List<Alarm> findAlarmByUser(User user);
+
+    @Modifying
+    @Query("update User u set u.deviceId = null where u = :user")
+    void updateFcmTokenByUser(User user);
 }

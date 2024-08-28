@@ -60,7 +60,7 @@ public class FcmService {
                 FirebaseMessaging.getInstance().send(message);
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
-                userCommandService.fcmSignOut(receiver);
+                userCommandService.notDeadLockFcmSignOut(receiver);
                 if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
                     discordClient.sendAlarm(createMessage(receiver, title, body));
                 }
