@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -96,7 +97,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (post.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
+            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
             fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -124,7 +125,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (parentComment.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
+            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
             fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -344,7 +345,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                     : (name != null ? name : "");
             userByMoim.forEach((u) ->{
                 if (u.getIsPushAlarm()) {
-                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
+                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH, AlarmDetailType.POST, savedPost.getId());
                     fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
             });

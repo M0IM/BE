@@ -1,6 +1,7 @@
 package com.dev.moim.global.firebase.service;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.user.dto.EventDTO;
@@ -33,7 +34,7 @@ public class FcmService {
         List<User> users = userQueryService.findAllUser();
         users.forEach(user -> {
             if (user.getIsEventAlarm()) {
-                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT);
+                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null);
                 sendNotification(user, eventDTO.title(), eventDTO.content());
             }
         });
