@@ -14,9 +14,10 @@ public record ProfileDetailDTO(
         LocalDate birth,
         LocalDateTime createdAt,
         double rating,
+        int participateMoimCnt,
         String introduction
 ) {
-        public static ProfileDetailDTO from(User user, UserProfile userProfile, String imageUrl) {
+        public static ProfileDetailDTO from(User user, UserProfile userProfile, String imageUrl, int participateMoimCnt) {
                 return new ProfileDetailDTO(
                         user.getId(),
                         imageUrl,
@@ -25,6 +26,7 @@ public record ProfileDetailDTO(
                         user.getBirth(),
                         userProfile.getCreatedAt(),
                         user.getRating(),
+                        participateMoimCnt,
                         userProfile.getIntroduction()
                 );
         }
