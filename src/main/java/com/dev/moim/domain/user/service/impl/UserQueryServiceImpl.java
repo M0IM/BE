@@ -270,9 +270,8 @@ public class UserQueryServiceImpl implements UserQueryService {
         }
 
         Set<Long> readUsersId = userRepository.findReadUserId(post);
-        System.out.println(readUsersId);
 
-        List<UserProfileDTO> readUsers = userRepository.findReadUsersProfileByUsersId(readUsersId);
+        List<UserProfileDTO> readUsers = userRepository.findReadUsersProfileByUsersId(readUsersId, moim);
 
         List<UserPreviewDTO> userPreviewDTOList = readUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
