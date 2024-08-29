@@ -141,6 +141,16 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             throw new MoimException(ErrorStatus.ALREADY_REQUEST);
         }
 
+        Optional<User> owner = userRepository.findOwnerByMoim(moim);
+
+        if (owner.isPresent()) {
+            User realOwner = owner.get();
+            if (realOwner.getIsPushAlarm()) {
+                alarmService.saveAlarm(user, realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+                fcmService.sendNotification(realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.");
+            }
+        }
+
         userMoimRepository.save(userMoim);
     }
 

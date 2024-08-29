@@ -54,4 +54,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.user.id in :userIds and um.moim = :moim and um.joinStatus = 'COMPLETE'")
     List<UserProfileDTO> findReadUsersProfileByUsersId(Set<Long> userIds, Moim moim);
+
+    @Query("select um.user from UserMoim um where um.moim = :moim and um.moimRole = 'OWNER' and um.joinStatus = 'COMPLETE'")
+    Optional<User> findOwnerByMoim(Moim moim);
 }
