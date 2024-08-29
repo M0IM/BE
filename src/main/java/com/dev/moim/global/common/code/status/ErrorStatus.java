@@ -79,6 +79,7 @@ public enum ErrorStatus implements BaseErrorCode {
     MOIM_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_009", "모임장 회원을 찾을 수 없습니다."),
     ALREADY_REQUEST(HttpStatus.FORBIDDEN, "MOIM_010", "이미 신청한 모임 입니다.."),
     NOT_REQUEST_JOIN(HttpStatus.NOT_FOUND, "MOIM_011", "신청하지 않은 모임입니다."),
+    USER_MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_012", "user moim을 찾을 수 없습니다."),
 
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
@@ -125,7 +126,14 @@ public enum ErrorStatus implements BaseErrorCode {
     FCM_TOKEN_REQUIRED(HttpStatus.BAD_REQUEST, "FCM_002", "FCM 토큰이 누락되었습니다."),
 
     // Review 관련
-    SELF_REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_001", "유저 본인에게 리뷰를 남길 수 없습니다.")
+    SELF_REVIEW_FORBIDDEN(HttpStatus.FORBIDDEN, "REVIEW_001", "유저 본인에게 리뷰를 남길 수 없습니다."),
+
+    // Todo 관련
+    TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "TODO_001", "Todo를 찾을 수 없습니다."),
+    NOT_TODO_ASSIGNEE(HttpStatus.UNAUTHORIZED, "TODO_002", "해당 유저에게 부여된 todo가 아닙니다."),
+    TODO_STATUS_SAME(HttpStatus.BAD_REQUEST, "TODO_003", "업데이트 요청한 todo status가 기존 status와 동일합니다."),
+    TODO_ASSIGNEE_NULL(HttpStatus.BAD_REQUEST, "TODO_004", "Todo를 할당받을 유저를 지정하지 않았습니다."),
+    TODO_ASSIGNEE_NOT_MATCH(HttpStatus.BAD_REQUEST, "TODO_005", "전체 선택인 경우 특정 assignee를 지정할 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;

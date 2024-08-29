@@ -9,6 +9,8 @@ import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
+import java.util.List;
+
 public interface MoimQueryService {
 
     MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take);
@@ -34,4 +36,6 @@ public interface MoimQueryService {
     boolean existsByMoimId(Long moimId);
 
     boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus);
+
+    List<Long> findAllMemberIdByMoimId(Long moimId);
 }

@@ -260,4 +260,11 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     public boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus) {
         return userMoimRepository.existsByUserIdAndMoimIdAndJoinStatus(userId, moimId, joinStatus);
     }
+
+    @Override
+    public List<Long> findAllMemberIdByMoimId(Long moimId) {
+        return userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE).stream()
+                .map(userMoim -> userMoim.getUser().getId())
+                .toList();
+    }
 }

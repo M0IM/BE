@@ -1,9 +1,7 @@
 package com.dev.moim.domain.account.entity;
 
 import com.dev.moim.domain.account.entity.enums.*;
-import com.dev.moim.domain.moim.entity.IndividualPlan;
-import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.entity.UserPlan;
+import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
@@ -92,6 +90,12 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<IndividualPlan> individualPlanList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<UserTodo> userTodoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
+    private List<Todo> todoList = new ArrayList<>();
+
     public void updateRating(double newRating) {
         this.rating = newRating;
     }
@@ -116,5 +120,12 @@ public class User extends BaseEntity {
 
     public void updateAlarmTime() {
         this.lastAlarmTime = LocalDateTime.now();
+    }
+
+    @PreRemove
+    public void preRemove() {
+        for (Todo todo : todoList) {
+            todo.updateWriter(null);
+        }
     }
 }

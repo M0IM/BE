@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.entity.enums;
 
 public enum PlanType {
-    MOIM_PLAN, INDIVIDUAL_PLAN;
+    MOIM_PLAN, INDIVIDUAL_PLAN, TODO_PLAN;
 
     public static PlanType fromString(String type) {
         try {
