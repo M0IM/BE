@@ -133,4 +133,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.getUserTodoList().removeAll(userTodoListToRemove);
         todo.getUserTodoList().addAll(userTodoListToAdd);
     }
+
+    @Override
+    public void deleteTodo(Long todoId) {
+        todoRepository.deleteById(todoId);
+    }
 }

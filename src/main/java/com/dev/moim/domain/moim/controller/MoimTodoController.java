@@ -167,6 +167,23 @@ public class MoimTodoController {
             @Valid @RequestBody CreateTodoDTO request
     ) {
         todoCommandService.updateTodo(todoId, request);
-        return BaseResponse.onSuccess(null);
+        return BaseResponse.onSuccess("todo 수정 성공했습니다.");
+    }
+
+    @Operation(summary = "todo 삭제", description = "모임 관리자 회원이 특정 todo 내용을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다.")
+    })
+    @DeleteMapping("/moims/{moimId}/todos/admin/{todoId}")
+    public BaseResponse<?> deleteTodo(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @TodoValidation @PathVariable Long todoId
+    ) {
+        todoCommandService.deleteTodo(todoId);
+        return BaseResponse.onSuccess("todo 삭제 성공했습니다.");
     }
 }
