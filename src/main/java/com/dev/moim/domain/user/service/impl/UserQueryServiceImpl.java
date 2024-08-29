@@ -3,12 +3,10 @@ package com.dev.moim.domain.user.service.impl;
 import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
-import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -48,7 +46,6 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 public class UserQueryServiceImpl implements UserQueryService {
 
     private final UserProfileRepository userProfileRepository;
-    private final UserReviewRepository userReviewRepository;
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;
@@ -77,14 +74,6 @@ public class UserQueryServiceImpl implements UserQueryService {
         int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
 
         return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl(), participateMoimCnt);
-    }
-
-    @Override
-    public ReviewListDTO getUserReviews(Long userId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<UserReview> userReviewPage = userReviewRepository.findByUserId(userId, pageRequest);
-
-        return ReviewListDTO.of(userReviewPage);
     }
 
     @Override
