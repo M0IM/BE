@@ -44,7 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.moimRole = :moimRole")
     Optional<User> findByMoimAndMoimCategory(Moim moim, MoimRole moimRole);
 
-    @Query("select a from Alarm a join a.user u where u.lastAlarmTime < a.createdAt")
+    @Query("select a from Alarm a join a.user u where u.lastAlarmTime < a.createdAt and u = :user")
     List<Alarm> findAlarmByUser(User user);
 
     @Modifying
