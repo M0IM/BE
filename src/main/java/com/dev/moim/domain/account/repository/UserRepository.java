@@ -14,7 +14,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,4 +63,8 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select um.user from UserMoim um where um.moim = :moim and (um.moimRole = 'ADMIN' or um.moimRole = 'OWNER')")
     List<User> findAdmins(Moim moim);
+
+    @Modifying
+    @Query("update User u set u.lastAlarmTime = :lastReadTime where u = :user")
+    void updateLastReadTime(User user, LocalDateTime lastReadTime);
 }

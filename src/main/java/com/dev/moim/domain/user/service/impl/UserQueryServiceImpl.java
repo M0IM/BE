@@ -18,6 +18,7 @@ import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
+import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.*;
@@ -57,6 +58,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     private final UserPlanRepository userPlanRepository;
     private final MoimRepository moimRepository;
     private final PostRepository postRepository;
+    private final UserCommandService userCommandService;
 
     @Override
     public ProfileDTO getProfile(User user) {
@@ -240,12 +242,13 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    @Transactional
     public AlarmResponseListDTO getAlarms(User user, Long cursor, Integer take) {
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
-        user.updateAlarmTime();
+        userRepository.updateLastReadTime(user, LocalDateTime.now());
 
         Slice<Alarm> alarmSlices = alarmRepository.findByUserAndIdLessThanOrderByIdDesc(user, cursor, PageRequest.of(0, take));
 
