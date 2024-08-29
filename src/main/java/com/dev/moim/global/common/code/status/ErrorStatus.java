@@ -52,6 +52,7 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_REQUEST_HEADER(HttpStatus.BAD_REQUEST, "AUTH_027", "잘못된 요청 헤더입니다."),
     USER_UNREGISTERED(HttpStatus.UNAUTHORIZED, "AUTH_028", "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
     OIDC_PUBLIC_KEY_NOT_FOUND(HttpStatus.UNAUTHORIZED, "AUTH_029", "OIDC ID 토큰 공개키를 받아오는데 실패했습니다."),
+    HTTP_REQUEST_NULL(HttpStatus.BAD_REQUEST, "AUTH_030", "HttpServletRequest가 null입니다."),
 
     // Plan 관련
     INDIVIDUAL_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "PLAN_001", "존재하지 않는 개인 일정 입니다."),
