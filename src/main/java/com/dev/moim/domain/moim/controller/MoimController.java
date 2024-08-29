@@ -202,8 +202,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/accept")
-    public BaseResponse<String> acceptMoim(@RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
-        moimCommandService.acceptMoim(moimJoinConfirmRequestDTO);
+    public BaseResponse<String> acceptMoim(@AuthUser User user, @RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.acceptMoim(user, moimJoinConfirmRequestDTO);
         return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
     }
 

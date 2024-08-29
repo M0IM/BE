@@ -97,7 +97,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         commentRepository.save(comment);
 
-        if (post.getUserMoim().getUser().getIsPushAlarm()) {
+        if (post.getUserMoim().getUser().getIsPushAlarm() && post.getUserMoim().getUser() != user) {
             alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, moim.getId(), post.getId(), comment.getId());
             fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
         }
@@ -125,7 +125,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         commentRepository.save(comment);
 
-        if (parentComment.getUserMoim().getUser().getIsPushAlarm()) {
+        if (parentComment.getUserMoim().getUser().getIsPushAlarm() && parentComment.getUserMoim().getUser() != user) {
             alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, moim.getId(), post.getId(), comment.getId());
             fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
         }
@@ -148,6 +148,13 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             postLikeRepository.save(savedPostLike);
+
+            Optional<UserMoim> postByUserMoim = userMoimRepository.findByPost(post);
+
+            if (postByUserMoim.isPresent() && post.getUserMoim().getUser().getIsPushAlarm() && post.getUserMoim().getUser() != user) {
+                alarmService.saveAlarm(user, post.getUserMoim().getUser(), "좋아요가 달렸습니다", post.getTitle()+"에 좋아요가 달렸습니다", AlarmType.PUSH, AlarmDetailType.POST, post.getMoim().getId(), post.getId(), null);
+                fcmService.sendNotification(post.getUserMoim().getUser(), "좋아요가 달렸습니다.", post.getTitle()+"에 좋아요가 달렸습니다");
+            }
         }
     }
 
@@ -166,6 +173,13 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             commentLikeRepository.save(savedCommentLike);
+
+            Optional<UserMoim> userMoimByComment = userMoimRepository.findByComment(comment);
+
+            if (userMoimByComment.isPresent() && comment.getUserMoim().getUser().getIsPushAlarm() && comment.getUserMoim().getUser() != user) {
+                alarmService.saveAlarm(user, comment.getUserMoim().getUser(), "좋아요가 달렸습니다", comment.getContent()+"에 좋아요가 달렸습니다", AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getUserMoim().getMoim().getId(), comment.getId(), comment.getId());
+                fcmService.sendNotification(comment.getUserMoim().getUser(), "좋아요가 달렸습니다.", comment.getContent()+"에 좋아요가 달렸습니다");
+            }
         }
     }
 
@@ -356,7 +370,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                     ? name.substring(0, 7)
                     : (name != null ? name : "");
             userByMoim.forEach((u) ->{
-                if (u.getIsPushAlarm()) {
+                if (u.getIsPushAlarm() && u != user) {
                     alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH, AlarmDetailType.POST, moim.getId(), savedPost.getId(), null);
                     fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
