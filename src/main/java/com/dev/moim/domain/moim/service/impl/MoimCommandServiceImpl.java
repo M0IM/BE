@@ -164,7 +164,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public void acceptMoim(MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+    public void acceptMoim(User owner, MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
         User user = userRepository.findById(moimJoinConfirmRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
 
 
@@ -174,12 +174,18 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         userMoim.accept();
         userMoim.confirm();
 
-        Optional<User> owner = userRepository.findByMoimAndMoimCategory(moim, MoimRole.OWNER);
+
+        List<User> admins = userRepository.findAdmins(moim);
 
         if (user.getIsPushAlarm()) {
-            alarmService.saveAlarm(owner.get(), user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+            alarmService.saveAlarm(owner, user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
             fcmService.sendNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다");
         }
+
+        admins.stream().filter(admin -> !admin.equals(owner)).forEach(admin -> {
+            alarmService.saveAlarm(owner, admin, moim.getName() + " 모임에 참여되었습니다", moim.getName() + "에 참여되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+            fcmService.sendNotification(admin,  moim.getName() + " 모임에 참여하었습니다", moim.getName() + "에 참여하었습니다");
+        });
     }
 
     @Override

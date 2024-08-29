@@ -58,4 +58,7 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
 
     @Query("select um from UserMoim um where um.moim = :moim and um.moimRole = 'OWNER' and um.joinStatus = 'COMPLETE'")
     Optional<UserMoim> findOwnerByMoim(Moim moim);
+
+    @Query("select um.user from UserMoim um where um.moim = :moim and (um.moimRole = 'ADMIN' or um.moimRole = 'OWNER')")
+    List<User> findAdmins(Moim moim);
 }
