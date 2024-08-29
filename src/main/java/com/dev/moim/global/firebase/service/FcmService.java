@@ -30,11 +30,11 @@ public class FcmService {
     private final UserCommandService userCommandService;
     private final Environment environment;
 
-    public void sendEventAlarm(EventDTO eventDTO) {
+    public void sendEventAlarm(User owner, EventDTO eventDTO) {
         List<User> users = userQueryService.findAllUser();
         users.forEach(user -> {
             if (user.getIsEventAlarm()) {
-                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null, null, null);
+                alarmService.saveAlarm(owner, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null, null, null);
                 sendNotification(user, eventDTO.title(), eventDTO.content());
             }
         });
