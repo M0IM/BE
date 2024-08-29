@@ -32,6 +32,13 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
             "FROM individual_plan ip " +
             "WHERE ip.user_id = :userId " +
             "AND ip.date BETWEEN :startOfDay AND :endOfDay " +
+            "UNION " +
+            "SELECT t.id, t.title, t.due_date as date, NULL as location, NULL as location_detail, t.content as memo, m.name as moimName, 'TODO_PLAN' as plan_type " +
+            "FROM todo t " +
+            "JOIN user_todo ut ON t.id = ut.todo_id " +
+            "LEFT JOIN moim m ON t.moim_id = m.id " +
+            "WHERE ut.user_id = :userId " +
+            "AND t.due_date BETWEEN :startOfDay AND :endOfDay " +
             "ORDER BY date ASC " +
             "LIMIT :size OFFSET :offset", nativeQuery = true)
     List<Object[]> findUserPlansAndIndividualPlans(
