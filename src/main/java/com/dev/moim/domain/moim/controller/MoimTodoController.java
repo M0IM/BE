@@ -30,7 +30,9 @@ public class MoimTodoController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
-            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_004", description = "Todo를 할당받을 유저를 지정하지 않았습니다."),
+            @ApiResponse(responseCode = "TODO_005", description = "전체 선택인 경우 특정 assignee를 지정할 수 없습니다.")
     })
     @PostMapping("/moims/{moimId}/todos")
     public BaseResponse<Long> createTodo(
@@ -72,7 +74,6 @@ public class MoimTodoController {
         return BaseResponse.onSuccess(todoQueryService.getTodoDetailForAdmin(todoId));
     }
 
-    // TODO: cursor 초기값 확인 (현재 방식 : 초기값 null)
     @Operation(summary = "todo 할당받은 멤버 리스트 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 특정 todo를 할당받은 멤버 리스트를 조회합니다. ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -157,7 +158,9 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
-            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다.")
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "TODO_004", description = "Todo를 할당받을 유저를 지정하지 않았습니다."),
+            @ApiResponse(responseCode = "TODO_005", description = "전체 선택인 경우 특정 assignee를 지정할 수 없습니다.")
     })
     @PutMapping("/moims/{moimId}/todos/admin/{todoId}")
     public BaseResponse<?> updateTodo(

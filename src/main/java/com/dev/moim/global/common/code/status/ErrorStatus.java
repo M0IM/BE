@@ -131,7 +131,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // Todo 관련
     TODO_NOT_FOUND(HttpStatus.NOT_FOUND, "TODO_001", "Todo를 찾을 수 없습니다."),
     NOT_TODO_ASSIGNEE(HttpStatus.UNAUTHORIZED, "TODO_002", "해당 유저에게 부여된 todo가 아닙니다."),
-    TODO_STATUS_SAME(HttpStatus.BAD_REQUEST, "TODO_003", "업데이트 요청한 todo status가 기존 status와 동일합니다.")
+    TODO_STATUS_SAME(HttpStatus.BAD_REQUEST, "TODO_003", "업데이트 요청한 todo status가 기존 status와 동일합니다."),
+    TODO_ASSIGNEE_NULL(HttpStatus.BAD_REQUEST, "TODO_004", "Todo를 할당받을 유저를 지정하지 않았습니다."),
+    TODO_ASSIGNEE_NOT_MATCH(HttpStatus.BAD_REQUEST, "TODO_005", "전체 선택인 경우 특정 assignee를 지정할 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;

@@ -64,7 +64,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Query("select um from Post p join p.userMoim um where p = :post")
     Optional<UserMoim> findByPost(Post post);
 
-    List<UserMoim> findByMoimId(Long moimId);
+    List<UserMoim> findByMoimIdAndJoinStatus(Long moimId, JoinStatus joinStatus);
 
     @Query("SELECT um FROM UserMoim um WHERE um.moim.id = :moimId AND um.user.id IN :userIds")
     List<UserMoim> findByMoimIdAndUserIds(@Param("moimId") Long moimId, @Param("userIds") Set<Long> userIds);

@@ -37,5 +37,5 @@ public interface MoimQueryService {
 
     boolean existsByUserIdAndMoimIdAndJoinStatus(Long userId, Long moimId, JoinStatus joinStatus);
 
-    List<Long> findAllUserIdByMoimId(Long moimId);
+    List<Long> findAllMemberIdByMoimId(Long moimId);
 }

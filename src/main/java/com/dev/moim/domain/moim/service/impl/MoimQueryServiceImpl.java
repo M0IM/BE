@@ -262,8 +262,8 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public List<Long> findAllUserIdByMoimId(Long moimId) {
-        return userMoimRepository.findByMoimId(moimId).stream()
+    public List<Long> findAllMemberIdByMoimId(Long moimId) {
+        return userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE).stream()
                 .map(userMoim -> userMoim.getUser().getId())
                 .toList();
     }

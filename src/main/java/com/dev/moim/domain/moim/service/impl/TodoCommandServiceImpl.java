@@ -6,11 +6,9 @@ import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
-import com.dev.moim.domain.moim.repository.MoimRepository;
-import com.dev.moim.domain.moim.repository.TodoImageRepository;
-import com.dev.moim.domain.moim.repository.TodoRepository;
-import com.dev.moim.domain.moim.repository.UserTodoRepository;
+import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
@@ -40,6 +38,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     private final S3Service s3Service;
     private final UserRepository userRepository;
     private final UserTodoRepository userTodoRepository;
+    private final UserMoimRepository userMoimRepository;
 
     @Override
     public Long createTodo(User user, Long moimId, CreateTodoDTO request) {
@@ -57,14 +56,16 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         todoRepository.save(todo);
 
-        request.imageKeyList().forEach((i) ->{
-                    TodoImage todoImage = TodoImage.builder()
-                            .imageUrl(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i))
-                            .todo(todo)
-                            .build();
-                    todoImageRepository.save(todoImage);});
+        request.imageKeyList().forEach((i) ->
+                        todoImageRepository.save(TodoImage.builder()
+                                .imageUrl((i == null || i.isEmpty() || i.isBlank()) ? null : s3Service.generateStaticUrl(i))
+                                .todo(todo)
+                                .build()));
 
-        List<User> userList = userRepository.findAllById(request.targetUserIdList());
+        List<User> userList = request.isAssigneeSelectAll()
+                ? userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE).stream()
+                .map(UserMoim::getUser).toList()
+                : userRepository.findAllById(request.targetUserIdList());
 
         List<UserTodo> userTodoList = userList.stream()
                 .map(userEntity -> UserTodo.builder()
@@ -114,7 +115,12 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .map(userTodo -> userTodo.getUser().getId())
                 .collect(Collectors.toSet());
 
-        Set<Long> requestUserIdSet = new HashSet<>(request.targetUserIdList());
+        Set<Long> requestUserIdSet = request.isAssigneeSelectAll()
+                ? userMoimRepository.findByMoimIdAndJoinStatus(request.moimId(), JoinStatus.COMPLETE).stream()
+                .map(userMoim -> userMoim.getUser().getId())
+                .collect(Collectors.toSet())
+                : new HashSet<>(request.targetUserIdList());
+
         List<UserTodo> userTodoListToAdd = requestUserIdSet.stream()
                 .filter(userId -> !existingUserIdSet.contains(userId))
                 .map(userId -> {
