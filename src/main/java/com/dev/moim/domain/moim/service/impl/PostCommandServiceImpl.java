@@ -148,6 +148,11 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             postLikeRepository.save(savedPostLike);
+
+            if (post.getUserMoim().getUser().getIsPushAlarm()) {
+                alarmService.saveAlarm(user, post.getUserMoim().getUser(), "좋아요가 달렸습니다", post.getTitle()+"에 좋아요가 달렸습니다", AlarmType.PUSH, AlarmDetailType.POST, post.getMoim().getId(), post.getId(), null);
+                fcmService.sendNotification(post.getUserMoim().getUser(), "좋아요가 달렸습니다.", post.getTitle()+"에 좋아요가 달렸습니다");
+            }
         }
     }
 
@@ -166,6 +171,11 @@ public class PostCommandServiceImpl implements PostCommandService {
                     .build();
 
             commentLikeRepository.save(savedCommentLike);
+
+            if (comment.getUserMoim().getUser().getIsPushAlarm()) {
+                alarmService.saveAlarm(user, comment.getUserMoim().getUser(), "좋아요가 달렸습니다", comment.getContent()+"에 좋아요가 달렸습니다", AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getUserMoim().getMoim().getId(), comment.getId(), comment.getId());
+                fcmService.sendNotification(comment.getUserMoim().getUser(), "좋아요가 달렸습니다.", comment.getContent()+"에 좋아요가 달렸습니다");
+            }
         }
     }
 
