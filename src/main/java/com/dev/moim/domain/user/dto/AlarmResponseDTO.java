@@ -10,10 +10,12 @@ public record AlarmResponseDTO(
         String title,
         String content,
         AlarmDetailType alarmDetailType,
-        Long targetId,
+        Long moimId,
+        Long postId,
+        Long commentId,
         LocalDateTime createdAt
 ) {
     public static AlarmResponseDTO toAlarmResponseDTO(Alarm alarm) {
-        return new AlarmResponseDTO(alarm.getId(), alarm.getTitle(), alarm.getContent(), alarm.getAlarmDetailType(), alarm.getTargetId(), alarm.getCreatedAt());
+        return new AlarmResponseDTO(alarm.getId(), alarm.getTitle(), alarm.getContent(), alarm.getAlarmDetailType(), alarm.getMoimId(), alarm.getPostId(), alarm.getCommentId(), alarm.getCreatedAt());
     }
 }

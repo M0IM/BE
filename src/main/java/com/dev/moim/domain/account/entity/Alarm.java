@@ -33,7 +33,11 @@ public class Alarm extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AlarmDetailType alarmDetailType;
 
-    private Long targetId;
+    private Long moimId;
+
+    private Long postId;
+
+    private Long commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

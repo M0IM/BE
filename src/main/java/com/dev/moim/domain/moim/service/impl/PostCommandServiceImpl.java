@@ -98,7 +98,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (post.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
+            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, moim.getId(), post.getId(), comment.getId());
             fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -126,7 +126,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (parentComment.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
+            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, moim.getId(), post.getId(), comment.getId());
             fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -357,7 +357,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                     : (name != null ? name : "");
             userByMoim.forEach((u) ->{
                 if (u.getIsPushAlarm()) {
-                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH, AlarmDetailType.POST, savedPost.getId());
+                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH, AlarmDetailType.POST, moim.getId(), savedPost.getId(), null);
                     fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
             });
