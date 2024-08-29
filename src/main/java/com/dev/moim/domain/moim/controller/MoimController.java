@@ -86,7 +86,7 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims")
-    public BaseResponse<CreateMoimResultDTO> createMoim(@Parameter(hidden = true) @AuthUser User user, @RequestBody CreateMoimDTO createMoimDTO) {
+    public BaseResponse<CreateMoimResultDTO> createMoim(@Parameter(hidden = true) @AuthUser User user, @RequestBody @Valid CreateMoimDTO createMoimDTO) {
         Moim moim = moimCommandService.createMoim(user, createMoimDTO);
         return BaseResponse.onSuccess(CreateMoimResultDTO.toCreateMoimResultDTO(moim));
     }

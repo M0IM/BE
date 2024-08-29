@@ -57,6 +57,7 @@ public class Comment extends BaseEntity {
     public void delete() {
         this.content = null;
         this.userMoim = null;
+        this.commentStatus = CommentStatus.DELETED;
     }
 
     public void update(String content) {

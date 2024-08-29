@@ -77,7 +77,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/posts")
-    public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody CreateMoimPostDTO createMoimPostDTO) {
+    public BaseResponse<CreateMoimPostResultDTO> createMoimPost(@AuthUser User user, @RequestBody @Valid CreateMoimPostDTO createMoimPostDTO) {
         Post post = postCommandService.createMoimPost(user, createMoimPostDTO);
         return BaseResponse.onSuccess(CreateMoimPostResultDTO.toCreateMoimPostDTO(post));
     }
@@ -113,7 +113,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/posts/comments")
-    public BaseResponse<CreateCommentResultDTO> createComment(@AuthUser User user, @RequestBody CreateCommentDTO createCommentDTO) {
+    public BaseResponse<CreateCommentResultDTO> createComment(@AuthUser User user, @RequestBody @Valid CreateCommentDTO createCommentDTO) {
         Comment comment = postCommandService.createComment(user, createCommentDTO);
         return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
     }
@@ -123,7 +123,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/posts/comments/comments")
-    public BaseResponse<CreateCommentResultDTO> createCommentComment(@AuthUser User user, @RequestBody CreateCommentCommentDTO createCommentCommentDTO) {
+    public BaseResponse<CreateCommentResultDTO> createCommentComment(@AuthUser User user, @RequestBody @Valid CreateCommentCommentDTO createCommentCommentDTO) {
         Comment comment = postCommandService.createCommentComment(user, createCommentCommentDTO);
         return BaseResponse.onSuccess(CreateCommentResultDTO.toCreateCommentResultDTO(comment));
     }
@@ -193,7 +193,7 @@ public class MoimPostController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PutMapping("/moims/comments")
-    public BaseResponse<String> updateComment(@AuthUser User user, @RequestBody CommentUpdateRequestDTO commentUpdateRequestDTO) {
+    public BaseResponse<String> updateComment(@AuthUser User user, @RequestBody @Valid CommentUpdateRequestDTO commentUpdateRequestDTO) {
         postCommandService.updateComment(user, commentUpdateRequestDTO);
         return BaseResponse.onSuccess("댓글이 수정 되었습니다.");
     }
