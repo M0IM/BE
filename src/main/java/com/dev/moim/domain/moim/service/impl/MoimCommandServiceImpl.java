@@ -105,6 +105,15 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         userMoimRepository.delete(userMoim);
 
+        Optional<UserMoim> ownerByMoim = userRepository.findOwnerByMoim(moim);
+        if (ownerByMoim.isPresent()) {
+            UserMoim owner = ownerByMoim.get();
+            if (owner.getUser().getIsPushAlarm() && (user != owner.getUser())) {
+                alarmService.saveAlarm(user, owner.getUser(), owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+                fcmService.sendNotification(owner.getUser(), owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.");
+            }
+        }
+
         userMoimRepository.flush();
 
         List<UserMoim> byUserIdAndMoimId = userMoimRepository.findByMoimId(moim.getId(), JoinStatus.COMPLETE);
@@ -141,10 +150,10 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             throw new MoimException(ErrorStatus.ALREADY_REQUEST);
         }
 
-        Optional<User> owner = userRepository.findOwnerByMoim(moim);
+        Optional<UserMoim> owner = userRepository.findOwnerByMoim(moim);
 
         if (owner.isPresent()) {
-            User realOwner = owner.get();
+            User realOwner = owner.get().getUser();
             if (realOwner.getIsPushAlarm()) {
                 alarmService.saveAlarm(user, realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
                 fcmService.sendNotification(realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.");

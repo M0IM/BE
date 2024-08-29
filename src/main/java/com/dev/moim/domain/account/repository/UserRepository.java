@@ -3,6 +3,7 @@ package com.dev.moim.domain.account.repository;
 import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
@@ -55,6 +56,6 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) from UserMoim um join um.userProfile up where um.user.id in :userIds and um.moim = :moim and um.joinStatus = 'COMPLETE'")
     List<UserProfileDTO> findReadUsersProfileByUsersId(Set<Long> userIds, Moim moim);
 
-    @Query("select um.user from UserMoim um where um.moim = :moim and um.moimRole = 'OWNER' and um.joinStatus = 'COMPLETE'")
-    Optional<User> findOwnerByMoim(Moim moim);
+    @Query("select um from UserMoim um where um.moim = :moim and um.moimRole = 'OWNER' and um.joinStatus = 'COMPLETE'")
+    Optional<UserMoim> findOwnerByMoim(Moim moim);
 }
