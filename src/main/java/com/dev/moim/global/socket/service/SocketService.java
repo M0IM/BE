@@ -134,7 +134,7 @@ public class SocketService {
         notEnterPeople.forEach(p -> {
             User receiver = userRepository.findById(p).orElseThrow(()-> new ChatRoomException(ErrorStatus.USER_NOT_FOUND));
             if (receiver.getIsPushAlarm()) {
-                alarmService.saveAlarm(sender, receiver, chatRoom.getTitle(), chattingDTO.getContent(), AlarmType.PUSH, AlarmDetailType.CHATROOM, chatRoom.getId());
+//                alarmService.saveAlarm(sender, receiver, chatRoom.getTitle(), chattingDTO.getContent(), AlarmType.PUSH, AlarmDetailType.CHATROOM, chatRoom.getId());
                 fcmService.sendNotification(receiver, chatRoom.getTitle(), chattingDTO.getContent());
             }
         });

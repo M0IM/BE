@@ -34,7 +34,7 @@ public class FcmService {
         List<User> users = userQueryService.findAllUser();
         users.forEach(user -> {
             if (user.getIsEventAlarm()) {
-                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null);
+                alarmService.saveAlarm(null, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null, null, null);
                 sendNotification(user, eventDTO.title(), eventDTO.content());
             }
         });

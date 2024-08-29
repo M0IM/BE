@@ -17,7 +17,7 @@ public class AlarmCommandServiceImpl implements AlarmService {
     private final AlarmRepository alarmRepository;
 
     @Override
-    public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type, AlarmDetailType alarmDetailType, Long targetId) {
+    public void saveAlarm(User sender, User receiver, String title, String content, AlarmType type, AlarmDetailType alarmDetailType, Long moimId, Long postId, Long commentId) {
 
         Alarm alarm = Alarm.builder()
                 .user(receiver)
@@ -25,7 +25,9 @@ public class AlarmCommandServiceImpl implements AlarmService {
                 .title(title)
                 .writerId(sender.getId())
                 .alarmDetailType(alarmDetailType)
-                .targetId(targetId)
+                .moimId(moimId)
+                .postId(postId)
+                .commentId(commentId)
                 .alarmType(type)
                 .build();
 
