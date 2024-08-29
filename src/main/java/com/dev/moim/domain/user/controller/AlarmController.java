@@ -12,10 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,9 +27,9 @@ public class AlarmController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @GetMapping("/event")
+    @PostMapping("/event")
     public BaseResponse<String> sendEventAlarm(@AuthUser User user, @RequestBody EventDTO eventDTO) {
-        fcmService.sendEventAlarm(eventDTO);
+        fcmService.sendEventAlarm(user, eventDTO);
         return BaseResponse.onSuccess("이벤트 알림 보내기에 성공하였습니다.");
     }
 
