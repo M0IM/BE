@@ -36,7 +36,7 @@ public class Todo extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @OneToMany(mappedBy = "todo", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTodo> userTodoList = new ArrayList<>();
 
     @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -44,5 +44,18 @@ public class Todo extends BaseEntity {
 
     public void updateWriter(User writer) {
         this.writer = writer;
+    }
+
+    public void updateTodo(
+            String title,
+            String content,
+            LocalDateTime dueDate,
+            List<TodoImage> newImageList
+    ) {
+        this.title = title;
+        this.content = content;
+        this.dueDate = dueDate;
+        this.todoImageList.clear();
+        this.todoImageList.addAll(newImageList);
     }
 }

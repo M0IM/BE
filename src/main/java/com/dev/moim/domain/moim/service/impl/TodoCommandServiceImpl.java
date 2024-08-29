@@ -14,13 +14,17 @@ import com.dev.moim.domain.moim.repository.UserTodoRepository;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
+import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -54,8 +58,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todoRepository.save(todo);
 
         request.imageKeyList().forEach((i) ->{
-                    TodoImage todoImage = TodoImage.builder().imageUrl
-                            (i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).todo(todo)
+                    TodoImage todoImage = TodoImage.builder()
+                            .imageUrl(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i))
+                            .todo(todo)
                             .build();
                     todoImageRepository.save(todoImage);});
 
@@ -79,9 +84,53 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         UserTodo userTodo = userTodoRepository.findByUserIdAndTodoId(user.getId(), todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
-
         userTodo.updateStatus(request.todoStatus());
 
         return UpdateTodoStatusResponseDTO.of(userTodo);
+    }
+
+    @Override
+    public void updateTodo(Long todoId, CreateTodoDTO request) {
+
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        List<TodoImage> newImageList = request.imageKeyList().stream()
+                .map(imageKey -> TodoImage.builder()
+                        .imageUrl(s3Service.generateStaticUrl(imageKey))
+                        .todo(todo)
+                        .build())
+                .toList();
+
+        todo.updateTodo(
+                request.title(),
+                request.content(),
+                request.dueDate(),
+                newImageList
+        );
+
+        List<UserTodo> existingUserTodoList = todo.getUserTodoList();
+        Set<Long> existingUserIdSet = existingUserTodoList.stream()
+                .map(userTodo -> userTodo.getUser().getId())
+                .collect(Collectors.toSet());
+
+        Set<Long> requestUserIdSet = new HashSet<>(request.targetUserIdList());
+        List<UserTodo> userTodoListToAdd = requestUserIdSet.stream()
+                .filter(userId -> !existingUserIdSet.contains(userId))
+                .map(userId -> {
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                    return UserTodo.builder()
+                            .todo(todo)
+                            .user(user)
+                            .status(TodoStatus.LOADING)
+                            .build();
+                }).toList();
+        List<UserTodo> userTodoListToRemove = existingUserTodoList.stream()
+                .filter(userTodo -> !requestUserIdSet.contains(userTodo.getUser().getId()))
+                .toList();
+
+        todo.getUserTodoList().removeAll(userTodoListToRemove);
+        todo.getUserTodoList().addAll(userTodoListToAdd);
     }
 }

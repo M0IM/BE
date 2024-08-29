@@ -142,7 +142,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다."),
             @ApiResponse(responseCode = "TODO_003", description = "업데이트 요청한 todo status가 기존 status와 동일합니다.")
     })
-    @PutMapping("/moims/{moimId}/todos/{todoId}")
+    @PutMapping("/moims/{moimId}/todos/assignee/{todoId}")
     public BaseResponse<UpdateTodoStatusResponseDTO> updateUserTodoStatus(
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
@@ -150,5 +150,23 @@ public class MoimTodoController {
             @Valid @RequestBody UpdateTodoStatusDTO request
     ) {
         return BaseResponse.onSuccess(todoCommandService.updateUserTodoStatus(user, todoId, request));
+    }
+
+    @Operation(summary = "todo 수정", description = "모임 관리자 회원이 특정 todo 내용을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다.")
+    })
+    @PutMapping("/moims/{moimId}/todos/admin/{todoId}")
+    public BaseResponse<?> updateTodo(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @TodoValidation @PathVariable Long todoId,
+            @Valid @RequestBody CreateTodoDTO request
+    ) {
+        todoCommandService.updateTodo(todoId, request);
+        return BaseResponse.onSuccess(null);
     }
 }

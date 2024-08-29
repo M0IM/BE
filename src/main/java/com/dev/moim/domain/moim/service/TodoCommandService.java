@@ -10,4 +10,6 @@ public interface TodoCommandService {
     Long createTodo(User user, Long moimId, CreateTodoDTO request);
 
     UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request);
+
+    void updateTodo(Long todoId, CreateTodoDTO request);
 }
