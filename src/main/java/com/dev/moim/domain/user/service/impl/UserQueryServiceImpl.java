@@ -11,6 +11,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
@@ -32,6 +33,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,7 +74,9 @@ public class UserQueryServiceImpl implements UserQueryService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(userId, MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl());
+        int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
+
+        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl(), participateMoimCnt);
     }
 
     @Override
@@ -241,6 +245,8 @@ public class UserQueryServiceImpl implements UserQueryService {
             cursor = Long.MAX_VALUE;
         }
 
+        user.updateAlarmTime();
+
         Slice<Alarm> alarmSlices = alarmRepository.findByUserAndIdLessThanOrderByIdDesc(user, cursor, PageRequest.of(0, take));
 
         List<AlarmResponseDTO> alarmResponseDTOList = alarmSlices.stream().map(AlarmResponseDTO::toAlarmResponseDTO
@@ -263,7 +269,9 @@ public class UserQueryServiceImpl implements UserQueryService {
            throw new PostException(ErrorStatus.NOT_ANNOUNCEMENT_POST);
         }
 
-        List<UserProfileDTO> readUsers = userRepository.findReadUsers(post);
+        Set<Long> readUsersId = userRepository.findReadUserId(post);
+
+        List<UserProfileDTO> readUsers = userRepository.findReadUsersProfileByUsersId(readUsersId, moim);
 
         List<UserPreviewDTO> userPreviewDTOList = readUsers.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
 
@@ -278,6 +286,12 @@ public class UserQueryServiceImpl implements UserQueryService {
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Integer countAlarm(User user) {
+        List<Alarm> alarmByUser = userRepository.findAlarmByUser(user);
+        return alarmByUser.size();
     }
 
 }

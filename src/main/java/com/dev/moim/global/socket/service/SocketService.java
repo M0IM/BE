@@ -3,6 +3,7 @@ package com.dev.moim.global.socket.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -129,11 +130,11 @@ public class SocketService {
         
         // 밖 인원들 에게 푸시 알림 전달
         Set<Long> notEnterPeople = socketUtil.sendPushNotification(userIds, chattingDTO);
-        System.out.println(notEnterPeople);
+
         notEnterPeople.forEach(p -> {
             User receiver = userRepository.findById(p).orElseThrow(()-> new ChatRoomException(ErrorStatus.USER_NOT_FOUND));
             if (receiver.getIsPushAlarm()) {
-                alarmService.saveAlarm(sender, receiver, chatRoom.getTitle(), chattingDTO.getContent(), AlarmType.PUSH);
+                alarmService.saveAlarm(sender, receiver, chatRoom.getTitle(), chattingDTO.getContent(), AlarmType.PUSH, AlarmDetailType.CHATROOM, chatRoom.getId());
                 fcmService.sendNotification(receiver, chatRoom.getTitle(), chattingDTO.getContent());
             }
         });

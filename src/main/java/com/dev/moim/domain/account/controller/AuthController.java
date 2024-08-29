@@ -30,7 +30,9 @@ public class AuthController {
     @Operation(summary="회원 가입 API", description="회원가입 API 입니다." )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
-            @ApiResponse(responseCode = "AUTH_011", description = "이미 가입한 메일 입니다.")
+            @ApiResponse(responseCode = "AUTH_011", description = "이미 가입한 메일 입니다."),
+            @ApiResponse(responseCode = "AUTH_025", description = "providerId가 누락되었습니다."),
+            @ApiResponse(responseCode = "AUTH_022", description = "이미 가입한 소셜 계정입니다.")
     })
     public BaseResponse<TokenResponse> join(@Valid @RequestBody JoinRequest request) {
         return BaseResponse.onSuccess(authService.join(request));
@@ -42,7 +44,9 @@ public class AuthController {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @ApiResponse(responseCode = "AUTH_009", description = "비밀번호를 잘못 입력했습니다."),
             @ApiResponse(responseCode = "AUTH_010", description = "인증에 실패했습니다."),
-            @ApiResponse(responseCode = "AUTH_021", description = "존재하지 않는 사용자입니다.")
+            @ApiResponse(responseCode = "AUTH_021", description = "존재하지 않는 사용자입니다."),
+            @ApiResponse(responseCode = "AUTH_028", description = "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
+            @ApiResponse(responseCode = "FCM_002", description = "FCM 토큰이 누락되었습니다."),
     })
     public BaseResponse<TokenResponse> localLogin(@RequestBody LoginRequest request) {
         return BaseResponse.onSuccess(null);
@@ -52,10 +56,12 @@ public class AuthController {
     @Operation(summary="소셜 로그인 API", description="소셜 로그인 타입을 입력해주세요.\n [Provider] KAKAO, APPLE, GOOGLE, NAVER (개발용)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @ApiResponse(responseCode = "AUTH_001", description = "신규 유저 입니다. 회원가입을 진행해주세요."),
             @ApiResponse(responseCode = "AUTH_016", description = "지원하지 않는 로그인 provider 입니다."),
             @ApiResponse(responseCode = "AUTH_018", description = "만료된 ID 토큰 입니다."),
             @ApiResponse(responseCode = "AUTH_019", description = "유효하지 않은 ID 토큰 입니다."),
+            @ApiResponse(responseCode = "FCM_002", description = "FCM 토큰이 누락되었습니다."),
+            @ApiResponse(responseCode = "AUTH_028", description = "존재하지 않는 계정입니다. 회원가입을 진행해주세요."),
+            @ApiResponse(responseCode = "AUTH_029", description = "OIDC ID 토큰 공개키를 받아오는데 실패했습니다.")
     })
     public BaseResponse<TokenResponse> oAuthLogin(
             @RequestBody OAuthLoginRequest request

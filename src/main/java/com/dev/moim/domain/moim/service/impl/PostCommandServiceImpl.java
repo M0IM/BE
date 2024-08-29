@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,7 +58,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         Moim moim = moimRepository.findById(createMoimPostDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post savedPost = Post.builder()
                 .title(createMoimPostDTO.title())
@@ -82,7 +84,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         Moim moim = moimRepository.findById(createCommentDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post post = postRepository.findById(createCommentDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
@@ -96,7 +98,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (post.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
+            alarmService.saveAlarm(user, post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
             fcmService.sendNotification(post.getUserMoim().getUser(), "새로운 댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -107,7 +109,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     public Comment createCommentComment(User user, CreateCommentCommentDTO createCommentCommentDTO) {
         Moim moim = moimRepository.findById(createCommentCommentDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post post = postRepository.findById(createCommentCommentDTO.postId()).orElseThrow(()-> new PostException(ErrorStatus.POST_NOT_FOUND));
 
@@ -124,7 +126,7 @@ public class PostCommandServiceImpl implements PostCommandService {
         commentRepository.save(comment);
 
         if (parentComment.getUserMoim().getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH);
+            alarmService.saveAlarm(user, parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent(), AlarmType.PUSH, AlarmDetailType.COMMENT, comment.getId());
             fcmService.sendNotification(parentComment.getUserMoim().getUser(), "새로운 대댓글이 달렸습니다.", comment.getContent());
         }
 
@@ -200,14 +202,26 @@ public class PostCommandServiceImpl implements PostCommandService {
     }
 
     @Override
-    public void updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
-        Post updatePost = postRepository.findById(updateMoimPostDTO.postId()).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+    public Post updatePost(User user, UpdateMoimPostDTO updateMoimPostDTO) {
+        Post updatePost = postRepository.findById(updateMoimPostDTO.postId())
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
-        List<PostImage> imageList = updateMoimPostDTO.imageKeyNames().stream().map((i) ->
-                PostImage.builder().imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i)).post(updatePost).build()
+        // imageKeyNames()의 반환값이 null인지 체크
+        List<String> imageKeyNames = updateMoimPostDTO.imageKeyNames();
+        if (imageKeyNames == null) {
+            imageKeyNames = Collections.emptyList(); // 빈 리스트로 초기화
+        }
+
+        List<PostImage> imageList = imageKeyNames.stream().map(i ->
+                PostImage.builder()
+                        .imageKeyName(i == null || i.isEmpty() || i.isBlank() ? null : s3Service.generateStaticUrl(i))
+                        .post(updatePost)
+                        .build()
         ).toList();
 
         updatePost.updatePost(updateMoimPostDTO.title(), updateMoimPostDTO.content(), imageList);
+
+        return updatePost;
     }
 
     @Override
@@ -252,7 +266,6 @@ public class PostCommandServiceImpl implements PostCommandService {
             throw new PostException(ErrorStatus.NOT_MY_POST);
         }
 
-        System.out.println(commentUpdateRequestDTO.content());
         comment.update(commentUpdateRequestDTO.content());
     }
 
@@ -310,7 +323,7 @@ public class PostCommandServiceImpl implements PostCommandService {
     public Long createAnnouncement(User user, AnnouncementRequestDTO announcementRequestDTO) {
         Moim moim = moimRepository.findById(announcementRequestDTO.moimId()).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(()-> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         Post savedPost = Post.builder()
                 .title(announcementRequestDTO.title())
@@ -344,7 +357,7 @@ public class PostCommandServiceImpl implements PostCommandService {
                     : (name != null ? name : "");
             userByMoim.forEach((u) ->{
                 if (u.getIsPushAlarm()) {
-                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH);
+                    alarmService.saveAlarm(user, u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle(), AlarmType.PUSH, AlarmDetailType.POST, savedPost.getId());
                     fcmService.sendNotification(u, "[" + moimName  +"] 새로운 공지사항이 있습니다.", savedPost.getTitle());
                 }
             });

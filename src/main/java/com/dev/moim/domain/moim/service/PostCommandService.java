@@ -21,7 +21,7 @@ public interface PostCommandService {
 
     void deletePost(User user, Long postId);
 
-    void updatePost(User user, @Valid UpdateMoimPostDTO updateMoimPostDTO);
+    Post updatePost(User user, @Valid UpdateMoimPostDTO updateMoimPostDTO);
 
     void blockPost(User user, @Valid PostBlockDTO postBlockDTO);
 

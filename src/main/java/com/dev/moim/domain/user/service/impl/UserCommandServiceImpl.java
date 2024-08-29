@@ -140,6 +140,11 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
+    public void notDeadLockFcmSignOut(User user) {
+        userRepository.updateFcmTokenByUser(user);
+    }
+
+    @Override
     public void deleteAlarms(User user) {
         alarmRepository.deleteAllByUser(user);
     }

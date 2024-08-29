@@ -40,14 +40,17 @@ public class User extends BaseEntity {
 
     private LocalDateTime inactive_date;
 
+    @Column(nullable = false)
+    private LocalDateTime lastAlarmTime;
+
     private String deviceId;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     private Boolean isPushAlarm;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     private Boolean isEventAlarm;
 
     @Enumerated(EnumType.STRING)
@@ -113,6 +116,10 @@ public class User extends BaseEntity {
 
     public void fcmSignOut() {
         this.deviceId = null;
+    }
+
+    public void updateAlarmTime() {
+        this.lastAlarmTime = LocalDateTime.now();
     }
 
     @PreRemove
