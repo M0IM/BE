@@ -48,4 +48,5 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
     @Query("SELECT COUNT(up) FROM UserPlan up WHERE up.user = :user AND up.plan.date BETWEEN :startOfDay AND :endOfDay")
     int countPlansByUserAndDateBetween(@Param("user") User user, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 
+    List<UserPlan> findByPlanId(Long planId);
 }

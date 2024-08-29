@@ -1,7 +1,10 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
+import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
@@ -13,6 +16,7 @@ import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
 import com.dev.moim.global.error.handler.UserException;
+import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,8 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     private final UserRepository userRepository;
     private final UserTodoRepository userTodoRepository;
     private final UserMoimRepository userMoimRepository;
+    private final AlarmService alarmService;
+    private final FcmService fcmService;
 
     @Override
     public Long createTodo(User user, Long moimId, CreateTodoDTO request) {
@@ -76,6 +82,11 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .toList();
 
         userTodoRepository.saveAll(userTodoList);
+
+        userList.stream().filter(User::getIsPushAlarm).forEach(assignee -> {
+            alarmService.saveAlarm(user, assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
+            fcmService.sendNotification(assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle());
+        });
 
         return todo.getId();
     }

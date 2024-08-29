@@ -2,12 +2,10 @@ package com.dev.moim.domain.user.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
-import com.dev.moim.domain.account.entity.UserReview;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.domain.account.repository.UserReviewRepository;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
@@ -37,7 +35,6 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserProfileRepository userProfileRepository;
     private final UserMoimRepository userMoimRepository;
     private final UserRepository userRepository;
-    private final UserReviewRepository userReviewRepository;
     private final S3Service s3Service;
     private final IndividualPlanRepository individualPlanRepository;
     private final AlarmRepository alarmRepository;
@@ -61,31 +58,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
         );
-    }
-
-    @Override
-    public CreateReviewResultDTO postMemberReview(User user, CreateReviewDTO request) {
-
-        User targetUser = userRepository.findById(request.targetUserId())
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-
-        UserReview userReview = UserReview.builder()
-                .rating(request.rating())
-                .content(request.content())
-                .user(targetUser)
-                .writerId(user.getId())
-                .build();
-        userReviewRepository.save(userReview);
-
-        double averageRating = userReviewRepository.findAllByUserId(targetUser.getId())
-                .stream()
-                .mapToDouble(UserReview::getRating)
-                .average()
-                .orElse(0.0);
-
-        targetUser.updateRating(averageRating);
-
-        return CreateReviewResultDTO.of(userReview);
     }
 
     @Override

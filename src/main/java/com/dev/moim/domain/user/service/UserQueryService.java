@@ -16,8 +16,6 @@ public interface UserQueryService {
 
     ProfileDetailDTO getDetailProfile(Long userId);
 
-    ReviewListDTO getUserReviews(Long userId, int page, int size);
-
     PlanMonthListDTO<List<UserPlanDTO>> getIndividualPlans(User user, int year, int month);
 
     PlanMonthListDTO<List<UserPlanDTO>> getUserPlans(User user, int year, int month);

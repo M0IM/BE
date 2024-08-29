@@ -7,8 +7,6 @@ public interface UserCommandService {
 
     void updateInfo(User user, UpdateUserInfoDTO request);
 
-    CreateReviewResultDTO postMemberReview(User user, CreateReviewDTO request);
-
     AlarmDTO settingPushAlarm(User user);
 
     AlarmDTO settingEventAlarm(User user);

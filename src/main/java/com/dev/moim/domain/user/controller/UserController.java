@@ -7,6 +7,8 @@ import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
+import com.dev.moim.domain.user.service.ReviewCommandService;
+import com.dev.moim.domain.user.service.ReviewQueryService;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
@@ -34,6 +36,8 @@ public class UserController {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final CalenderQueryService calenderQueryService;
+    private final ReviewQueryService reviewQueryService;
+    private final ReviewCommandService reviewCommandService;
 
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -91,7 +95,7 @@ public class UserController {
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userQueryService.getUserReviews(user.getId(), page, size));
+        return BaseResponse.onSuccess(reviewQueryService.getUserReviews(user.getId(), page, size));
     }
 
     @Operation(summary = "멤버 후기 리스트 조회", description = "다른 유저의 후기를 조회합니다. 조회할 멤버의 id를 넣어주세요.")
@@ -104,7 +108,7 @@ public class UserController {
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
-        return BaseResponse.onSuccess(userQueryService.getUserReviews(userId, page, size));
+        return BaseResponse.onSuccess(reviewQueryService.getUserReviews(userId, page, size));
     }
 
     @Operation(summary = "멤버 후기 작성", description = "유저 본인에겐 후기를 남길 수 없습니다.")
@@ -117,7 +121,7 @@ public class UserController {
     public BaseResponse<CreateReviewResultDTO> postMemberReview(
             @AuthUser User user,
             @Valid @RequestBody CreateReviewDTO createReviewDTO) {
-        return BaseResponse.onSuccess(userCommandService.postMemberReview(user, createReviewDTO));
+        return BaseResponse.onSuccess(reviewCommandService.postMemberReview(user, createReviewDTO));
     }
 
     @Operation(summary = "push 알림 설정", description = "push 알림이 켜져있으면 끄고 꺼져있으면 킵니다.")
