@@ -35,7 +35,7 @@ public record CommentCommentResponseDTO(
                 userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getImageUrl(),
                 userMoim.isEmpty() || b1 ? null : userMoim.get().getUserProfile().getName(),
                 isLike,
-                comment.getCommentStatus(),
+                b1 ? CommentStatus.BLOCKED : comment.getCommentStatus(),
                 comment.getUpdatedAt(),
                 comment.getCreatedAt()
         );
