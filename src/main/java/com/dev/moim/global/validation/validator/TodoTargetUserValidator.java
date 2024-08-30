@@ -31,7 +31,7 @@ public class TodoTargetUserValidator implements ConstraintValidator<TodoTargetUs
         boolean isAssigneeSelectAll = request.isAssigneeSelectAll();
         List<Long> targetUserIdList = request.targetUserIdList();
 
-        if (isAssigneeSelectAll && targetUserIdList != null) {
+        if (isAssigneeSelectAll && !(targetUserIdList == null || targetUserIdList.isEmpty())) {
             addConstraintViolation(context, TODO_ASSIGNEE_NOT_MATCH.getMessage());
             return false;
         }
