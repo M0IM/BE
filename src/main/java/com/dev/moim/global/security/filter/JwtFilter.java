@@ -17,7 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
+import static com.dev.moim.global.common.code.status.ErrorStatus.FCM_TOKEN_REQUIRED;
 import static com.dev.moim.global.common.code.status.ErrorStatus.LOGOUT_ACCESS_TOKEN;
 
 @Slf4j
@@ -42,7 +44,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (redisUtil.getValue(accessToken) != null) {
+        if (Objects.equals(redisUtil.getValue(accessToken), "deviceId_missing")) {
+            filterChain.doFilter(request, response);
+            throw new AuthException(FCM_TOKEN_REQUIRED);
+        }
+
+        if (Objects.equals(redisUtil.getValue(accessToken), "logout")) {
             filterChain.doFilter(request, response);
             throw new AuthException(LOGOUT_ACCESS_TOKEN);
         }

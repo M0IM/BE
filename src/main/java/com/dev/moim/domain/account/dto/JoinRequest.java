@@ -13,6 +13,7 @@ import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 
+// @JoinFcmTokenValidtaion
 @OAuthAccountValidation
 @LocalAccountValidation
 @JoinPasswordValidation
@@ -21,7 +22,7 @@ public record JoinRequest(
         @NonNull
         Provider provider,
         String providerId,
-        String fcmToken,
+        @NotBlank String fcmToken,
         @NotBlank
         String nickname,
         @NotBlank
