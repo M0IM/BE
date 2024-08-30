@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckOwnerValidation {
-    String message() default "허용 되지 않은 cursor 값 입니다.";
+    String message() default "해당 유저는 owner가 아닙니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
