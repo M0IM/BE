@@ -1,10 +1,10 @@
 package com.dev.moim.domain.moim.dto;
 
-import com.dev.moim.global.validation.annotation.CheckAdminValidation;
+import com.dev.moim.global.validation.annotation.CheckOwnerValidation;
 
 public record ChangeMoimLeaderRequestDTO(
         Long userId,
-        @CheckAdminValidation
+        @CheckOwnerValidation
         Long moimId
 ) {
 }
