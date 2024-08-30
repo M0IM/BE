@@ -103,7 +103,9 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
-        if (userMoim.getMoimRole().equals(MoimRole.OWNER)) {
+        List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
+
+        if (users.size() > 1 || userMoim.getMoimRole().equals(MoimRole.OWNER)) {
             throw new MoimException(ErrorStatus.OWNER_NOT_EXIT);
         }
 
