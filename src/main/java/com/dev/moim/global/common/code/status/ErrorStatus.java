@@ -81,6 +81,7 @@ public enum ErrorStatus implements BaseErrorCode {
     ALREADY_REQUEST(HttpStatus.FORBIDDEN, "MOIM_010", "이미 신청한 모임 입니다.."),
     NOT_REQUEST_JOIN(HttpStatus.NOT_FOUND, "MOIM_011", "신청하지 않은 모임입니다."),
     USER_MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_012", "user moim을 찾을 수 없습니다."),
+    OWNER_NOT_EXIT(HttpStatus.NOT_FOUND, "MOIM_013", "owner는 모임을 나갈 수 없습니다."),
 
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
