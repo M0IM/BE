@@ -86,8 +86,8 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        if (plan.getUser().getIsPushAlarm()) {
-            alarmService.saveAlarm(user, plan.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+        alarmService.saveAlarm(user, plan.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+        if (plan.getUser().getIsPushAlarm() && plan.getUser().getDeviceId() != null) {
             fcmService.sendNotification(plan.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다");
         }
 
@@ -127,9 +127,13 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
-        participantList.stream().filter(User::getIsPushAlarm).forEach(participant -> {
+        participantList.forEach(participant -> {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
-            fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.");
+
+            if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
+                fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.");
+            }
+
         });
 
         plan.updateSchedule(scheduleList);
@@ -142,9 +146,12 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
-        participantList.stream().filter(User::getIsPushAlarm).forEach(participant -> {
+        participantList.forEach(participant -> {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
-            fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.");
+
+            if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
+                fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.");
+            }
         });
 
         planRepository.delete(plan);

@@ -83,9 +83,12 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         userTodoRepository.saveAll(userTodoList);
 
-        userList.stream().filter(User::getIsPushAlarm).forEach(assignee -> {
+        userList.forEach(assignee -> {
             alarmService.saveAlarm(user, assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
-            fcmService.sendNotification(assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle());
+
+            if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                fcmService.sendNotification(assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle());
+            }
         });
 
         return todo.getId();
