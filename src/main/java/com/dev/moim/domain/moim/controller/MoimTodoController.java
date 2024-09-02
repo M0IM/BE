@@ -86,8 +86,8 @@ public class MoimTodoController {
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
-            @RequestParam(name = "cursor", required = false) Long cursor,
-            @RequestParam(name = "take") Integer take
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTodoAssigneeListForAdmin(todoId, cursor, take));
     }
@@ -101,8 +101,8 @@ public class MoimTodoController {
     public BaseResponse<TodoPageDTO> getMoimTodoListForAdmin(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
-            @RequestParam(name = "cursor", required = false) Long cursor,
-            @RequestParam(name = "take") Integer take
+            @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getMoimTodoListForAdmin(moimId, cursor, take));
     }
@@ -116,8 +116,8 @@ public class MoimTodoController {
     public BaseResponse<TodoPageDTO> getSpecificMoimTodoListByMe(
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
-            @RequestParam(name = "cursor", required = false) Long cursor,
-            @RequestParam(name = "take") Integer take
+            @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getSpecificMoimTodoListByMe(user, moimId, cursor, take));
     }
