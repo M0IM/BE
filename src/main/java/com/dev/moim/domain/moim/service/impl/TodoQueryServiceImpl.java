@@ -76,7 +76,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public TodoPageDTO getTodoAssigneeListForAdmin(Long todoId, Long cursor, Integer take) {
 
-        Long startCursor = (cursor == null) ? 0L : cursor;
+        Long startCursor = (cursor == 1) ? 0L : cursor;
         Pageable pageable = PageRequest.of(0, take);
 
         Slice<UserTodo> userTodoSlice = userTodoRepository.findAllWithUserMoimAndUserProfileByTodoIdAndCursor(todoId, startCursor, pageable);
@@ -105,7 +105,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public TodoPageDTO getMoimTodoListForAdmin(Long moimId, Long cursor, Integer take) {
 
-        Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
+        Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
         Slice<Todo> todoSlice = todoRepository.findByMoimIdAndCursorLessThan(moimId, startCursor, pageable);
@@ -133,7 +133,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public TodoPageDTO getSpecificMoimTodoListByMe(User user, Long moimId, Long cursor, Integer take) {
 
-        Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
+        Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
         Slice<Todo> todoSlice = todoRepository.findByWriterIdAndMoimIdAndCursorLessThan(user.getId(), moimId, startCursor, pageable);
@@ -150,7 +150,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take) {
 
-        Long startCursor = (cursor == null) ? Long.MAX_VALUE : cursor;
+        Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
         Slice<Todo> todoSlice = todoRepository.findByWriterIdAndCursorLessThan(user.getId(), startCursor, pageable);
