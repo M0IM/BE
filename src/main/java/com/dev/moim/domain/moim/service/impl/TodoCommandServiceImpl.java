@@ -55,7 +55,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         Todo todo = Todo.builder()
                 .title(request.title())
                 .content(request.content())
-                .dueDate(request.dueDate())
+                .dueDate(request.dueDate().atStartOfDay())
                 .moim(moim)
                 .writer(user)
                 .build();
@@ -122,7 +122,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.updateTodo(
                 request.title(),
                 request.content(),
-                request.dueDate(),
+                request.dueDate().atStartOfDay(),
                 newImageList
         );
 
