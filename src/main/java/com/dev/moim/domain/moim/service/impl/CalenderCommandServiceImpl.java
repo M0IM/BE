@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -86,10 +87,15 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        alarmService.saveAlarm(user, plan.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
-        if (plan.getUser().getIsPushAlarm() && plan.getUser().getDeviceId() != null) {
-            fcmService.sendNotification(plan.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다");
-        }
+        Optional.of(plan.getUser())
+                .filter(planUser -> !user.equals(planUser))
+                .ifPresent(planUser -> {
+                    alarmService.saveAlarm(user, planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+
+                    if (planUser.getIsPushAlarm() && planUser.getDeviceId() != null) {
+                        fcmService.sendNotification(planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다");
+                    }
+                });
 
         return userPlanRepository.save(userPlan).getId();
     }
@@ -104,7 +110,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     }
 
     @Override
-    public void updatePlan(Long moimId, Long planId, PlanCreateDTO request) {
+    public void updatePlan(User user, Long moimId, Long planId, PlanCreateDTO request) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
@@ -127,7 +133,8 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
-        participantList.forEach(participant -> {
+        participantList.stream().filter(participant -> !user.equals(participant))
+                .forEach(participant -> {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
             if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
@@ -140,13 +147,14 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     }
 
     @Override
-    public void deletePlan(Long moimId, Long planId) {
+    public void deletePlan(User user, Long moimId, Long planId) {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
 
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
-        participantList.forEach(participant -> {
+        participantList.stream().filter(participant -> !user.equals(participant))
+                .forEach(participant -> {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
             if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {

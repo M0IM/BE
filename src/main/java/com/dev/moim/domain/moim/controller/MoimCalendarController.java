@@ -119,11 +119,12 @@ public class MoimCalendarController {
     })
     @PutMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> updatePlan(
+            @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanAuthorityValidation @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
     ) {
-        calenderCommandService.updatePlan(moimId, planId, request);
+        calenderCommandService.updatePlan(user, moimId, planId, request);
         return BaseResponse.onSuccess(null);
     }
 
@@ -137,10 +138,11 @@ public class MoimCalendarController {
     })
     @DeleteMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> deletePlan(
+            @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanAuthorityValidation @PathVariable Long planId
     ) {
-        calenderCommandService.deletePlan(moimId, planId);
+        calenderCommandService.deletePlan(user, moimId, planId);
         return BaseResponse.onSuccess(null);
     }
 
