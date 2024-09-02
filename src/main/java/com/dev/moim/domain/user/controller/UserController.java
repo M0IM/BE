@@ -260,7 +260,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyIndividualPlans(user, year, month, day, page, size));
     }
 
-    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 (개인 + 모임 신청 일정) 리스트 조회", description = "특정 날짜에 예정된 (개인 + 모임 신청 일정) 리스트를 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 (개인 일정 + 모임 신청 일정 + 할당받은 todo) 리스트 조회", description = "특정 날짜에 예정된 (개인 + 모임 신청 일정) 리스트를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
@@ -276,7 +276,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getUserDailyPlans(user, year, month, day, page, size));
     }
 
-    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 총 일정 개수 조회", description = "특정 날짜에 예정된 (유저의 총 일정 개수)를 조회합니다.")
+    @Operation(summary = "특정 날짜 (연, 월, 일) : 유저의 총 일정 개수 조회", description = "특정 날짜에 예정된 유저의 총 일정 개수 (개인 일정 + 모임 신청 일정 + 할당받은 todo) 를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })

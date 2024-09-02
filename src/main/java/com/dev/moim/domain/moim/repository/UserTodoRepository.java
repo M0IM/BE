@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.repository;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.UserTodo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
@@ -27,4 +29,13 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
             @Param("todoId") Long todoId,
             @Param("cursor") Long cursor,
             Pageable pageable);
+
+    @Query("SELECT COUNT(ut) " +
+            "FROM UserTodo ut " +
+            "JOIN ut.todo t " +
+            "WHERE ut.user = :user " +
+            "AND t.dueDate BETWEEN :startOfDay AND :endOfDay")
+    int countByUserAndTodoDueDateBetween(@Param("user") User user,
+                                         @Param("startOfDay") LocalDateTime startOfDay,
+                                         @Param("endOfDay") LocalDateTime endOfDay);
 }
