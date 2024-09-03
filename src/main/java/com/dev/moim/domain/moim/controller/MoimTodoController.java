@@ -92,6 +92,24 @@ public class MoimTodoController {
         return BaseResponse.onSuccess(todoQueryService.getTodoAssigneeListForAdmin(todoId, cursor, take));
     }
 
+    @Operation(summary = "todo 할당받은 멤버 제외한 모임 멤버 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 특정 todo를 할당받은 멤버를 제외한 모임 멤버들을 조회합니다. ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "MOIM_012", description = "user moim을 찾을 수 없습니다.")
+    })
+    @GetMapping("/moims/{moimId}/todos/{todoId}/admins/non-assignee-list")
+    public BaseResponse<TodoPageDTO> getTodoNonAssigneeListForAdmin(
+            @AuthUser User user,
+            @CheckAdminValidation @PathVariable Long moimId,
+            @TodoValidation @PathVariable Long todoId,
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getTodoNonAssigneeListForAdmin(moimId, todoId, cursor, take));
+    }
+
     @Operation(summary = "특정 모임의 todo 리스트 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 todo 리스트를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),

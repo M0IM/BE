@@ -16,6 +16,8 @@ public interface TodoQueryService {
 
     TodoPageDTO getTodoAssigneeListForAdmin(Long todoId, Long cursor, Integer take);
 
+    TodoPageDTO getTodoNonAssigneeListForAdmin(Long moidId, Long todoId, Long cursor, Integer take);
+
     TodoPageDTO getMoimTodoListForAdmin(Long moimId, Long cursor, Integer take);
 
     TodoPageDTO getSpecificMoimTodoListByMe(User user, Long moimId, Long cursor, Integer take);

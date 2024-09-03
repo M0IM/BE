@@ -73,4 +73,17 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("SELECT um FROM UserMoim um WHERE um.moim.id = :moimId AND um.user.id IN :userIds")
     List<UserMoim> findByMoimIdAndUserIds(@Param("moimId") Long moimId, @Param("userIds") Set<Long> userIds);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "LEFT JOIN UserTodo ut ON um.user.id = ut.user.id AND ut.todo.id = :todoId " +
+            "WHERE um.moim.id = :moimId AND ut.id IS NULL " +
+            "AND um.joinStatus = :joinStatus " +
+            "AND um.id > :cursor " +
+            "ORDER BY um.id ASC")
+    Slice<UserMoim> findAllMembersNotAssignedToTodo(
+            @Param("moimId") Long moimId,
+            @Param("todoId") Long todoId,
+            @Param("joinStatus") JoinStatus joinStatus,
+            @Param("cursor") Long cursor,
+            Pageable pageable);
 }
