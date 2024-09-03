@@ -9,11 +9,11 @@ public interface TodoCommandService {
 
     UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request);
 
-    void updateTodo(Long todoId, UpdateTodoDTO request);
+    void updateTodo(User user, Long moimId, Long todoId, UpdateTodoDTO request);
 
     void deleteTodo(Long todoId);
 
-    void addAssignees(AddTodoAssigneeDTO request);
+    void addAssignees(User user, AddTodoAssigneeDTO request);
 
     void deleteAssignees(DeleteTodoAssigneeDTO request);
 }

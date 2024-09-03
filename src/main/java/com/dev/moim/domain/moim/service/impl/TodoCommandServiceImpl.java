@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
@@ -79,15 +80,14 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         userTodoRepository.saveAll(userTodoList);
 
-        userList.stream().filter(assignee -> !user.equals(assignee))
+        userList.stream().filter(assignee -> !assignee.equals(user))
                 .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
-            alarmService.saveAlarm(user, assignee, "새로운 todo가 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
-
-            if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                fcmService.sendNotification(assignee, "새로운 todo가 도착했습니다", todo.getTitle());
-            }
-        });
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                    }
+                });
 
         return todo.getId();
     }
@@ -113,10 +113,30 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void updateTodo(Long todoId, UpdateTodoDTO request) {
+    public void updateTodo(User user, Long moimId, Long todoId, UpdateTodoDTO request) {
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        LocalDateTime dueDateTime = request.dueDate().atTime(23, 59, 59, 999999000);
+
+        for (UserTodo userTodo : todo.getUserTodoList()) {
+            if (!dueDateTime.equals(todo.getDueDate())) {
+                if (dueDateTime.isAfter(LocalDateTime.now())) {
+                    userTodo.updateStatus(switch (userTodo.getStatus()) {
+                        case LOADING, COMPLETE -> TodoAssigneeStatus.LOADING;
+                        case OVERDUE -> TodoAssigneeStatus.PENDING;
+                        default -> userTodo.getStatus();
+                    });
+                }
+            } else {
+                userTodo.updateStatus(switch (userTodo.getStatus()) {
+                    case LOADING, COMPLETE -> TodoAssigneeStatus.LOADING;
+                    case OVERDUE -> TodoAssigneeStatus.PENDING;
+                    default -> userTodo.getStatus();
+                });
+            }
+        }
 
         List<TodoImage> newImageList = request.imageKeyList().stream()
                 .map(imageKey -> TodoImage.builder()
@@ -128,9 +148,18 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.updateTodo(
                 request.title(),
                 request.content(),
-                request.dueDate().atTime(23, 59, 59, 999999000),
+                dueDateTime,
                 newImageList
         );
+
+        todo.getUserTodoList().stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(user))
+                .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moimId, null, null);
+
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "할 일이 수정되었습니다", todo.getTitle());
+                    }
+                });
     }
 
     @Override
@@ -139,7 +168,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void addAssignees(AddTodoAssigneeDTO request) {
+    public void addAssignees(User user, AddTodoAssigneeDTO request) {
 
         Todo todo = todoRepository.findById(request.todoId())
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
@@ -155,6 +184,15 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .toList();
 
         todo.getUserTodoList().addAll(userTodoListToAdd);
+
+        userTodoListToAdd.stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(user))
+                .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, request.moimId(), null, null);
+
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                    }
+                });
     }
 
     @Override

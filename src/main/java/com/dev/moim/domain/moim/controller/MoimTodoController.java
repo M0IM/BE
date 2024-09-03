@@ -189,7 +189,7 @@ public class MoimTodoController {
             @TodoValidation @PathVariable Long todoId,
             @RequestBody UpdateTodoDTO request
     ) {
-        todoCommandService.updateTodo(todoId, request);
+        todoCommandService.updateTodo(user, moimId, todoId, request);
         return BaseResponse.onSuccess("todo 수정 성공했습니다.");
     }
 
@@ -223,7 +223,7 @@ public class MoimTodoController {
             @AuthUser User user,
             @Valid @RequestBody AddTodoAssigneeDTO request
     ) {
-        todoCommandService.addAssignees(request);
+        todoCommandService.addAssignees(user, request);
         return BaseResponse.onSuccess("todo assignee 추가 성공했습니다.");
     }
 
