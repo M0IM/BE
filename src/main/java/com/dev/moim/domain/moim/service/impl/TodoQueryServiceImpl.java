@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,8 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 todo.getContent(),
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
-                userTodo.getStatus()
+                userTodo.getStatus(),
+                todo.getStatus()
         );
     }
 
@@ -69,7 +71,8 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 todo.getContent(),
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
-                null
+                null,
+                todo.getStatus()
         );
     }
 
@@ -175,8 +178,12 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public UserTodo findByUserIdAndTodoId(Long userId, Long todoId) {
-        return userTodoRepository.findByUserIdAndTodoId(userId, todoId)
-                .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE));
+    public Optional<UserTodo> findByUserIdAndTodoId(Long userId, Long todoId) {
+        return userTodoRepository.findByUserIdAndTodoId(userId, todoId);
+    }
+
+    @Override
+    public Optional<Todo> findTodoByTodoId(Long todoId) {
+        return todoRepository.findById(todoId);
     }
 }

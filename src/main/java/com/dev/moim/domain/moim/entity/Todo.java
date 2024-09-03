@@ -1,9 +1,11 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +29,11 @@ public class Todo extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime dueDate;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'IN_PROGRESS'")
+    @Column(nullable = false)
+    private TodoStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
@@ -57,5 +64,9 @@ public class Todo extends BaseEntity {
         this.dueDate = dueDate;
         this.todoImageList.clear();
         this.todoImageList.addAll(newImageList);
+    }
+
+    public void updateStatus(TodoStatus status) {
+        this.status = status;
     }
 }

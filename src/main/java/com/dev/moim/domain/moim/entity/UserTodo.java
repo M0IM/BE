@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.entity.enums.TodoStatus;
+import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,9 +19,9 @@ public class UserTodo extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'LOADING'")
+    @ColumnDefault("'PENDING'")
     @Column(nullable = false)
-    private TodoStatus status;
+    private TodoAssigneeStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -31,7 +31,7 @@ public class UserTodo extends BaseEntity {
     @JoinColumn(name = "todo_id")
     private Todo todo;
 
-    public void updateStatus(TodoStatus todoStatus) {
-        this.status = todoStatus;
+    public void updateStatus(TodoAssigneeStatus todoAssigneeStatus) {
+        this.status = todoAssigneeStatus;
     }
 }

@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.dto.task;
 
+import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public record TodoDetailDTO(
         String content,
         LocalDateTime dueDate,
         List<String> imageUrlList,
-        TodoStatus status
+        TodoAssigneeStatus todoAssigneeStatus,
+        TodoStatus todoStatus
 ) {
 }

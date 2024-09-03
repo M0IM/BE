@@ -4,6 +4,7 @@ import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.TodoImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +14,7 @@ public record TodoDTO(
         String title,
         LocalDateTime dueDate,
         List<String> imageUrlList,
+        TodoStatus todoStatus,
         String writerNickname,
         String writerProfileImageUrl,
         MoimRole writerMoimRole,
@@ -26,6 +28,7 @@ public record TodoDTO(
                 todo.getTitle(),
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
+                todo.getStatus(),
                 userMoim.getUserProfile().getName(),
                 userMoim.getUserProfile().getImageUrl(),
                 userMoim.getMoimRole(),
@@ -40,6 +43,7 @@ public record TodoDTO(
                 todo.getTitle(),
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
+                todo.getStatus(),
                 null,
                 null,
                 null,
