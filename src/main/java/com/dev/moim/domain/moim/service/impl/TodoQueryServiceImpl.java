@@ -206,4 +206,9 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     public Optional<Todo> findTodoByTodoId(Long todoId) {
         return todoRepository.findById(todoId);
     }
+
+    @Override
+    public List<UserTodo> findAssigneeByTodoId(Long todoId) {
+        return userTodoRepository.findAllByTodoId(todoId);
+    }
 }

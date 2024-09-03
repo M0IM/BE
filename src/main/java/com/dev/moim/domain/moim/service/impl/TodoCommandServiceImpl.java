@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
+import com.dev.moim.domain.moim.dto.task.AddTodoAssigneeDTO;
 import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
@@ -171,5 +172,24 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     @Override
     public void deleteTodo(Long todoId) {
         todoRepository.deleteById(todoId);
+    }
+
+    @Override
+    public void addAssignee(Long todoId, AddTodoAssigneeDTO request) {
+
+        Todo todo = todoRepository.findById(todoId)
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        List<User> userList = userRepository.findAllById(request.addAssigneeIdList());
+
+        List<UserTodo> userTodoListToAdd = userList.stream()
+                .map(userEntity -> UserTodo.builder()
+                        .user(userEntity)
+                        .todo(todo)
+                        .status(TodoAssigneeStatus.PENDING)
+                        .build())
+                .toList();
+
+        todo.getUserTodoList().addAll(userTodoListToAdd);
     }
 }

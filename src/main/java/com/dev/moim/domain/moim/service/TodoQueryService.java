@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.UserTodo;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TodoQueryService {
@@ -31,4 +32,6 @@ public interface TodoQueryService {
     Optional<UserTodo> findByUserIdAndTodoId(Long userId, Long todoId);
 
     Optional<Todo> findTodoByTodoId(Long todoId);
+
+    List<UserTodo> findAssigneeByTodoId(Long todoId);
 }
