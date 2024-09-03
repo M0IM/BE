@@ -5,9 +5,7 @@ import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
-import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
-import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
-import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
+import com.dev.moim.domain.moim.dto.task.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
@@ -16,7 +14,6 @@ import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
-import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -56,7 +51,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         Todo todo = Todo.builder()
                 .title(request.title())
                 .content(request.content())
-                .dueDate(request.dueDate().atTime(23, 59, 59, 999999))
+                .dueDate(request.dueDate().atTime(23, 59, 59, 999999000))
                 .status(TodoStatus.IN_PROGRESS)
                 .moim(moim)
                 .writer(user)
@@ -85,15 +80,14 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         userTodoRepository.saveAll(userTodoList);
 
-        userList.stream().filter(assignee -> !user.equals(assignee))
+        userList.stream().filter(assignee -> !assignee.equals(user))
                 .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
-            alarmService.saveAlarm(user, assignee, "새로운 todo를 확인하고 작업을 시작해주세요.", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
-
-            if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                fcmService.sendNotification(assignee, "새로운 todo를 확인하고 작업을 시작해주세요.", todo.getTitle());
-            }
-        });
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                    }
+                });
 
         return todo.getId();
     }
@@ -119,10 +113,30 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void updateTodo(Long todoId, CreateTodoDTO request) {
+    public void updateTodo(User user, Long moimId, Long todoId, UpdateTodoDTO request) {
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        LocalDateTime dueDateTime = request.dueDate().atTime(23, 59, 59, 999999000);
+
+        for (UserTodo userTodo : todo.getUserTodoList()) {
+            if (!dueDateTime.equals(todo.getDueDate())) {
+                if (dueDateTime.isAfter(LocalDateTime.now())) {
+                    userTodo.updateStatus(switch (userTodo.getStatus()) {
+                        case LOADING, COMPLETE -> TodoAssigneeStatus.LOADING;
+                        case OVERDUE -> TodoAssigneeStatus.PENDING;
+                        default -> userTodo.getStatus();
+                    });
+                }
+            } else {
+                userTodo.updateStatus(switch (userTodo.getStatus()) {
+                    case LOADING, COMPLETE -> TodoAssigneeStatus.LOADING;
+                    case OVERDUE -> TodoAssigneeStatus.PENDING;
+                    default -> userTodo.getStatus();
+                });
+            }
+        }
 
         List<TodoImage> newImageList = request.imageKeyList().stream()
                 .map(imageKey -> TodoImage.builder()
@@ -134,42 +148,63 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.updateTodo(
                 request.title(),
                 request.content(),
-                request.dueDate().atTime(23, 59, 59, 999999),
+                dueDateTime,
                 newImageList
         );
 
-        List<UserTodo> existingUserTodoList = todo.getUserTodoList();
-        Set<Long> existingUserIdSet = existingUserTodoList.stream()
-                .map(userTodo -> userTodo.getUser().getId())
-                .collect(Collectors.toSet());
+        todo.getUserTodoList().stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(user))
+                .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moimId, null, null);
 
-        Set<Long> requestUserIdSet = request.isAssigneeSelectAll()
-                ? userMoimRepository.findByMoimIdAndJoinStatus(request.moimId(), JoinStatus.COMPLETE).stream()
-                .map(userMoim -> userMoim.getUser().getId())
-                .collect(Collectors.toSet())
-                : new HashSet<>(request.targetUserIdList());
-
-        List<UserTodo> userTodoListToAdd = requestUserIdSet.stream()
-                .filter(userId -> !existingUserIdSet.contains(userId))
-                .map(userId -> {
-                    User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-                    return UserTodo.builder()
-                            .todo(todo)
-                            .user(user)
-                            .status(TodoAssigneeStatus.LOADING)
-                            .build();
-                }).toList();
-        List<UserTodo> userTodoListToRemove = existingUserTodoList.stream()
-                .filter(userTodo -> !requestUserIdSet.contains(userTodo.getUser().getId()))
-                .toList();
-
-        todo.getUserTodoList().removeAll(userTodoListToRemove);
-        todo.getUserTodoList().addAll(userTodoListToAdd);
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "할 일이 수정되었습니다", todo.getTitle());
+                    }
+                });
     }
 
     @Override
     public void deleteTodo(Long todoId) {
         todoRepository.deleteById(todoId);
+    }
+
+    @Override
+    public void addAssignees(User user, AddTodoAssigneeDTO request) {
+
+        Todo todo = todoRepository.findById(request.todoId())
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        List<User> userList = userRepository.findAllById(request.addAssigneeIdList());
+
+        List<UserTodo> userTodoListToAdd = userList.stream()
+                .map(userEntity -> UserTodo.builder()
+                        .user(userEntity)
+                        .todo(todo)
+                        .status(TodoAssigneeStatus.PENDING)
+                        .build())
+                .toList();
+
+        todo.getUserTodoList().addAll(userTodoListToAdd);
+
+        userTodoListToAdd.stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(user))
+                .forEach(assignee -> {
+                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, request.moimId(), null, null);
+
+                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
+                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                    }
+                });
+    }
+
+    @Override
+    public void deleteAssignees(DeleteTodoAssigneeDTO request) {
+
+        Todo todo = todoRepository.findById(request.todoId())
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        List<UserTodo> userTodoList = request.deleteAssigneeIdList().stream()
+                .map(id -> userTodoRepository.findByUserIdAndTodoId(id, request.todoId())
+                        .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE))).toList();
+
+        todo.getUserTodoList().removeAll(userTodoList);
     }
 }

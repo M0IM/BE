@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.dto.task.TodoDTO;
 import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
 import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.*;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.TodoRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.repository.UserTodoRepository;
@@ -50,6 +51,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
 
         return new TodoDetailDTO(
                 todo.getId(),
+                todo.getMoim().getId(),
                 todo.getTitle(),
                 todo.getContent(),
                 todo.getDueDate(),
@@ -67,6 +69,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
 
         return new TodoDetailDTO(
                 todo.getId(),
+                todo.getMoim().getId(),
                 todo.getTitle(),
                 todo.getContent(),
                 todo.getDueDate(),
@@ -94,7 +97,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                             .findFirst()
                             .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
 
-                    return TodoAssigneeDetailDTO.of(userTodo, userMoim);
+                    return TodoAssigneeDetailDTO.toTodoAssignee(userTodo, userMoim);
                 })
                 .toList();
 
@@ -103,6 +106,25 @@ public class TodoQueryServiceImpl implements TodoQueryService {
                 : null;
 
         return new TodoPageDTO(todoAssigneeDetailDTOList, nextCursor, userTodoSlice.hasNext());
+    }
+
+    @Override
+    public TodoPageDTO getTodoNonAssigneeListForAdmin(Long moimId, Long todoId, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == 1) ? 0L : cursor;
+        Pageable pageable = PageRequest.of(0, take);
+
+        Slice<UserMoim> userMoimSlice = userMoimRepository.findAllMembersNotAssignedToTodo(moimId, todoId, JoinStatus.COMPLETE, startCursor, pageable);
+
+        List<TodoAssigneeDetailDTO> todoAssigneeDetailDTOList = userMoimSlice.stream()
+                .map(TodoAssigneeDetailDTO::toTodoNonAssignee)
+                .toList();
+
+        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
+                ? userMoimSlice.getContent().get(userMoimSlice.getNumberOfElements() - 1).getId()
+                : null;
+
+        return new TodoPageDTO(todoAssigneeDetailDTOList, nextCursor, userMoimSlice.hasNext());
     }
 
     @Override
@@ -185,5 +207,10 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     @Override
     public Optional<Todo> findTodoByTodoId(Long todoId) {
         return todoRepository.findById(todoId);
+    }
+
+    @Override
+    public List<UserTodo> findAssigneeByTodoId(Long todoId) {
+        return userTodoRepository.findAllByTodoId(todoId);
     }
 }
