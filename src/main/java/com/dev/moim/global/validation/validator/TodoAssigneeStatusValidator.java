@@ -52,8 +52,7 @@ public class TodoAssigneeStatusValidator implements ConstraintValidator<TodoAssi
             return false;
         }
 
-        if (request.todoAssigneeStatus() == TodoAssigneeStatus.PENDING ||
-                request.todoAssigneeStatus() == TodoAssigneeStatus.OVERDUE) {
+        if (request.todoAssigneeStatus() == TodoAssigneeStatus.OVERDUE) {
             addConstraintViolation(context, TODO_INVALID_STATE_REQUEST.getMessage(), "todoStatus");
             return false;
         }
