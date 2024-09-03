@@ -14,7 +14,6 @@ import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
-import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -54,7 +50,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         Todo todo = Todo.builder()
                 .title(request.title())
                 .content(request.content())
-                .dueDate(request.dueDate().atTime(23, 59, 59, 999999))
+                .dueDate(request.dueDate().atTime(23, 59, 59, 999999000))
                 .status(TodoStatus.IN_PROGRESS)
                 .moim(moim)
                 .writer(user)
@@ -132,7 +128,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.updateTodo(
                 request.title(),
                 request.content(),
-                request.dueDate().atTime(23, 59, 59, 999999),
+                request.dueDate().atTime(23, 59, 59, 999999000),
                 newImageList
         );
     }
