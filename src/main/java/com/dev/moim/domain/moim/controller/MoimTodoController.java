@@ -218,14 +218,29 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_008", description = "이미 todo를 할당받은 멤버를 지정했습니다.")
     })
-    @PutMapping("/moims/{moimId}/todos/admin/{todoId}/add-assignee")
-    public BaseResponse<?> addAssignee(
+    @PutMapping("/moims/todos/admin/assignees")
+    public BaseResponse<?> addAssignees(
             @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
-            @TodoValidation @PathVariable Long todoId,
             @Valid @RequestBody AddTodoAssigneeDTO request
     ) {
-        todoCommandService.addAssignee(todoId, request);
+        todoCommandService.addAssignees(request);
         return BaseResponse.onSuccess("todo assignee 추가 성공했습니다.");
+    }
+
+    @Operation(summary = "todo assignee 삭제", description = "모임 관리자 회원이 특정 todo를 할당받을 모임 멤버를 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다.")
+    })
+    @DeleteMapping("/moims/todos/admin/assignees")
+    public BaseResponse<?> deleteAssignees(
+            @AuthUser User user,
+            @Valid @RequestBody DeleteTodoAssigneeDTO request
+    ) {
+        todoCommandService.deleteAssignees(request);
+        return BaseResponse.onSuccess("todo assignee 삭제 성공했습니다.");
     }
 }

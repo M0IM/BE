@@ -5,10 +5,7 @@ import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
-import com.dev.moim.domain.moim.dto.task.AddTodoAssigneeDTO;
-import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
-import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
-import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
+import com.dev.moim.domain.moim.dto.task.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
@@ -175,9 +172,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void addAssignee(Long todoId, AddTodoAssigneeDTO request) {
+    public void addAssignees(AddTodoAssigneeDTO request) {
 
-        Todo todo = todoRepository.findById(todoId)
+        Todo todo = todoRepository.findById(request.todoId())
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
 
         List<User> userList = userRepository.findAllById(request.addAssigneeIdList());
@@ -191,5 +188,18 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .toList();
 
         todo.getUserTodoList().addAll(userTodoListToAdd);
+    }
+
+    @Override
+    public void deleteAssignees(DeleteTodoAssigneeDTO request) {
+
+        Todo todo = todoRepository.findById(request.todoId())
+                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+
+        List<UserTodo> userTodoList = request.deleteAssigneeIdList().stream()
+                .map(id -> userTodoRepository.findByUserIdAndTodoId(id, request.todoId())
+                        .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE))).toList();
+
+        todo.getUserTodoList().removeAll(userTodoList);
     }
 }
