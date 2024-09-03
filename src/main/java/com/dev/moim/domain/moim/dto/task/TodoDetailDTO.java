@@ -8,6 +8,7 @@ import java.util.List;
 
 public record TodoDetailDTO(
         Long todoId,
+        Long moimId,
         String title,
         String content,
         LocalDateTime dueDate,

@@ -51,6 +51,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
 
         return new TodoDetailDTO(
                 todo.getId(),
+                todo.getMoim().getId(),
                 todo.getTitle(),
                 todo.getContent(),
                 todo.getDueDate(),
@@ -68,6 +69,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
 
         return new TodoDetailDTO(
                 todo.getId(),
+                todo.getMoim().getId(),
                 todo.getTitle(),
                 todo.getContent(),
                 todo.getDueDate(),
