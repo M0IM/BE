@@ -141,7 +141,9 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다."),
-            @ApiResponse(responseCode = "TODO_003", description = "업데이트 요청한 todo status가 기존 status와 동일합니다.")
+            @ApiResponse(responseCode = "TODO_003", description = "업데이트 요청한 todo status가 기존 status와 동일합니다."),
+            @ApiResponse(responseCode = "TODO_006", description = "마감 기한이 지난 Todo입니다."),
+            @ApiResponse(responseCode = "TODO_007", description = "해당 todo status로 변경할 수 없습니다.")
     })
     @PutMapping("/moims/{moimId}/todos/assignee/{todoId}")
     public BaseResponse<UpdateTodoStatusResponseDTO> updateUserTodoStatus(

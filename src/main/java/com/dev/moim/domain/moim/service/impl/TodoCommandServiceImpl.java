@@ -10,6 +10,7 @@ import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
 import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusResponseDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
@@ -55,7 +56,8 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         Todo todo = Todo.builder()
                 .title(request.title())
                 .content(request.content())
-                .dueDate(request.dueDate().atStartOfDay())
+                .dueDate(request.dueDate().atTime(23, 59, 59, 999999))
+                .status(TodoStatus.IN_PROGRESS)
                 .moim(moim)
                 .writer(user)
                 .build();
@@ -77,7 +79,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .map(userEntity -> UserTodo.builder()
                         .user(userEntity)
                         .todo(todo)
-                        .status(TodoStatus.LOADING)
+                        .status(TodoAssigneeStatus.PENDING)
                         .build())
                 .toList();
 
@@ -86,10 +88,10 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         userList.stream().filter(assignee -> !user.equals(assignee))
                 .forEach(assignee -> {
 
-            alarmService.saveAlarm(user, assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
+            alarmService.saveAlarm(user, assignee, "[" + moim.getName() + "] 새로운 todo를 확인하고 작업을 시작해주세요.", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
             if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                fcmService.sendNotification(assignee, "[" + moim.getName() + "] 새로운 todo를 받았습니다", todo.getTitle());
+                fcmService.sendNotification(assignee, "[" + moim.getName() + "] 새로운 todo를 확인하고 작업을 시작해주세요.", todo.getTitle());
             }
         });
 
@@ -101,7 +103,17 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         UserTodo userTodo = userTodoRepository.findByUserIdAndTodoId(user.getId(), todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
-        userTodo.updateStatus(request.todoStatus());
+
+        userTodo.updateStatus(request.todoAssigneeStatus());
+
+        Todo todo = userTodo.getTodo();
+
+        todo.updateStatus(
+                userTodoRepository.findAllByTodoId(todoId).stream()
+                        .map(UserTodo::getStatus)
+                        .allMatch(status -> status == TodoAssigneeStatus.COMPLETE)
+                ? TodoStatus.COMPLETED : TodoStatus.IN_PROGRESS
+        );
 
         return UpdateTodoStatusResponseDTO.of(userTodo);
     }
@@ -122,7 +134,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
         todo.updateTodo(
                 request.title(),
                 request.content(),
-                request.dueDate().atStartOfDay(),
+                request.dueDate().atTime(23, 59, 59, 999999),
                 newImageList
         );
 
@@ -145,7 +157,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                     return UserTodo.builder()
                             .todo(todo)
                             .user(user)
-                            .status(TodoStatus.LOADING)
+                            .status(TodoAssigneeStatus.LOADING)
                             .build();
                 }).toList();
         List<UserTodo> userTodoListToRemove = existingUserTodoList.stream()
