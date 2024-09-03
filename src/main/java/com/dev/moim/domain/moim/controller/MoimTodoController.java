@@ -187,7 +187,7 @@ public class MoimTodoController {
             @AuthUser User user,
             @CheckAdminValidation @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
-            @Valid @RequestBody CreateTodoDTO request
+            @RequestBody UpdateTodoDTO request
     ) {
         todoCommandService.updateTodo(todoId, request);
         return BaseResponse.onSuccess("todo 수정 성공했습니다.");

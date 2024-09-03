@@ -117,7 +117,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void updateTodo(Long todoId, CreateTodoDTO request) {
+    public void updateTodo(Long todoId, UpdateTodoDTO request) {
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
@@ -135,35 +135,6 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 request.dueDate().atTime(23, 59, 59, 999999),
                 newImageList
         );
-
-        List<UserTodo> existingUserTodoList = todo.getUserTodoList();
-        Set<Long> existingUserIdSet = existingUserTodoList.stream()
-                .map(userTodo -> userTodo.getUser().getId())
-                .collect(Collectors.toSet());
-
-        Set<Long> requestUserIdSet = request.isAssigneeSelectAll()
-                ? userMoimRepository.findByMoimIdAndJoinStatus(request.moimId(), JoinStatus.COMPLETE).stream()
-                .map(userMoim -> userMoim.getUser().getId())
-                .collect(Collectors.toSet())
-                : new HashSet<>(request.targetUserIdList());
-
-        List<UserTodo> userTodoListToAdd = requestUserIdSet.stream()
-                .filter(userId -> !existingUserIdSet.contains(userId))
-                .map(userId -> {
-                    User user = userRepository.findById(userId)
-                            .orElseThrow(() -> new UserException(USER_NOT_FOUND));
-                    return UserTodo.builder()
-                            .todo(todo)
-                            .user(user)
-                            .status(TodoAssigneeStatus.LOADING)
-                            .build();
-                }).toList();
-        List<UserTodo> userTodoListToRemove = existingUserTodoList.stream()
-                .filter(userTodo -> !requestUserIdSet.contains(userTodo.getUser().getId()))
-                .toList();
-
-        todo.getUserTodoList().removeAll(userTodoListToRemove);
-        todo.getUserTodoList().addAll(userTodoListToAdd);
     }
 
     @Override

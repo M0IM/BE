@@ -9,7 +9,7 @@ public interface TodoCommandService {
 
     UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request);
 
-    void updateTodo(Long todoId, CreateTodoDTO request);
+    void updateTodo(Long todoId, UpdateTodoDTO request);
 
     void deleteTodo(Long todoId);
 
