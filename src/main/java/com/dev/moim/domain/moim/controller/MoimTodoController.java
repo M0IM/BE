@@ -218,7 +218,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_008", description = "이미 todo를 할당받은 멤버를 지정했습니다.")
     })
-    @PutMapping("/moims/todos/admin/assignees")
+    @PutMapping("/moims/todos/admin/assignees/new")
     public BaseResponse<?> addAssignees(
             @AuthUser User user,
             @Valid @RequestBody AddTodoAssigneeDTO request
@@ -235,7 +235,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다.")
     })
-    @DeleteMapping("/moims/todos/admin/assignees")
+    @PutMapping("/moims/todos/admin/assignees/current")
     public BaseResponse<?> deleteAssignees(
             @AuthUser User user,
             @Valid @RequestBody DeleteTodoAssigneeDTO request
