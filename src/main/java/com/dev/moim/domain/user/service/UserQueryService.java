@@ -3,6 +3,7 @@ package com.dev.moim.domain.user.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
+import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
@@ -36,7 +37,7 @@ public interface UserQueryService {
 
     List<Long> findUserMoimIdListByUserId(Long userId);
 
-    Long findUserByPlanId(Long individualPlanId);
+    Optional<IndividualPlan> findUserByPlanId(Long individualPlanId);
 
     boolean isExistEmail(String email);
 
