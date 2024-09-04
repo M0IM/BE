@@ -138,7 +138,8 @@ public enum ErrorStatus implements BaseErrorCode {
     TODO_ASSIGNEE_NOT_MATCH(HttpStatus.BAD_REQUEST, "TODO_005", "전체 선택인 경우 특정 assignee를 지정할 수 없습니다."),
     TODO_DUE_DATE_EXPIRED(HttpStatus.BAD_REQUEST, "TODO_006", "마감 기한이 지난 Todo입니다."),
     TODO_INVALID_STATE_REQUEST(HttpStatus.BAD_REQUEST, "TODO_007", "해당 todo status로 변경할 수 없습니다."),
-    IS_ALREADY_TODO_ASSIGNEE(HttpStatus.BAD_REQUEST, "TODO_008", "이미 todo를 할당받은 멤버를 지정했습니다.")
+    IS_ALREADY_TODO_ASSIGNEE(HttpStatus.BAD_REQUEST, "TODO_008", "이미 todo를 할당받은 멤버를 지정했습니다."),
+    INVALID_TODO_DUE_DATE(HttpStatus.BAD_REQUEST, "TODO_009", "todo 마감 기한을 현재 날짜 이전으로 수정할 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;
