@@ -45,12 +45,10 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (Objects.equals(redisUtil.getValue(accessToken), "deviceId_missing")) {
-            filterChain.doFilter(request, response);
             throw new AuthException(FCM_TOKEN_REQUIRED);
         }
 
         if (Objects.equals(redisUtil.getValue(accessToken), "logout")) {
-            filterChain.doFilter(request, response);
             throw new AuthException(LOGOUT_ACCESS_TOKEN);
         }
 
