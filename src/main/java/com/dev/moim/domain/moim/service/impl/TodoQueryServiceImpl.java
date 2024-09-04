@@ -1,10 +1,10 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.task.TodoAssigneeDetailDTO;
-import com.dev.moim.domain.moim.dto.task.TodoDTO;
-import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
-import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoAssigneeDetailDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.TodoRepository;

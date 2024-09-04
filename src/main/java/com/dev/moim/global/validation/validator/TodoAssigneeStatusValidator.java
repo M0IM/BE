@@ -1,6 +1,6 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.moim.dto.task.UpdateTodoStatusDTO;
+import com.dev.moim.domain.moim.dto.todo.UpdateTodoStatusDTO;
 import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.UserTodo;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;

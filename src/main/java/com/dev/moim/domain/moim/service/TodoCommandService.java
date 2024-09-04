@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.task.*;
+import com.dev.moim.domain.moim.dto.todo.*;
 
 public interface TodoCommandService {
 

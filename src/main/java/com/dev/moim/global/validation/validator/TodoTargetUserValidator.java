@@ -1,6 +1,6 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.moim.dto.task.CreateTodoDTO;
+import com.dev.moim.domain.moim.dto.todo.CreateTodoDTO;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.global.validation.annotation.TodoTargetUserValidation;
 import jakarta.validation.ConstraintValidator;

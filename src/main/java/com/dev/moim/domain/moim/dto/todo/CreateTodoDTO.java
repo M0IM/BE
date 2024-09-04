@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto.task;
+package com.dev.moim.domain.moim.dto.todo;
 
 import com.dev.moim.global.validation.annotation.TodoTargetUserValidation;
 import io.swagger.v3.oas.annotations.media.Schema;

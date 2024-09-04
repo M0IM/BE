@@ -1,8 +1,8 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.task.TodoDetailDTO;
-import com.dev.moim.domain.moim.dto.task.TodoPageDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
+import com.dev.moim.domain.moim.dto.todo.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.UserTodo;
 
