@@ -29,6 +29,7 @@ public class MoimTodoController {
     @Operation(summary = "모임 todo 생성", description = "모임 관리자 회원이 모임의 멤버들에게 todo를 줄 수 있는 기능입니다. 관리자 회원만 가능합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_004", description = "Todo를 할당받을 유저를 지정하지 않았습니다."),
@@ -156,6 +157,7 @@ public class MoimTodoController {
     @Operation(summary = "부여된 todo 상태 업데이트", description = "회원이 자신에게 부여된 todo의 상태를 변경합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다."),
@@ -176,6 +178,7 @@ public class MoimTodoController {
     @Operation(summary = "todo 수정", description = "모임 관리자 회원이 특정 todo 내용을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
@@ -213,6 +216,7 @@ public class MoimTodoController {
     @Operation(summary = "todo assignee 추가", description = "모임 관리자 회원이 특정 todo를 할당받을 모임 멤버를 추가합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
@@ -230,6 +234,7 @@ public class MoimTodoController {
     @Operation(summary = "todo assignee 삭제", description = "모임 관리자 회원이 특정 todo를 할당받을 모임 멤버를 삭제합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
