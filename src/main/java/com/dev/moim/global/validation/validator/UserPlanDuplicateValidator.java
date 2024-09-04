@@ -30,7 +30,7 @@ public class UserPlanDuplicateValidator implements ConstraintValidator<UserPlanD
 
         boolean isValidPlan = calenderQueryService.existsByPlanId(planId);
         if (!isValidPlan) {
-            addConstraintViolation(context, PLAN_NOT_FOUND.toString());
+            addConstraintViolation(context, PLAN_NOT_FOUND.getMessage());
             return false;
         }
 
@@ -39,7 +39,7 @@ public class UserPlanDuplicateValidator implements ConstraintValidator<UserPlanD
         boolean alreadyParticipate = calenderQueryService.existsByUserIdAndPlanId(
                 Long.valueOf(authentication.getName()), planId);
         if (alreadyParticipate) {
-            addConstraintViolation(context, ALREADY_PARTICIPATE_IN_PLAN.toString());
+            addConstraintViolation(context, ALREADY_PARTICIPATE_IN_PLAN.getMessage());
             return false;
         }
         return true;
@@ -48,7 +48,6 @@ public class UserPlanDuplicateValidator implements ConstraintValidator<UserPlanD
     private void addConstraintViolation(ConstraintValidatorContext context, String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode("planId")
                 .addConstraintViolation();
     }
 }

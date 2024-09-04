@@ -35,7 +35,7 @@ public class JoinPasswordValidator implements ConstraintValidator<JoinPasswordVa
 
         if (password == null || !password.matches(passwordPattern)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.toString())
+            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.getMessage())
                     .addPropertyNode("password")
                     .addConstraintViolation();
             return false;

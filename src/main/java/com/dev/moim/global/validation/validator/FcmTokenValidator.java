@@ -26,14 +26,14 @@ public class FcmTokenValidator implements ConstraintValidator<FcmTokenValidation
     public boolean isValid(String fcmToken, ConstraintValidatorContext context) {
 
         if (fcmToken == null || fcmToken.trim().isEmpty()) {
-            addConstraintViolation(context, FCM_TOKEN_REQUIRED.toString());
+            addConstraintViolation(context, FCM_TOKEN_REQUIRED.getMessage());
             return false;
         }
 
         try {
             fcmQueryService.isTokenValid("MOIM", fcmToken);
         } catch (AuthException e) {
-            addConstraintViolation(context, FCM_NOT_VALID.toString());
+            addConstraintViolation(context, FCM_NOT_VALID.getMessage());
             return false;
         }
         return true;

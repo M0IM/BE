@@ -30,8 +30,7 @@ public class QuitValidator implements ConstraintValidator<QuitValidation, User> 
 
         if (isMoimOwner) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(IS_MOIM_OWNER.toString())
-                    .addPropertyNode("user")
+            context.buildConstraintViolationWithTemplate(IS_MOIM_OWNER.getMessage())
                     .addConstraintViolation();
             return false;
         }

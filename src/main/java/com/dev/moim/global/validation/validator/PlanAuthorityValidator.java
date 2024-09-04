@@ -40,13 +40,13 @@ public class PlanAuthorityValidator implements ConstraintValidator<PlanAuthority
             if (userId.equals(writerId) || userId.equals(ownerId)) {
                 return true;
             }
-            addConstraintViolation(context, PLAN_EDIT_UNAUTHORIZED.toString(), "userId");
+            addConstraintViolation(context, PLAN_EDIT_UNAUTHORIZED.getMessage(), "userId");
             return false;
         } catch(PlanException e) {
-            addConstraintViolation(context, PLAN_NOT_FOUND.toString(), "planId");
+            addConstraintViolation(context, PLAN_NOT_FOUND.getMessage(), "planId");
             return false;
         } catch (MoimException e) {
-            addConstraintViolation(context, MOIM_OWNER_NOT_FOUND.toString(), "moimId");
+            addConstraintViolation(context, MOIM_OWNER_NOT_FOUND.getMessage(), "moimId");
             return false;
         }
     }

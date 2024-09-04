@@ -36,12 +36,12 @@ public class SelfReviewValidator implements ConstraintValidator<SelfReviewValida
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (targetUser.getId().toString().equals(authentication.getName())) {
-                addConstraintViolation(context, SELF_REVIEW_FORBIDDEN.toString());
+                addConstraintViolation(context, SELF_REVIEW_FORBIDDEN.getMessage());
                 return false;
             }
             return true;
         } catch (UserException e) {
-            addConstraintViolation(context, USER_NOT_FOUND.toString());
+            addConstraintViolation(context, USER_NOT_FOUND.getMessage());
             return false;
         }
     }
@@ -49,7 +49,6 @@ public class SelfReviewValidator implements ConstraintValidator<SelfReviewValida
     private void addConstraintViolation(ConstraintValidatorContext context, String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode("userId")
                 .addConstraintViolation();
     }
 }

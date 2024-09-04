@@ -26,8 +26,7 @@ public class TodoValidator implements ConstraintValidator<TodoValidation, Long> 
 
         if (!isExistTodo) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(TODO_NOT_FOUND.toString())
-                    .addPropertyNode("todoId")
+            context.buildConstraintViolationWithTemplate(TODO_NOT_FOUND.getMessage())
                     .addConstraintViolation();
             return false;
         }

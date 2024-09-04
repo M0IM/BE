@@ -26,7 +26,7 @@ public class ExistEmailValidator implements ConstraintValidator<ExistEmailValida
 
         if (!isExistEmail){
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(USER_NOT_FOUND.toString())
+            context.buildConstraintViolationWithTemplate(USER_NOT_FOUND.getMessage())
                     .addPropertyNode("email")
                     .addConstraintViolation();
             return false;

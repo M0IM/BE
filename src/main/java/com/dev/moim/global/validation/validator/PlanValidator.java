@@ -29,7 +29,7 @@ public class PlanValidator implements ConstraintValidator<PlanValidation, Long> 
 
         if (!isValidPlan) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(PLAN_NOT_FOUND.toString())
+            context.buildConstraintViolationWithTemplate(PLAN_NOT_FOUND.getMessage())
                     .addPropertyNode("planId")
                     .addConstraintViolation();
             return false;

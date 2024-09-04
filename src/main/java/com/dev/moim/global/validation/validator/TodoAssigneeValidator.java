@@ -28,7 +28,7 @@ public class TodoAssigneeValidator implements ConstraintValidator<TodoAssigneeVa
 
         boolean isExistTodo = todoQueryService.existsByTodoId(todoId);
         if (!isExistTodo) {
-            addConstraintViolation(context, TODO_NOT_FOUND.toString());
+            addConstraintViolation(context, TODO_NOT_FOUND.getMessage());
             return false;
         }
 
@@ -36,7 +36,7 @@ public class TodoAssigneeValidator implements ConstraintValidator<TodoAssigneeVa
         boolean isAssignee = todoQueryService.existsByUserIdAndTodoId(Long.valueOf(authentication.getName()), todoId);
 
         if (!isAssignee) {
-            addConstraintViolation(context, NOT_TODO_ASSIGNEE.toString());
+            addConstraintViolation(context, NOT_TODO_ASSIGNEE.getMessage());
             return false;
         }
         return true;
@@ -45,7 +45,6 @@ public class TodoAssigneeValidator implements ConstraintValidator<TodoAssigneeVa
     private void addConstraintViolation(ConstraintValidatorContext context, String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode("todoId")
                 .addConstraintViolation();
     }
 }

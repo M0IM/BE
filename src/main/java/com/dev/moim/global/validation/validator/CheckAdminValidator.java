@@ -36,9 +36,7 @@ public class CheckAdminValidator implements ConstraintValidator<CheckAdminValida
 
         if (userMoim.isEmpty()) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(INVALID_MOIM_MEMBER.toString())
-                    .addPropertyNode("userId")
-                    .addPropertyNode("moimId")
+            context.buildConstraintViolationWithTemplate(INVALID_MOIM_MEMBER.getMessage())
                     .addConstraintViolation();
             return false;
         } else {
@@ -46,9 +44,7 @@ public class CheckAdminValidator implements ConstraintValidator<CheckAdminValida
                 return true;
             } else {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(MOIM_NOT_ADMIN.toString())
-                        .addPropertyNode("userId")
-                        .addPropertyNode("moimId")
+                context.buildConstraintViolationWithTemplate(MOIM_NOT_ADMIN.getMessage())
                         .addConstraintViolation();
                 return false;
             }
