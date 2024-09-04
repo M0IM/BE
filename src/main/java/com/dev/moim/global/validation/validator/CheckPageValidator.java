@@ -20,7 +20,7 @@ public class CheckPageValidator implements ConstraintValidator<CheckPageValidati
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
         if (value <= 0) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(NOT_VALID_PAGE.toString())
+            context.buildConstraintViolationWithTemplate(NOT_VALID_PAGE.getMessage())
                     .addConstraintViolation();
 
             return false;

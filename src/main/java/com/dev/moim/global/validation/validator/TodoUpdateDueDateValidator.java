@@ -24,8 +24,6 @@ public class TodoUpdateDueDateValidator implements ConstraintValidator<TodoUpdat
     @Override
     public boolean isValid(LocalDate dueDate, ConstraintValidatorContext context) {
 
-        log.info("LocalDate.now() : {}", LocalDate.now());
-
         if (dueDate.isBefore(LocalDate.now())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(INVALID_TODO_DUE_DATE.getMessage())

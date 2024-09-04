@@ -34,10 +34,8 @@ public class LocalAccountValidator implements ConstraintValidator<LocalAccountVa
         if (userQueryService.existsByEmail(email)) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(EMAIL_DUPLICATION.getMessage())
-                    .addPropertyNode("email")
                     .addConstraintViolation();
 
-            log.warn("회원가입 실패 : 이메일 중복");
             return false;
         }
         return true;
