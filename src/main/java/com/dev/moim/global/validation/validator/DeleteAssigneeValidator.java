@@ -1,6 +1,6 @@
 package com.dev.moim.global.validation.validator;
 
-import com.dev.moim.domain.moim.dto.task.DeleteTodoAssigneeDTO;
+import com.dev.moim.domain.moim.dto.todo.DeleteTodoAssigneeDTO;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.validation.annotation.DeleteAssigneeValidation;

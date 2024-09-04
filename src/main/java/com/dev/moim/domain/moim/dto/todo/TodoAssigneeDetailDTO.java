@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto.task;
+package com.dev.moim.domain.moim.dto.todo;
 
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserTodo;

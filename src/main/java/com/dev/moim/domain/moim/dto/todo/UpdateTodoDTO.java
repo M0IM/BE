@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto.task;
+package com.dev.moim.domain.moim.dto.todo;
 
 import java.time.LocalDate;
 import java.util.List;

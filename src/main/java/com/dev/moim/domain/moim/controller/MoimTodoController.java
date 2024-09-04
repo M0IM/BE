@@ -1,7 +1,7 @@
 package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.task.*;
+import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
