@@ -29,8 +29,7 @@ public class MoimValidator implements ConstraintValidator<MoimValidation, Long> 
 
         if (!isValidMoim) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(MOIM_NOT_FOUND.toString())
-                    .addPropertyNode("moimId")
+            context.buildConstraintViolationWithTemplate(MOIM_NOT_FOUND.getMessage())
                     .addConstraintViolation();
             return false;
         }

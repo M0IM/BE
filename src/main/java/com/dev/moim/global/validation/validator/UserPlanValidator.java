@@ -30,25 +30,24 @@ public class UserPlanValidator implements ConstraintValidator<UserPlanValidation
 
         boolean isValidPlan = calenderQueryService.existsByPlanId(planId);
         if (!isValidPlan) {
-            addConstraintViolation(context, PLAN_NOT_FOUND.toString(), "planId");
+            addConstraintViolation(context, PLAN_NOT_FOUND.getMessage());
             return false;
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Boolean isExistUserPlan = calenderQueryService.existsByUserIdAndPlanId(Long.valueOf(authentication.getName()), planId);
+        boolean isExistUserPlan = calenderQueryService.existsByUserIdAndPlanId(Long.valueOf(authentication.getName()), planId);
         if (!isExistUserPlan) {
-            addConstraintViolation(context, USER_NOT_PART_OF_PLAN.toString(), "userId");
+            addConstraintViolation(context, USER_NOT_PART_OF_PLAN.getMessage());
             return false;
         }
 
         return true;
     }
 
-    private void addConstraintViolation(ConstraintValidatorContext context, String message, String propertyNode) {
+    private void addConstraintViolation(ConstraintValidatorContext context, String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode(propertyNode)
                 .addConstraintViolation();
     }
 }

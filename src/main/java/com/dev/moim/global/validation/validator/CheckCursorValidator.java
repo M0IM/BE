@@ -19,7 +19,7 @@ public class CheckCursorValidator implements ConstraintValidator<CheckCursorVali
     public boolean isValid(Long value, ConstraintValidatorContext context) {
         if (value <= 0) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorStatus.NOT_VALID_CURSOR.toString())
+            context.buildConstraintViolationWithTemplate(ErrorStatus.NOT_VALID_CURSOR.getMessage())
                     .addConstraintViolation();
 
             return false;

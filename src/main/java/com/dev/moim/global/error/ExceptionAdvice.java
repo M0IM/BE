@@ -6,6 +6,7 @@ import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.feign.dto.DiscordMessage;
 import com.dev.moim.global.error.feign.service.DiscordClient;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -32,6 +32,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.dev.moim.global.common.code.status.ErrorStatus.NO_MATCHING_ERROR_STATUS;
+import static com.dev.moim.global.common.code.status.ErrorStatus.REQUEST_BODY_INVALID;
 
 @Slf4j
 @RestControllerAdvice(annotations = {RestController.class})
@@ -45,11 +48,17 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
 
         String errorMessage = e.getConstraintViolations().stream()
-                .map(constraintViolation -> constraintViolation.getMessage())
+                .map(ConstraintViolation::getMessage)
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("ConstraintViolationException 추출 도중 에러 발생"));
 
-        return handleExceptionInternalConstraint(e, ErrorStatus.valueOf(errorMessage), HttpHeaders.EMPTY,request);
+        ErrorStatus errorStatus = mapToErrorStatus(errorMessage);
+
+        if (errorStatus == null) {
+            throw new IllegalArgumentException(String.valueOf(NO_MATCHING_ERROR_STATUS));
+        }
+
+        return handleExceptionInternalConstraint(e, errorStatus, HttpHeaders.EMPTY,request);
     }
 
     @Override
@@ -61,19 +70,23 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         Map<String, String> errors = new LinkedHashMap<>();
 
-        ex.getBindingResult().getFieldErrors().stream().forEach(fieldError -> {
+        ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
             String fieldName = fieldError.getField();
             String errorMessage = Optional.ofNullable(fieldError.getDefaultMessage()).orElse("");
             errors.merge(fieldName, errorMessage, (existingErrorMessage, newErrorMessage) -> existingErrorMessage + ", " + newErrorMessage);
         });
 
-        return handleExceptionInternalArgs(ex,HttpHeaders.EMPTY,ErrorStatus.valueOf("_BAD_REQUEST"),request,errors);
+        ErrorStatus errorStatus = mapToErrorStatus(errors.values().iterator().next());
 
+        if (errors.size() == 1 || errorStatus == null) {
+            errorStatus = ErrorStatus.MULTIPLE_FIELD_VALIDATION_ERROR;
+        }
+
+        return handleExceptionInternalArgs(ex, HttpHeaders.EMPTY, errorStatus, request, errors);
     }
 
     @ExceptionHandler
     public ResponseEntity<Object> exception(Exception e, WebRequest request) {
-        e.printStackTrace();
 
         if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
             sendDiscordAlarm(e, request);
@@ -89,7 +102,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = GeneralException.class)
-    public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
+    public ResponseEntity<Object> onThrowException(GeneralException generalException, HttpServletRequest request) {
 
         ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
 
@@ -99,9 +112,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        String errorMessage = "요청 본문을 읽을 수 없습니다. 빈 문자열 또는 null이 있는지 확인해주세요.";
-
-        BaseResponse<Object> body = BaseResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), errorMessage, null);
+        BaseResponse<Object> body = BaseResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), REQUEST_BODY_INVALID.getMessage(), null);
 
         return handleExceptionInternal(e, body, HttpHeaders.EMPTY, ErrorStatus._BAD_REQUEST.getHttpStatus(), request);
     }
@@ -110,7 +121,6 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                                                            HttpHeaders headers, HttpServletRequest request) {
 
         BaseResponse<Object> body = BaseResponse.onFailure(reason.getCode(),reason.getMessage(),null);
-//        e.printStackTrace();
 
         WebRequest webRequest = new ServletWebRequest(request);
 
@@ -125,6 +135,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleExceptionInternalFalse(Exception e, ErrorStatus errorCommonStatus,
                                                                 HttpHeaders headers, HttpStatus status, WebRequest request, String errorPoint) {
+
         BaseResponse<Object> body = BaseResponse.onFailure(errorCommonStatus.getCode(),errorCommonStatus.getMessage(),errorPoint);
 
         return super.handleExceptionInternal(
@@ -138,6 +149,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleExceptionInternalArgs(Exception e, HttpHeaders headers, ErrorStatus errorCommonStatus,
                                                                WebRequest request, Map<String, String> errorArgs) {
+
         BaseResponse<Object> body = BaseResponse.onFailure(errorCommonStatus.getCode(),errorCommonStatus.getMessage(),errorArgs);
 
         return super.handleExceptionInternal(
@@ -151,6 +163,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorCommonStatus,
                                                                      HttpHeaders headers, WebRequest request) {
+
         BaseResponse<Object> body = BaseResponse.onFailure(errorCommonStatus.getCode(), errorCommonStatus.getMessage(), null);
 
         return super.handleExceptionInternal(
@@ -204,5 +217,14 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         StringWriter stringWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stringWriter));
         return stringWriter.toString();
+    }
+
+    private ErrorStatus mapToErrorStatus(String errorMessage) {
+        for (ErrorStatus status : ErrorStatus.values()) {
+            if (status.getMessage().equals(errorMessage)) {
+                return status;
+            }
+        }
+        return null;
     }
 }

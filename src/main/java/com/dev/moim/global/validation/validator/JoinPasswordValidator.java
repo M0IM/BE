@@ -24,7 +24,6 @@ public class JoinPasswordValidator implements ConstraintValidator<JoinPasswordVa
     @Override
     public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
         if (request.provider() == LOCAL && !isPasswordValid(request.password(), context)) {
-            log.warn("회원가입 실패 : 비밀번호 조건 미충족");
             return false;
         }
         return true;
@@ -35,8 +34,7 @@ public class JoinPasswordValidator implements ConstraintValidator<JoinPasswordVa
 
         if (password == null || !password.matches(passwordPattern)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.toString())
-                    .addPropertyNode("password")
+            context.buildConstraintViolationWithTemplate(INVALID_PASSWORD.getMessage())
                     .addConstraintViolation();
             return false;
         }

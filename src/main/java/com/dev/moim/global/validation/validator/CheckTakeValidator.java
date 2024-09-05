@@ -19,7 +19,7 @@ public class CheckTakeValidator implements ConstraintValidator<CheckTakeValidati
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
         if (value <= 0) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(ErrorStatus.NOT_VALID_TAKE.toString())
+            context.buildConstraintViolationWithTemplate(ErrorStatus.NOT_VALID_TAKE.getMessage())
                     .addConstraintViolation();
 
             return false;

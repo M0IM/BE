@@ -25,42 +25,29 @@ public class OAuthAccountValidator implements ConstraintValidator<OAuthAccountVa
 
     @Override
     public boolean isValid(JoinRequest request, ConstraintValidatorContext context) {
+
         if (request.provider() == LOCAL) {
             return true;
         }
 
-        if (isProviderIdInvalid(request.providerId(), context)) {
-            log.warn("회원가입 실패 : providerId 누락");
+        String providerId = request.providerId();
+        if (providerId == null || providerId.isEmpty()) {
+            addConstraintViolation(context, PROVIDER_ID_NOT_FOUND.getMessage());
             return false;
         }
 
-        if (isProviderIdDuplicated(request, context)) {
-            log.warn("회원가입 실패 : 이미 가입된 소셜 계정");
+        boolean isDuplicated = userQueryService.existsByProviderAndProviderId(request.provider(), request.providerId());
+        if (isDuplicated) {
+            addConstraintViolation(context, OAUTH_ACCOUNT_DUPLICATION.getMessage());
             return false;
         }
 
         return true;
     }
 
-    private boolean isProviderIdInvalid(String providerId, ConstraintValidatorContext context) {
-        if (providerId == null || providerId.isEmpty()) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(PROVIDER_ID_NOT_FOUND.toString())
-                    .addPropertyNode("providerId")
-                    .addConstraintViolation();
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isProviderIdDuplicated(JoinRequest request, ConstraintValidatorContext context) {
-        boolean isDuplicated = userQueryService.existsByProviderAndProviderId(request.provider(), request.providerId());
-        if (isDuplicated) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(OAUTH_ACCOUNT_DUPLICATION.toString())
-                    .addPropertyNode("providerId")
-                    .addConstraintViolation();
-        }
-        return isDuplicated;
+    private void addConstraintViolation(ConstraintValidatorContext context, String message) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+                .addConstraintViolation();
     }
 }

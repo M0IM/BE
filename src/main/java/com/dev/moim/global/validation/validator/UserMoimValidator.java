@@ -32,22 +32,21 @@ public class UserMoimValidator implements ConstraintValidator<UserMoimValidaton,
 
         boolean isValidMoim = moimQueryService.existsByMoimId(moimId);
         if (!isValidMoim) {
-            addConstraintViolation(context, MOIM_NOT_FOUND.toString(), "moimId");
+            addConstraintViolation(context, MOIM_NOT_FOUND.getMessage());
             return false;
         }
 
         boolean isValidMember = moimQueryService.existsByUserIdAndMoimIdAndJoinStatus(Long.valueOf(authentication.getName()), moimId, COMPLETE);
         if (!isValidMember) {
-            addConstraintViolation(context, INVALID_MOIM_MEMBER.toString(), "userId");
+            addConstraintViolation(context, INVALID_MOIM_MEMBER.getMessage());
             return false;
         }
         return true;
     }
 
-    private void addConstraintViolation(ConstraintValidatorContext context, String message, String propertyNode) {
+    private void addConstraintViolation(ConstraintValidatorContext context, String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message)
-                .addPropertyNode(propertyNode)
                 .addConstraintViolation();
     }
 }

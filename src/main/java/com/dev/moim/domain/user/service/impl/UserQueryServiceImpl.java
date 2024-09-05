@@ -16,7 +16,6 @@ import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
 import com.dev.moim.domain.user.dto.UserPlanDTO;
 import com.dev.moim.domain.user.dto.*;
-import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.*;
@@ -206,11 +205,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public Long findUserByPlanId(Long individualPlanId) {
-        IndividualPlan individualPlan = individualPlanRepository.findById(individualPlanId)
-                .orElseThrow(() -> new IndividualPlanException(INDIVIDUAL_PLAN_NOT_FOUND));
-
-        return individualPlan.getUser().getId();
+    public Optional<IndividualPlan> findUserByPlanId(Long individualPlanId) {
+        return individualPlanRepository.findById(individualPlanId);
     }
 
     @Override

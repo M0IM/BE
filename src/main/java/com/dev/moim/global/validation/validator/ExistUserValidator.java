@@ -29,8 +29,7 @@ public class ExistUserValidator implements ConstraintValidator<ExistUserValidati
 
         if (user.isEmpty()){
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(USER_NOT_FOUND.toString())
-                    .addPropertyNode("userId")
+            context.buildConstraintViolationWithTemplate(USER_NOT_FOUND.getMessage())
                     .addConstraintViolation();
             return false;
         }

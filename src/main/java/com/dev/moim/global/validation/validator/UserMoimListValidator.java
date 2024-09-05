@@ -43,7 +43,6 @@ public class UserMoimListValidator implements ConstraintValidator<UserMoimListVa
         if (!isValidMember) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(INVALID_MOIM_MEMBER.getMessage())
-                    .addPropertyNode("moimId")
                     .addConstraintViolation();
             return false;
         }
