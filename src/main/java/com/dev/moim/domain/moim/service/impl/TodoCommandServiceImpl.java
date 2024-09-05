@@ -207,4 +207,17 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         todo.getUserTodoList().removeAll(userTodoList);
     }
+
+    @Override
+    public void updateExpiredTodosAndAssigneesStatus() {
+
+        List<Todo> expiredTodoList = todoRepository.findAllByStatusAndDueDateBefore(TodoStatus.IN_PROGRESS, LocalDateTime.now());
+
+        expiredTodoList.forEach(todo -> {
+            List<UserTodo> incompleteUserTodoList = userTodoRepository.findAllByTodoIdAndStatusNot(todo.getId(), TodoAssigneeStatus.COMPLETE);
+            incompleteUserTodoList.forEach(userTodo -> userTodo.updateStatus(TodoAssigneeStatus.OVERDUE));
+
+            todo.updateStatus(TodoStatus.EXPIRED);
+        });
+    }
 }
