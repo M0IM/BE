@@ -157,8 +157,14 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .map(UserPlanDTO::toIndividualPlan)
                 .toList();
 
-        List<UserPlanDTO> userMonthlyPlanDTOList = Stream.concat(userMoimPlanDTOList.stream(), individualPlanDTOList.stream())
+        List<UserPlanDTO> userMoimTodoDTOList = userTodoRepository.findByUserIdAndTodoDueDateBetween(user.getId(), startDate, endDate).stream()
+                .map(userTodo -> UserPlanDTO.toUserMoimTodo(userTodo.getTodo()))
                 .toList();
+
+        List<UserPlanDTO> userMonthlyPlanDTOList = Stream.concat(
+                Stream.concat(userMoimPlanDTOList.stream(), individualPlanDTOList.stream()),
+                userMoimTodoDTOList.stream()
+        ).toList();
 
         Map<Integer, List<UserPlanDTO>> userMonthlyPlanListByDay = userMonthlyPlanDTOList.stream()
                 .collect(Collectors.groupingBy(plan -> plan.time().getDayOfMonth()));

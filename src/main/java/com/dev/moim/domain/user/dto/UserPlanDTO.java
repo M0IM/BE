@@ -2,12 +2,12 @@ package com.dev.moim.domain.user.dto;
 
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
+import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.enums.PlanType;
 
 import java.time.LocalDateTime;
 
-import static com.dev.moim.domain.moim.entity.enums.PlanType.INDIVIDUAL_PLAN;
-import static com.dev.moim.domain.moim.entity.enums.PlanType.MOIM_PLAN;
+import static com.dev.moim.domain.moim.entity.enums.PlanType.*;
 
 public record UserPlanDTO(
         Long planId,
@@ -16,6 +16,7 @@ public record UserPlanDTO(
         String location,
         String locationDetail,
         String memo,
+        Long moimId,
         String moimName,
         PlanType planType
 ) {
@@ -27,6 +28,7 @@ public record UserPlanDTO(
                 individualPlan.getLocation(),
                 individualPlan.getLocationDetail(),
                 individualPlan.getMemo(),
+                null,
                 null,
                 INDIVIDUAL_PLAN
         );
@@ -40,8 +42,23 @@ public record UserPlanDTO(
                 plan.getLocation(),
                 plan.getLocationDetail(),
                 null,
+                plan.getMoim().getId(),
                 plan.getMoim().getName(),
                 MOIM_PLAN
+        );
+    }
+
+    public static UserPlanDTO toUserMoimTodo(Todo todo) {
+        return new UserPlanDTO(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getDueDate(),
+                null,
+                null,
+                null,
+                todo.getMoim().getId(),
+                todo.getMoim().getName(),
+                TODO_PLAN
         );
     }
 
@@ -51,6 +68,7 @@ public record UserPlanDTO(
                                               String location,
                                               String locationDetail,
                                               String memo,
+                                              Long moimId,
                                               String moimName,
                                               PlanType planType) {
         return new UserPlanDTO(
@@ -60,6 +78,7 @@ public record UserPlanDTO(
                 location,
                 locationDetail,
                 memo,
+                moimId,
                 moimName,
                 planType
         );

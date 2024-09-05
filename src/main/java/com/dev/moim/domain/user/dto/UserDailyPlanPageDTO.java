@@ -48,8 +48,9 @@ public record UserDailyPlanPageDTO(
             String location = (String) record[3];
             String locationDetail = (String) record[4];
             String memo = (String) record[5];
-            String moimName = (String) record[6];
-            String planTypeString = (String) record[7];
+            Long moimId = (Long) record[6];
+            String moimName = (String) record[7];
+            String planTypeString = (String) record[8];
             PlanType planType = PlanType.fromString(planTypeString);
 
             return UserPlanDTO.toDailyUserPlan(
@@ -59,6 +60,7 @@ public record UserDailyPlanPageDTO(
                     location,
                     locationDetail,
                     memo,
+                    moimId,
                     moimName,
                     planType
             );

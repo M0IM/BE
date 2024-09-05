@@ -41,4 +41,14 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
                                          @Param("endOfDay") LocalDateTime endOfDay);
 
     List<UserTodo> findAllByTodoId(Long todoId);
+
+    @Query("SELECT ut FROM UserTodo ut " +
+            "JOIN ut.todo t " +
+            "WHERE ut.user.id = :userId " +
+            "AND t.dueDate BETWEEN :startDate AND :endDate " +
+            "ORDER BY t.dueDate ASC")
+    List<UserTodo> findByUserIdAndTodoDueDateBetween(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
