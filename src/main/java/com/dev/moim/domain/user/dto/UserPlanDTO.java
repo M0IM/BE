@@ -16,6 +16,7 @@ public record UserPlanDTO(
         String location,
         String locationDetail,
         String memo,
+        Long moimId,
         String moimName,
         PlanType planType
 ) {
@@ -27,6 +28,7 @@ public record UserPlanDTO(
                 individualPlan.getLocation(),
                 individualPlan.getLocationDetail(),
                 individualPlan.getMemo(),
+                null,
                 null,
                 INDIVIDUAL_PLAN
         );
@@ -40,6 +42,7 @@ public record UserPlanDTO(
                 plan.getLocation(),
                 plan.getLocationDetail(),
                 null,
+                plan.getMoim().getId(),
                 plan.getMoim().getName(),
                 MOIM_PLAN
         );
@@ -51,6 +54,7 @@ public record UserPlanDTO(
                                               String location,
                                               String locationDetail,
                                               String memo,
+                                              Long moimId,
                                               String moimName,
                                               PlanType planType) {
         return new UserPlanDTO(
@@ -60,6 +64,7 @@ public record UserPlanDTO(
                 location,
                 locationDetail,
                 memo,
+                moimId,
                 moimName,
                 planType
         );
