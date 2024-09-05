@@ -67,4 +67,6 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     @Modifying
     @Query("update User u set u.lastAlarmTime = :lastReadTime where u = :user")
     void updateLastReadTime(User user, LocalDateTime lastReadTime);
+
+    List<User> findAllByIsPushAlarmTrueAndDeviceIdNotNull();
 }

@@ -16,4 +16,6 @@ public interface TodoCommandService {
     void addAssignees(User user, AddTodoAssigneeDTO request);
 
     void deleteAssignees(DeleteTodoAssigneeDTO request);
+
+    void updateExpiredTodosAndAssigneesStatus();
 }

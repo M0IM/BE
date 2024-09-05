@@ -2,6 +2,7 @@ package com.dev.moim.domain.moim.repository;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.UserTodo;
+import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,4 +52,6 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
             @Param("userId") Long userId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    List<UserTodo> findAllByTodoIdAndStatusNot(Long todoId, TodoAssigneeStatus todoAssigneeStatus);
 }
