@@ -24,6 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p " +
             "WHERE p.moim = :moim " +
+            "AND p.postType != 'GLOBAL' " +
             "AND p.id < :id " +
             "AND p NOT IN (SELECT pb.post FROM PostBlock pb WHERE pb.user = :user) " +
             "ORDER BY p.id DESC")
