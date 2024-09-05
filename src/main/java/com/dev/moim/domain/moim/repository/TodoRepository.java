@@ -24,4 +24,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Slice<Todo> findByWriterIdAndCursorLessThan(Long writerId, Long cursor, Pageable pageable);
 
     List<Todo> findAllByStatusAndDueDateBefore(TodoStatus todoStatus, LocalDateTime now);
+
+    List<Todo> findAllByDueDateBetween(LocalDateTime tomorrow, LocalDateTime endOfTomorrow);
 }
