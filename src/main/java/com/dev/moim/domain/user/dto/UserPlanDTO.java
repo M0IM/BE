@@ -2,12 +2,12 @@ package com.dev.moim.domain.user.dto;
 
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
+import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.enums.PlanType;
 
 import java.time.LocalDateTime;
 
-import static com.dev.moim.domain.moim.entity.enums.PlanType.INDIVIDUAL_PLAN;
-import static com.dev.moim.domain.moim.entity.enums.PlanType.MOIM_PLAN;
+import static com.dev.moim.domain.moim.entity.enums.PlanType.*;
 
 public record UserPlanDTO(
         Long planId,
@@ -45,6 +45,20 @@ public record UserPlanDTO(
                 plan.getMoim().getId(),
                 plan.getMoim().getName(),
                 MOIM_PLAN
+        );
+    }
+
+    public static UserPlanDTO toUserMoimTodo(Todo todo) {
+        return new UserPlanDTO(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getDueDate(),
+                null,
+                null,
+                null,
+                todo.getMoim().getId(),
+                todo.getMoim().getName(),
+                TODO_PLAN
         );
     }
 
