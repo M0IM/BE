@@ -1,6 +1,8 @@
 package com.dev.moim.global.email;
 
-import com.dev.moim.global.error.GeneralException;
+import com.dev.moim.domain.account.dto.InQuiryDTO;
+import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.global.error.handler.EmailException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
@@ -26,16 +29,15 @@ public class EmailUtil {
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
 
-    public String sendMessage(String receiver) throws Exception {
+    public String sendAuthorizationCodeEmail(String receiver) throws Exception {
         String code = createCode();
-        MimeMessage message = createMessage(receiver, code);
+        MimeMessage message = createAuthorizationCodeMessage(receiver, code);
 
         try {
             emailSender.send(message);
         } catch (MailException e) {
-            throw new GeneralException(EMAIL_SEND_FAIL);
+            throw new EmailException(EMAIL_SEND_FAIL);
         }
-        emailSender.send(message);
         redisUtil.setValue(receiver, code, this.authCodeExpirationMillis);
 
         return code;
@@ -63,7 +65,7 @@ public class EmailUtil {
         return code.toString();
     }
 
-    private MimeMessage createMessage(String receiver, String code) throws Exception {
+    private MimeMessage createAuthorizationCodeMessage(String receiver, String code) throws Exception {
         MimeMessage message = emailSender.createMimeMessage();
         InternetAddress[] recipients = {new InternetAddress(receiver)};
         message.setSubject("MOIM 회원가입 인증 코드");
@@ -104,6 +106,54 @@ public class EmailUtil {
         message.setContent(msg, "text/html; charset=utf-8");
         message.setFrom(new InternetAddress("${spring.mail.username}", "MOIM"));
 
+        return message;
+    }
+
+    public void sendInquiryEmail(User user, String receiver, String content) throws Exception {
+        MimeMessage message = createInquiryMessage(user, receiver, content);
+
+        try {
+            emailSender.send(message);
+        } catch (MailException e) {
+            throw new EmailException(EMAIL_SEND_FAIL);
+        }
+    }
+
+    private MimeMessage createInquiryMessage(User user, String userEmail, String inquiryContent) throws Exception {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setSubject("MOIM 유저 의견 및 문의사항");
+        helper.setTo("moim2moim@gmail.com");
+        helper.setFrom(new InternetAddress("moim2moim@gmail.com", "MOIM"));
+
+        String msg = "<!DOCTYPE html>"
+                + "<html lang=\"en\">"
+                + "<head>"
+                + "    <meta charset=\"UTF-8\">"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                + "    <title>문의 메일</title>"
+                + "</head>"
+                + "<body style=\"font-family: Arial, sans-serif; background-color: #f6f6f6; margin: 0; padding: 0;\">"
+                + "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">"
+                + "        <div style=\"background-color: #00F0A1; padding: 20px; text-align: center; color: #ffffff;\">"
+                + "            <h1 style=\"margin: 0; font-size: 24px;\">의견 및 문의사항</h1>"
+                + "        </div>"
+                + "        <div style=\"padding: 20px;\">"
+                + "            <p style=\"color: #333333; font-weight: bold;\">회신용 이메일: " + userEmail + "</p>"
+                + "            <hr style=\"border: 0; height: 1px; background-color: #dddddd;\" />"
+                + "            <p style=\"color: #555555; font-weight: bold;\">내용:</p>"
+                + "            <p style=\"color: #555555;\">" + inquiryContent + "</p>"
+                + "            <br>"
+                + "        </div>"
+                + "        <div style=\"background-color: #f6f6f6; padding: 10px; text-align: center; font-size: 12px; color: #999999;\">"
+                + "            <p>Copyright ⓒ MOIM. All Rights Reserved.</p>"
+                + "        </div>"
+                + "    </div>"
+                + "</body>"
+                + "</html>";
+
+        helper.setText(msg, true);
         return message;
     }
 }

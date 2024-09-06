@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auth")
-@Tag(name = "유저 인증 관련 컨트롤러")
+@Tag(name = "유저 관리 관련 컨트롤러")
 public class AuthController {
 
     private final AuthService authService;
@@ -133,5 +133,18 @@ public class AuthController {
     ) {
         authService.quit(user);
         return BaseResponse.onSuccess(null);
+    }
+
+    @PostMapping("/inquiries")
+    @Operation(summary="의견 및 문의 메일 보내기", description="유저가 모임 서비스에 대한 의견 및 문의 사항을 보내는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
+    })
+    public BaseResponse<?> submitInquiry(
+            @AuthUser User user,
+            @RequestBody InQuiryDTO request
+    ) {
+        authService.submitInquiry(user, request);
+        return BaseResponse.onSuccess("의견 및 문의 메일 보내기 성공");
     }
 }
