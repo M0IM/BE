@@ -9,6 +9,7 @@ import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.global.email.EmailUtil;
 import com.dev.moim.global.error.GeneralException;
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.error.handler.EmailException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.event.CustomAuthenticationSuccessEvent;
 import com.dev.moim.global.security.principal.PrincipalDetails;
@@ -108,24 +109,24 @@ public class AuthService {
 
     public EmailVerificationCodeDTO sendCode(EmailDTO request) {
         try {
-            String code = emailUtil.sendMessage(request.email());
+            String code = emailUtil.sendAuthorizationCodeEmail(request.email());
             return new EmailVerificationCodeDTO(request.email(), code);
         } catch (Exception e) {
-            throw new GeneralException(EMAIL_SEND_FAIL);
+            throw new EmailException(EMAIL_SEND_FAIL);
         }
     }
 
     public EmailVerificationResultDTO verifyCode(EmailVerificationCodeDTO request) {
         String redisCode = redisUtil.getValue(request.code());
         if (redisCode == null) {
-            throw new AuthException(EMAIL_CODE_NOT_FOUND);
+            throw new EmailException(EMAIL_CODE_NOT_FOUND);
         }
 
        boolean isCodeValid = request.code().equals(redisCode);
         if (isCodeValid) {
             redisUtil.deleteValue(request.email());
         } else {
-            throw new AuthException(INCORRECT_EMAIL_CODE);
+            throw new EmailException(INCORRECT_EMAIL_CODE);
         }
 
         return new EmailVerificationResultDTO(request.email(), isCodeValid);
@@ -154,6 +155,14 @@ public class AuthService {
         if (fcmToken != null && !fcmToken.isEmpty()) {
             user.updateDeviceId(fcmToken);
             userRepository.save(user);
+        }
+    }
+
+    public void submitInquiry(User user, InquiryDTO request) {
+        try {
+            emailUtil.sendInquiryEmail(user, request.replyEmail(), request.content());
+        } catch (Exception e) {
+            throw new EmailException(EMAIL_SEND_FAIL);
         }
     }
 }
