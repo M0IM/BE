@@ -77,12 +77,10 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public MoimPreviewListDTO findMoims(MoimRequestType moimRequestType, String name, Long cursor, Integer take) {
+    public MoimPreviewListDTO findMoims(List<MoimRequestType> moimRequestTypes, String name, Long cursor, Integer take) {
 
-        if (name == null || name.isEmpty()) {
-            name = "%%";
-        } else {
-            name = "%" + name.trim() + "%";
+        if (name == null) {
+            name = "";
         }
 
         if (cursor == 1) {
@@ -90,10 +88,10 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         }
 
         Slice<Moim> moimSlice;
-        if (moimRequestType == null) {
+        if (moimRequestTypes.isEmpty()) {
             moimSlice = moimRepository.findByNameLikeAndIdLessThanOrderByIdDesc(name, cursor, PageRequest.of(0, take));
         } else {
-            MoimCategory moimCategory = MoimCategory.valueOf(moimRequestType.toString());
+            List<MoimCategory> moimCategory = moimRequestTypes.stream().map((moimRequestType -> MoimCategory.valueOf(moimRequestType.toString()))).toList();
             moimSlice = moimRepository.findByMoimCategoryAndNameLikeAndIdLessThanOrderByIdDesc(moimCategory, name, cursor, PageRequest.of(0, take));
         }
 

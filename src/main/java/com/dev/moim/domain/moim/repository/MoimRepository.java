@@ -15,7 +15,14 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
     @Query("SELECT m FROM UserMoim um join um.moim m where um.user.id = :userId and um.joinStatus = 'COMPLETE' and m.id < :cursor order by m.id desc")
     Slice<Moim> findMyMoims(Long userId, Long cursor, Pageable pageable);
 
-    Slice<Moim> findByMoimCategoryAndNameLikeAndIdLessThanOrderByIdDesc(MoimCategory moimCategory, String name, Long id, Pageable pageable);
+    @Query("SELECT m FROM Moim m WHERE m.id < :id AND m.moimCategory IN :moimCategories AND m.name LIKE %:name% order by m.id desc")
+    Slice<Moim> findByMoimCategoryAndNameLikeAndIdLessThanOrderByIdDesc(
+            List<MoimCategory> moimCategories,
+            String name,
+            Long id,
+            Pageable pageable
+    );
+
 
     Slice<Moim> findByNameLikeAndIdLessThanOrderByIdDesc(String name, Long id, Pageable pageable);
 

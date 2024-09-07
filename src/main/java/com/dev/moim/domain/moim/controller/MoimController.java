@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 @Tag(name = "모임 관련 컨트롤러")
@@ -102,12 +104,12 @@ public class MoimController {
     })
     @GetMapping("/moims")
     public BaseResponse<MoimPreviewListDTO> findMoims(
-            @RequestParam(name = "moimRequestType", required = false) MoimRequestType moimRequestType,
+            @RequestParam(name = "moimRequestType", required = false) List<MoimRequestType> moimRequestTypes,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
             @RequestParam(name = "take") @CheckTakeValidation Integer take
     ) {
-        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.findMoims(moimRequestType, name, cursor, take);
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.findMoims(moimRequestTypes, name, cursor, take);
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
