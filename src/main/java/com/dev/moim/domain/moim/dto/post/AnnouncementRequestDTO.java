@@ -14,6 +14,7 @@ public record AnnouncementRequestDTO(
         @Length(min = 1, max = 2000)
         String content,
         List<String> imageKeyNames,
-        List<Long> userIds
+        List<Long> userIds,
+        Boolean isAllUserSelected
 ) {
 }
