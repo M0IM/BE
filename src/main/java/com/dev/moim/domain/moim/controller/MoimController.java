@@ -1,10 +1,12 @@
 package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
@@ -63,8 +65,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/me")
-    public BaseResponse<MoimPreviewListDTO> getMyMoim(@AuthUser User user, @CheckCursorValidation Long cursor, @CheckTakeValidation Integer take) {
-        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(user.getId(), cursor, take);
+    public BaseResponse<MoimPreviewListDTO> getMyMoim(@AuthUser User user, @CheckCursorValidation Long cursor, @CheckTakeValidation Integer take, @RequestParam(name = "moimRequestRole") MoimRequestRole moimRequestRole) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(user.getId(), cursor, take, moimRequestRole);
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
 
@@ -77,8 +79,10 @@ public class MoimController {
     public BaseResponse<MoimPreviewListDTO> getUserMoim(
             @ExistUserValidation @PathVariable Long userId,
             @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
-            @CheckTakeValidation @RequestParam(name = "take") Integer take) {
-        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(userId, cursor, take);
+            @CheckTakeValidation @RequestParam(name = "take") Integer take,
+            @RequestParam(name = "moimRequestRole") MoimRequestRole moimRequestRole
+    ) {
+        MoimPreviewListDTO moimPreviewListDTO = moimQueryService.getUserMoim(userId, cursor, take, moimRequestRole);
         return BaseResponse.onSuccess(moimPreviewListDTO);
     }
     

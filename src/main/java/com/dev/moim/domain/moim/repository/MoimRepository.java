@@ -3,6 +3,8 @@ package com.dev.moim.domain.moim.repository;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +32,7 @@ public interface MoimRepository extends JpaRepository<Moim, Long> {
 
     @Query("select m from UserMoim um join um.moim m where um.user = :user and um.joinStatus = 'COMPLETE'")
     List<Moim> findMoimsByUser(User user);
+
+    @Query("SELECT m FROM UserMoim um join um.moim m where um.user.id = :userId and um.joinStatus = 'COMPLETE' and um.moimRole = :moimRole and m.id < :cursor order by m.id desc")
+    Slice<Moim> findMyMoimsWithMoimRole(Long userId, Long cursor, MoimRole moimRole, PageRequest of);
 }
