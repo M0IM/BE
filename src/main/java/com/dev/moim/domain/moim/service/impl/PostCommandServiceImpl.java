@@ -357,7 +357,7 @@ public class PostCommandServiceImpl implements PostCommandService {
 
         List<Long> unReadUserIds;
         if (announcementRequestDTO.isAllUserSelected()) {
-           unReadUserIds = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE).stream().filter(user1-> !user1.equals(user)).map(User::getId).toList();
+           unReadUserIds = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE).stream().map(User::getId).toList();
         } else {
             unReadUserIds = announcementRequestDTO.userIds();
         }
