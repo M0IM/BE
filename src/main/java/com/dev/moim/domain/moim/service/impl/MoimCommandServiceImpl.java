@@ -139,6 +139,13 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     @Override
     public void joinMoim(User user, Long moimId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+
+        Boolean isRequest = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+
+        if (isRequest) {
+            throw new MoimException(ErrorStatus.ALREADY_REQUEST);
+        }
+
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
         UserMoim userMoim = UserMoim.builder()
                             .userProfile(userProfile)
@@ -149,12 +156,6 @@ public class MoimCommandServiceImpl implements MoimCommandService {
                             .profileStatus(ProfileStatus.PRIVATE)
                             .confirm(false)
                             .build();
-
-        Boolean isRequest = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
-
-        if (isRequest) {
-            throw new MoimException(ErrorStatus.ALREADY_REQUEST);
-        }
 
         Optional<UserMoim> owner = userRepository.findOwnerByMoim(moim);
 
