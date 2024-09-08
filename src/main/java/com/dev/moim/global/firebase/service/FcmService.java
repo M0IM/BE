@@ -65,15 +65,13 @@ public class FcmService {
         }
     }
 
-    public void sendAndroidNotification(User receiver, String title, String body, AlarmDetailType alarmDetailType) {
+    public void sendPushNotification(User receiver, String title, String body, AlarmDetailType alarmDetailType) {
 
         if (!(receiver.getDeviceId() == null)) {
             Notification notification = Notification.builder()
                     .setTitle(title)
                     .setBody(body)
                     .build();
-
-            Integer count = userQueryService.countAlarm(receiver);
 
             AndroidNotification androidNotification = AndroidNotification.builder()
                     .setChannelId(alarmDetailType.toString())
@@ -83,10 +81,21 @@ public class FcmService {
                     .setNotification(androidNotification)
                     .build();
 
+            ApnsFcmOptions apnsFcmOptions = ApnsFcmOptions.builder()
+                    .setAnalyticsLabel(alarmDetailType.toString())
+                    .build();
+
+            ApnsConfig apnsConfig = ApnsConfig.builder()
+                    .setFcmOptions(apnsFcmOptions)
+                    .build();
+
+            Integer count = userQueryService.countAlarm(receiver);
+
             Message message = Message.builder()
+                    .setNotification(notification)
                     .setToken(receiver.getDeviceId())
                     .setAndroidConfig(androidConfig)
-                    .setNotification(notification)
+                    .setApnsConfig(apnsConfig)
                     .putData("count", count.toString())
                     .build();
 
