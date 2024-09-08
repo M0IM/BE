@@ -86,6 +86,12 @@ public class FcmService {
                     .build();
 
             ApnsConfig apnsConfig = ApnsConfig.builder()
+                    .setAps(Aps.builder()
+                            .setAlert(ApsAlert.builder()
+                                    .setTitle(title)
+                                    .setBody(body)
+                                    .build())
+                            .build())
                     .setFcmOptions(apnsFcmOptions)
                     .build();
 
