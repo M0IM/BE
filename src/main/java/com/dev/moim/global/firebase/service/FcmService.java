@@ -68,6 +68,9 @@ public class FcmService {
     public void sendPushNotification(User receiver, String title, String body, AlarmDetailType alarmDetailType) {
 
         if (!(receiver.getDeviceId() == null)) {
+
+            Integer count = userQueryService.countAlarm(receiver);
+
             Notification notification = Notification.builder()
                     .setTitle(title)
                     .setBody(body)
@@ -91,11 +94,11 @@ public class FcmService {
                                     .setTitle(title)
                                     .setBody(body)
                                     .build())
+                            .setBadge(count)
+                            .setContentAvailable(true)
                             .build())
                     .setFcmOptions(apnsFcmOptions)
                     .build();
-
-            Integer count = userQueryService.countAlarm(receiver);
 
             Message message = Message.builder()
                     .setNotification(notification)
