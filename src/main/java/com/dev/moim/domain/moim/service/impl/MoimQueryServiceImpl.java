@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.entity.*;
@@ -56,13 +57,19 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final UserProfileRepository userProfileRepository;
 
     @Override
-    public MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take) {
+    public MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take, MoimRequestRole moimRequestRole) {
 
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<Moim> myMoims = moimRepository.findMyMoims(userId, cursor, PageRequest.of(0, take));
+        Slice<Moim> myMoims;
+        if (moimRequestRole.equals(MoimRequestRole.ALL)) {
+            myMoims = moimRepository.findMyMoims(userId, cursor, PageRequest.of(0, take));
+        } else {
+            MoimRole moimRole = MoimRole.valueOf(moimRequestRole.toString());
+            myMoims = moimRepository.findMyMoimsWithMoimRole(userId, cursor, moimRole, PageRequest.of(0, take));
+        }
 
         List<MoimPreviewDTO> findMyMoims = myMoims.stream().map((moim)->{
             return MoimPreviewDTO.toMoimPreviewDTO(moim, moim.getImageUrl());

@@ -1,19 +1,21 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.dto.MoimJoinRequestListDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
 import java.util.List;
 
 public interface MoimQueryService {
 
-    MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take);
+    MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take, MoimRequestRole moimRequestRole);
 
     MoimPreviewListDTO findMoims(List<MoimRequestType> moimRequestTypes, String name, Long cursor, Integer take);
 
