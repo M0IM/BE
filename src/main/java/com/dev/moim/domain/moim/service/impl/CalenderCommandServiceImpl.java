@@ -93,7 +93,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                     alarmService.saveAlarm(user, planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
                     if (planUser.getIsPushAlarm() && planUser.getDeviceId() != null) {
-                        fcmService.sendNotification(planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다");
+                        fcmService.sendPushNotification(planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userProfile.getName() + " 님이 참여 신청했습니다", AlarmDetailType.PLAN);
                     }
                 });
 
@@ -138,7 +138,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
             if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
-                fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.");
+                fcmService.sendPushNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmDetailType.PLAN);
             }
 
         });
@@ -158,7 +158,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
             alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
             if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
-                fcmService.sendNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.");
+                fcmService.sendPushNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmDetailType.PLAN);
             }
         });
 

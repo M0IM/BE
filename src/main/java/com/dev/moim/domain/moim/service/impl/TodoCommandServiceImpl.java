@@ -85,7 +85,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                     alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                        fcmService.sendAndroidNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
+                        fcmService.sendPushNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
                     }
                 });
 
@@ -157,7 +157,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                     alarmService.saveAlarm(user, assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moimId, null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                        fcmService.sendNotification(assignee, "할 일이 수정되었습니다", todo.getTitle());
+                        fcmService.sendPushNotification(assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmDetailType.TODO);
                     }
                 });
     }
@@ -190,7 +190,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                     alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, request.moimId(), null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                        fcmService.sendPushNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
                     }
                 });
     }
