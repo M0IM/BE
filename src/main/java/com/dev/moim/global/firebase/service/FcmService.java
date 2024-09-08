@@ -9,10 +9,7 @@ import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.feign.dto.DiscordMessage;
 import com.dev.moim.global.error.feign.service.DiscordClient;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -60,6 +57,43 @@ public class FcmService {
                 FirebaseMessaging.getInstance().send(message);
             } catch (FirebaseMessagingException e) {
                 e.printStackTrace();
+                userCommandService.notDeadLockFcmSignOut(receiver);
+                if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
+                    discordClient.sendAlarm(createMessage(receiver, title, body));
+                }
+            }
+        }
+    }
+
+    public void sendAndroidNotification(User receiver, String title, String body, AlarmDetailType alarmDetailType) {
+
+        if (!(receiver.getDeviceId() == null)) {
+            Notification notification = Notification.builder()
+                    .setTitle(title)
+                    .setBody(body)
+                    .build();
+
+            Integer count = userQueryService.countAlarm(receiver);
+
+            AndroidNotification androidNotification = AndroidNotification.builder()
+                    .setChannelId(alarmDetailType.toString())
+                    .build();
+
+            AndroidConfig androidConfig = AndroidConfig.builder()
+                    .setPriority(AndroidConfig.Priority.HIGH)
+                    .setNotification(androidNotification)
+                    .build();
+
+            Message message = Message.builder()
+                    .setToken(receiver.getDeviceId())
+                    .setAndroidConfig(androidConfig)
+                    .setNotification(notification)
+                    .putData("count", count.toString())
+                    .build();
+
+            try {
+                FirebaseMessaging.getInstance().send(message);
+            } catch (FirebaseMessagingException e) {
                 userCommandService.notDeadLockFcmSignOut(receiver);
                 if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
                     discordClient.sendAlarm(createMessage(receiver, title, body));

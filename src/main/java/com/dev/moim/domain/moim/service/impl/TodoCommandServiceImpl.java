@@ -85,7 +85,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                     alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                        fcmService.sendNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle());
+                        fcmService.sendAndroidNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
                     }
                 });
 
