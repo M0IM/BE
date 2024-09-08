@@ -80,7 +80,6 @@ public class FcmService {
                     .build();
 
             AndroidConfig androidConfig = AndroidConfig.builder()
-                    .setPriority(AndroidConfig.Priority.HIGH)
                     .setNotification(androidNotification)
                     .build();
 
