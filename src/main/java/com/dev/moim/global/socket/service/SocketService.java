@@ -135,7 +135,7 @@ public class SocketService {
             User receiver = userRepository.findById(p).orElseThrow(()-> new ChatRoomException(ErrorStatus.USER_NOT_FOUND));
             if (receiver.getIsPushAlarm()) {
 //                alarmService.saveAlarm(sender, receiver, chatRoom.getTitle(), chattingDTO.getContent(), AlarmType.PUSH, AlarmDetailType.CHATROOM, chatRoom.getId());
-                fcmService.sendNotification(receiver, chatRoom.getTitle(), chattingDTO.getContent());
+//                fcmService.sendNotification(receiver, chatRoom.getTitle(), chattingDTO.getContent());
             }
         });
 

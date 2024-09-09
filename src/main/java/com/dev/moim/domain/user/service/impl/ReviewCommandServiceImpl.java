@@ -54,7 +54,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         if (targetUser.getIsPushAlarm()) {
             alarmService.saveAlarm(user, targetUser, "후기가 도착했습니다" , "새로 도착한 후기를 확인해주세요", AlarmType.PUSH, AlarmDetailType.REVIEW, null, null, null);
-            fcmService.sendNotification(targetUser, "후기가 도착했습니다" , "새로 도착한 후기를 확인해주세요");
+            fcmService.sendPushNotification(targetUser, "후기가 도착했습니다" , "새로 도착한 후기를 확인해주세요", AlarmDetailType.REVIEW);
         }
 
         return CreateReviewResultDTO.of(userReview);
