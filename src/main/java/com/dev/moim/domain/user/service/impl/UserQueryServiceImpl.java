@@ -84,8 +84,13 @@ public class UserQueryServiceImpl implements UserQueryService {
 
         Pageable pageable = PageRequest.of(page-1, size);
         Slice<Plan> userMoimPlanSlice = planRepository.findByUserAndDateBetween(user, startOfDay, endOfDay, pageable);
+        List<UserPlanDTO> userPlanDTOList = userMoimPlanSlice.map(plan -> {
+            UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, plan.getMoim())
+                    .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
+            return UserPlanDTO.toUserMoimPlan(plan, userMoim);
+        }).toList();
 
-        return UserDailyPlanPageDTO.toUserMoimPlan(userMoimPlanSlice);
+        return UserDailyPlanPageDTO.toUserMoimPlan(userMoimPlanSlice, userPlanDTOList);
     }
 
     @Override
@@ -137,8 +142,11 @@ public class UserQueryServiceImpl implements UserQueryService {
         List<UserPlan> userPlanList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate);
 
         Map<Integer, List<UserPlanDTO>> planListByDay = userPlanList.stream()
-                .map(userPlan -> UserPlanDTO.toUserMoimPlan(userPlan.getPlan()))
-                .collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
+                .map(userPlan -> {
+                    UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, userPlan.getPlan().getMoim())
+                            .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
+                    return UserPlanDTO.toUserMoimPlan(userPlan.getPlan(), userMoim);
+                }).collect(Collectors.groupingBy(dto -> dto.time().getDayOfMonth()));
 
         return new PlanMonthListDTO<>(planListByDay);
     }
@@ -150,8 +158,11 @@ public class UserQueryServiceImpl implements UserQueryService {
         LocalDateTime endDate = yearMonth.atEndOfMonth().atTime(23, 59, 59);
 
         List<UserPlanDTO> userMoimPlanDTOList = userPlanRepository.findByUserIdAndPlanDateBetween(user.getId(), startDate, endDate).stream()
-                .map(userPlan -> UserPlanDTO.toUserMoimPlan(userPlan.getPlan()))
-                .toList();
+                .map(userPlan -> {
+                    UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, userPlan.getPlan().getMoim())
+                            .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
+                    return UserPlanDTO.toUserMoimPlan(userPlan.getPlan(), userMoim);
+                }).toList();
 
         List<UserPlanDTO> individualPlanDTOList = individualPlanRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate).stream()
                 .map(UserPlanDTO::toIndividualPlan)
@@ -200,7 +211,10 @@ public class UserQueryServiceImpl implements UserQueryService {
         UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), userMoimPlanId)
                 .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
 
-        return UserPlanDTO.toUserMoimPlan(userPlan.getPlan());
+        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, userPlan.getPlan().getMoim())
+                .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
+
+        return UserPlanDTO.toUserMoimPlan(userPlan.getPlan(), userMoim);
     }
 
     @Override
