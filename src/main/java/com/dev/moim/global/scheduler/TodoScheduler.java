@@ -54,7 +54,7 @@ public class TodoScheduler {
                 alarmService.saveAlarm(todo.getWriter(), assignee, "마감 기한이 하루 남았습니다.", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, todo.getMoim().getId(), null, null);
 
                 if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                    fcmService.sendNotification(assignee, "마감 기한이 하루 남았습니다.", todo.getTitle());
+                    fcmService.sendPushNotification(assignee, "마감 기한이 하루 남았습니다.", todo.getTitle(), AlarmDetailType.TODO);
                 }
             });
         });

@@ -51,7 +51,10 @@ public class PlanScheduler {
             );
 
             alarmService.saveAlarm(user, user, "오늘 예정된 일정", content, AlarmType.PUSH, AlarmDetailType.PLAN, null, null, null);
-            fcmService.sendNotification(user, "오늘 예정된 일정", content);
+
+            if (user.getIsPushAlarm() && user.getDeviceId() != null) {
+                fcmService.sendPushNotification(user, "오늘 예정된 일정", content, AlarmDetailType.PLAN);
+            }
         });
     }
 }
