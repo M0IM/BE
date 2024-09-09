@@ -62,8 +62,13 @@ public class Todo extends BaseEntity {
         this.title = title;
         this.content = content;
         this.dueDate = dueDate;
-        this.todoImageList.clear();
-        this.todoImageList.addAll(newImageList);
+
+        if (newImageList == null) {
+            this.todoImageList.clear();
+        } else {
+            this.todoImageList.clear();
+            this.todoImageList.addAll(newImageList);
+        }
     }
 
     public void updateStatus(TodoStatus status) {
