@@ -96,6 +96,30 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
     private List<Todo> todoList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<ReadPost> readPostList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Alarm> alarmList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<PostReport> postReportList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<PostBlock> postBlockList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<PostLike> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CommentBlock> commentBlockList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CommentLike> commentLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<CommentReport> commentReportList = new ArrayList<>();
+
     public void updateRating(double newRating) {
         this.rating = newRating;
     }

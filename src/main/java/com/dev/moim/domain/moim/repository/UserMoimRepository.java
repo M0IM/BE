@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -90,4 +91,8 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.joinStatus = :joinStatus and um.id < :cursor order by um.id desc")
     Slice<JoinRequestDTO> findMyRequestMoimsWithJoinStatus(User user, Long cursor, JoinStatus joinStatus, PageRequest of);
+
+    @Modifying
+    @Query("delete from UserMoim um where um.confirm = true and um.joinStatus not in :joinStatusList")
+    void deleteAllByConfirmUserMoim(List<JoinStatus> joinStatusList);
 }
