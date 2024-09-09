@@ -37,34 +37,6 @@ public class FcmService {
         });
     }
 
-    public void sendNotification(User receiver, String title, String body) {
-
-        if (!(receiver.getDeviceId() == null)) {
-            Notification notification = Notification.builder()
-                    .setTitle(title)
-                    .setBody(body)
-                    .build();
-
-            Integer count = userQueryService.countAlarm(receiver);
-
-            Message message = Message.builder()
-                    .setToken(receiver.getDeviceId())
-                    .setNotification(notification)
-                    .putData("count", count.toString())
-                    .build();
-
-            try {
-                FirebaseMessaging.getInstance().send(message);
-            } catch (FirebaseMessagingException e) {
-                e.printStackTrace();
-                userCommandService.notDeadLockFcmSignOut(receiver);
-                if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
-                    discordClient.sendAlarm(createMessage(receiver, title, body));
-                }
-            }
-        }
-    }
-
     public void sendPushNotification(User receiver, String title, String body, AlarmDetailType alarmDetailType) {
 
         if (!(receiver.getDeviceId() == null)) {
