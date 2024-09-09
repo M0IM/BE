@@ -8,6 +8,7 @@ import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record TodoDTO(
         Long todoId,
@@ -22,16 +23,16 @@ public record TodoDTO(
         String moimName
 ) {
 
-    public static TodoDTO forMoimAdmins(Todo todo, UserMoim userMoim) {
+    public static TodoDTO forMoimAdmins(Todo todo, Optional<UserMoim> userMoim) {
         return new TodoDTO(
                 todo.getId(),
                 todo.getTitle(),
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 todo.getStatus(),
-                userMoim.getUserProfile().getName(),
-                userMoim.getUserProfile().getImageUrl(),
-                userMoim.getMoimRole(),
+                userMoim.map(moim -> moim.getUserProfile().getName()).orElse(null),
+                userMoim.map(value -> value.getUserProfile().getImageUrl()).orElse(null),
+                userMoim.map(UserMoim::getMoimRole).orElse(null),
                 todo.getMoim().getId(),
                 todo.getMoim().getName()
         );
