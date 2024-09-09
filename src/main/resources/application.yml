@@ -31,3 +31,4 @@ spring:
       - discord
       - s3
       - firebase
+      - image

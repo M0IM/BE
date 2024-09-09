@@ -1,7 +1,6 @@
 package com.dev.moim.global.email;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.global.error.GeneralException;
 import com.dev.moim.global.error.handler.EmailException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import jakarta.mail.Message;
@@ -28,6 +27,8 @@ public class EmailUtil {
     private final RedisUtil redisUtil;
     @Value("${spring.mail.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
+    @Value("${app.s3.logo-url}")
+    private String logoUrl;
 
     public String sendAuthorizationCodeEmail(String receiver) throws Exception {
         String code = createCode();
@@ -129,32 +130,44 @@ public class EmailUtil {
         helper.setFrom(new InternetAddress("moim2moim@gmail.com", "MOIM"));
 
         String msg = "<!DOCTYPE html>"
-                + "<html lang=\"en\">"
+                + "<html lang=\"ko\">"
                 + "<head>"
                 + "    <meta charset=\"UTF-8\">"
                 + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
                 + "    <title>문의 메일</title>"
                 + "</head>"
-                + "<body style=\"font-family: Arial, sans-serif; background-color: #f6f6f6; margin: 0; padding: 0;\">"
-                + "    <div style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">"
-                + "        <div style=\"background-color: #00F0A1; padding: 20px; text-align: center; color: #ffffff;\">"
-                + "            <h1 style=\"margin: 0; font-size: 24px;\">의견 및 문의사항</h1>"
-                + "        </div>"
-                + "        <div style=\"padding: 20px;\">"
-                + "            <p style=\"color: #333333; font-weight: bold;\">회신용 이메일: " + userEmail + "</p>"
-                + "            <hr style=\"border: 0; height: 1px; background-color: #dddddd;\" />"
-                + "            <p style=\"color: #555555; font-weight: bold;\">내용:</p>"
-                + "            <p style=\"color: #555555;\">" + inquiryContent + "</p>"
-                + "            <br>"
-                + "        </div>"
-                + "        <div style=\"background-color: #f6f6f6; padding: 10px; text-align: center; font-size: 12px; color: #999999;\">"
-                + "            <p>Copyright ⓒ MOIM. All Rights Reserved.</p>"
-                + "        </div>"
-                + "    </div>"
+                + "<body style='font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f6f6f6;'>"
+                + "    <table width='100%' cellpadding='0' cellspacing='0' border='0' style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);'>"
+                + "        <tr>"
+                + "            <td style='padding: 20px; display: flex; align-items: center;'>"
+                + "                <img src='" + logoUrl + "' alt='MOIM 로고' style='width: 30px; height: 30px;'/>"
+                + "                <div style='color: #00F0A1; font-size: 25px; margin-left: 10px;'>MOIM</div>"
+                + "            </td>"
+                + "        </tr>"
+                + "        <tr>"
+                + "            <td style='padding: 20px; text-align: center;'>"
+                + "                <div style='color: #000000; font-size: 30px; padding-bottom: 10px; border-bottom: 2px solid #dddddd;'>의견 및 문의사항</div>"
+                + "            </td>"
+                + "        </tr>"
+                + "        <tr>"
+                + "            <td style='padding: 20px;'>"
+                + "                <p style='color: #333333; font-weight: bold;'>회신용 이메일</p>"
+                + "                <div style='border: 1px solid #00F0A1; padding: 10px; color: #555555; margin-bottom: 20px;'>" + userEmail + "</div>"
+                + "                <p style='color: #555555; font-weight: bold; margin-bottom: 5px;'>문의 내용</p>"
+                + "                <div style='border: 1px solid #00F0A1; padding: 10px; color: #555555;'>" + inquiryContent + "</div>"
+                + "            </td>"
+                + "        </tr>"
+                + "        <tr>"
+                + "            <td style='background-color: #f6f6f6; padding: 10px; text-align: center; font-size: 12px; color: #999999;'>"
+                + "                <p>Copyright ⓒ MOIM. All Rights Reserved.</p>"
+                + "            </td>"
+                + "        </tr>"
+                + "    </table>"
                 + "</body>"
                 + "</html>";
 
         helper.setText(msg, true);
+
         return message;
     }
 }
