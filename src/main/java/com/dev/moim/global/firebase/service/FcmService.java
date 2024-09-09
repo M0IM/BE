@@ -94,7 +94,6 @@ public class FcmService {
                                     .setTitle(title)
                                     .setBody(body)
                                     .build())
-                            .setBadge(count)
                             .setContentAvailable(true)
                             .build())
                     .setFcmOptions(apnsFcmOptions)
