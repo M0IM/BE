@@ -78,7 +78,7 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
 
         ErrorStatus errorStatus = mapToErrorStatus(errors.values().iterator().next());
 
-        if (errors.size() == 1 || errorStatus == null) {
+        if (errors.size() != 1 || errorStatus == null) {
             errorStatus = ErrorStatus.MULTIPLE_FIELD_VALIDATION_ERROR;
         }
 
