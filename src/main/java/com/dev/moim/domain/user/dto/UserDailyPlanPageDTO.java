@@ -15,15 +15,11 @@ public record UserDailyPlanPageDTO(
         Boolean hasNext,
         List<UserPlanDTO> userPlanDTOList
 ) {
-    public static UserDailyPlanPageDTO toUserMoimPlan(Slice<Plan> userMoimPlanSlice) {
-        List<UserPlanDTO> userMoimPlanDTOList = userMoimPlanSlice.stream()
-                .map(UserPlanDTO::toUserMoimPlan)
-                .toList();
-
+    public static UserDailyPlanPageDTO toUserMoimPlan(Slice<Plan> userMoimPlanSlice, List<UserPlanDTO> userPlanDTOList) {
         return new UserDailyPlanPageDTO(
                 userMoimPlanSlice.isFirst(),
                 userMoimPlanSlice.hasNext(),
-                userMoimPlanDTOList
+                userPlanDTOList
         );
     }
 

@@ -3,6 +3,8 @@ package com.dev.moim.domain.user.dto;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Todo;
+import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PlanType;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,8 @@ public record UserPlanDTO(
         String memo,
         Long moimId,
         String moimName,
-        PlanType planType
+        PlanType planType,
+        MoimRole moimRole
 ) {
     public static UserPlanDTO toIndividualPlan(IndividualPlan individualPlan) {
         return new UserPlanDTO(
@@ -30,11 +33,12 @@ public record UserPlanDTO(
                 individualPlan.getMemo(),
                 null,
                 null,
-                INDIVIDUAL_PLAN
+                INDIVIDUAL_PLAN,
+                null
         );
     }
 
-    public static UserPlanDTO toUserMoimPlan(Plan plan) {
+    public static UserPlanDTO toUserMoimPlan(Plan plan, UserMoim userMoim) {
         return new UserPlanDTO(
                 plan.getId(),
                 plan.getTitle(),
@@ -44,7 +48,8 @@ public record UserPlanDTO(
                 null,
                 plan.getMoim().getId(),
                 plan.getMoim().getName(),
-                MOIM_PLAN
+                MOIM_PLAN,
+                userMoim.getMoimRole()
         );
     }
 
@@ -58,7 +63,8 @@ public record UserPlanDTO(
                 null,
                 todo.getMoim().getId(),
                 todo.getMoim().getName(),
-                TODO_PLAN
+                TODO_PLAN,
+                null
         );
     }
 
@@ -80,7 +86,8 @@ public record UserPlanDTO(
                 memo,
                 moimId,
                 moimName,
-                planType
+                planType,
+                null
         );
     }
 }
