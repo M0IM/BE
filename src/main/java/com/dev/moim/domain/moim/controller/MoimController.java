@@ -254,4 +254,14 @@ public class MoimController {
         moimCommandService.findMyRequestMoimsConfirm(user, moimId);
         return BaseResponse.onSuccess("모임 신청 확인하는 것을 없애는 데 성공 하였습니다.");
     }
+
+    @Operation(summary = "모임 탈퇴 시키기 API", description = "모임에서 탈퇴시킵니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @DeleteMapping("/moims/expel")
+    public BaseResponse<String> moimExpel(@AuthUser User user, @RequestBody MoimExpelRequestDTO moimExpelRequestDTO) {
+        moimCommandService.moimExpel(user, moimExpelRequestDTO);
+        return BaseResponse.onSuccess("모임 탈퇴 시키기에 성공하였습니다.");
+    }
 }

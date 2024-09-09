@@ -245,6 +245,23 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         userMoim.confirm();
     }
 
+    @Override
+    public void moimExpel(User user, MoimExpelRequestDTO moimExpelRequestDTO) {
+        Moim moim = moimRepository.findById(moimExpelRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+
+        UserMoim ownerMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        if (!ownerMoim.getMoimRole().equals(MoimRole.OWNER)) {
+            throw new MoimException(ErrorStatus.USER_NOT_MOIM_ADMIN);
+        }
+
+        User target = userRepository.findById(moimExpelRequestDTO.targetId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+
+        UserMoim targetMoim = userMoimRepository.findByUserAndMoim(target, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        userMoimRepository.delete(targetMoim);
+    }
+
     private String imageNullProcess(String imageKeyName) {
         return imageKeyName == null || imageKeyName.isEmpty() || imageKeyName.isBlank() ? null : s3Service.generateStaticUrl(imageKeyName);
     }

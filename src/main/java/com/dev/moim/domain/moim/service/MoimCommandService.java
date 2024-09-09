@@ -23,4 +23,6 @@ public interface MoimCommandService {
     void changeMoimLeader(User user, @Valid ChangeMoimLeaderRequestDTO changeMoimLeaderRequestDTO);
 
     void findMyRequestMoimsConfirm(User user, Long moimId);
+
+    void moimExpel(User user, MoimExpelRequestDTO moimExpelRequestDTO);
 }
