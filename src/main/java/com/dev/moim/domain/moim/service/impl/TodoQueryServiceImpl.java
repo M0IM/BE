@@ -145,7 +145,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
         List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
                 .map(todo -> {
                     Long writerId = todo.getWriter().getId();
-                    UserMoim userMoim = userMoimMap.get(writerId);
+                    Optional<UserMoim> userMoim = Optional.ofNullable(userMoimMap.get(writerId));
                     return TodoDTO.forMoimAdmins(todo, userMoim);
                 })
                 .toList();
