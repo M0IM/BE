@@ -116,7 +116,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             UserMoim owner = ownerByMoim.get();
             if (owner.getUser().getIsPushAlarm() && (user != owner.getUser())) {
                 alarmService.saveAlarm(user, owner.getUser(), owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-                fcmService.sendNotification(owner.getUser(), owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.");
+                fcmService.sendPushNotification(owner.getUser(), owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", owner.getUserProfile().getName()+"님이 모임을 탈퇴하셨습니다.", AlarmDetailType.MOIM);
             }
         }
 
@@ -163,7 +163,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             User realOwner = owner.get().getUser();
             if (realOwner.getIsPushAlarm() && user != realOwner) {
                 alarmService.saveAlarm(user, realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-                fcmService.sendNotification(realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.");
+                fcmService.sendPushNotification(realOwner, "모임 가입 신청이 들어왔습니다.", "["+moim.getName()+"]에 모임 가입 신청이 들어왔습니다.", AlarmDetailType.MOIM);
             }
         }
 
@@ -186,12 +186,12 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         if (user.getIsPushAlarm() && user != owner) {
             alarmService.saveAlarm(owner, user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-            fcmService.sendNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다");
+            fcmService.sendPushNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmDetailType.MOIM);
         }
 
         admins.stream().filter(admin -> !admin.equals(owner) && admin.getIsPushAlarm()).forEach(admin -> {
             alarmService.saveAlarm(owner, admin, moim.getName() + " 모임에 참여되었습니다", moim.getName() + "에 참여되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-            fcmService.sendNotification(admin,  moim.getName() + " 모임에 참여하었습니다", moim.getName() + "에 참여하었습니다");
+            fcmService.sendPushNotification(admin,  moim.getName() + " 모임에 참여하었습니다", moim.getName() + "에 참여하었습니다", AlarmDetailType.MOIM);
         });
     }
 
@@ -221,7 +221,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         if (user.getIsPushAlarm() && owner.get() != user) {
             alarmService.saveAlarm(owner.get(), user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-            fcmService.sendNotification(user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.");
+            fcmService.sendPushNotification(user, moim.getName()  + " 의 모임에 반려되셨습니다", moim.getName() + "에게 반려 되셨습니다.", AlarmDetailType.MOIM);
         }
     }
 

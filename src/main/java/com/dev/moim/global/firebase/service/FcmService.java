@@ -31,8 +31,8 @@ public class FcmService {
         List<User> users = userQueryService.findAllUser();
         users.forEach(user -> {
             if (user.getIsEventAlarm()) {
-                alarmService.saveAlarm(owner, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, null, null, null, null);
-                sendNotification(user, eventDTO.title(), eventDTO.content());
+                alarmService.saveAlarm(owner, user, eventDTO.title(), eventDTO.content(), AlarmType.EVENT, AlarmDetailType.EVENT, null, null, null);
+                sendPushNotification(user, eventDTO.title(), eventDTO.content(), AlarmDetailType.EVENT);
             }
         });
     }
