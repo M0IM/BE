@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.*;
@@ -125,9 +126,10 @@ public class MoimController {
     public BaseResponse<MoimJoinRequestListDTO> findMyRequestMoims(
             @AuthUser User user,
             @RequestParam(name = "cursor") @CheckCursorValidation Long cursor,
-            @RequestParam(name = "take") @CheckTakeValidation Integer take
+            @RequestParam(name = "take") @CheckTakeValidation Integer take,
+            @RequestParam(name = "moimRequestJoin") MoimRequestJoin moimRequestJoin
     ) {
-        MoimJoinRequestListDTO moimJoinRequestListDTO = moimQueryService.findMyRequestMoims(user, cursor, take);
+        MoimJoinRequestListDTO moimJoinRequestListDTO = moimQueryService.findMyRequestMoims(user, cursor, take, moimRequestJoin);
         return BaseResponse.onSuccess(moimJoinRequestListDTO);
     }
 

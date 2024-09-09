@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
@@ -233,13 +234,19 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take) {
+    public MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take, MoimRequestJoin moimRequestJoin) {
 
         if (cursor == 1) {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<JoinRequestDTO> joinRequestDTOSlice = userMoimRepository.findMyRequestMoims(user, cursor, PageRequest.of(0, take));
+        Slice<JoinRequestDTO> joinRequestDTOSlice;
+        if (moimRequestJoin.equals(MoimRequestJoin.ALL)) {
+            joinRequestDTOSlice = userMoimRepository.findMyRequestMoims(user, cursor, PageRequest.of(0, take));
+        } else {
+            JoinStatus joinStatus = JoinStatus.valueOf(moimRequestJoin.toString());
+            joinRequestDTOSlice = userMoimRepository.findMyRequestMoimsWithJoinStatus(user, cursor, joinStatus, PageRequest.of(0, take));
+        }
 
 
         List<MoimJoinRequestDTO> moimJoinRequestDTOList = joinRequestDTOSlice.map((j) -> {

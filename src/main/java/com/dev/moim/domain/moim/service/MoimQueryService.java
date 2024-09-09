@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
@@ -33,7 +34,7 @@ public interface MoimQueryService {
 
     Long findMoimOwner(Long moimId);
 
-    MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take);
+    MoimJoinRequestListDTO findMyRequestMoims(User user, Long cursor, Integer take, MoimRequestJoin moimRequestJoin);
 
     boolean existsByMoimId(Long moimId);
 

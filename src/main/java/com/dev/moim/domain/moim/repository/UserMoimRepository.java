@@ -9,6 +9,7 @@ import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -86,4 +87,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
             @Param("joinStatus") JoinStatus joinStatus,
             @Param("cursor") Long cursor,
             Pageable pageable);
+
+    @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.joinStatus = :joinStatus and um.id < :cursor order by um.id desc")
+    Slice<JoinRequestDTO> findMyRequestMoimsWithJoinStatus(User user, Long cursor, JoinStatus joinStatus, PageRequest of);
 }
