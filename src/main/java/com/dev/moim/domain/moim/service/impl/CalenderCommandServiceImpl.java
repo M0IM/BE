@@ -63,7 +63,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         if (request.schedules() != null && !request.schedules().isEmpty()) {
             request.schedules().forEach(scheduleDTO -> {
                 Schedule schedule = Schedule.builder()
-                        .content(scheduleDTO.title())
+                        .title(scheduleDTO.title())
                         .startTime(scheduleDTO.startTime())
                         .build();
                 plan.addSchedule(schedule);
@@ -117,7 +117,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
 
         List<Schedule> scheduleList = request.schedules().stream()
                 .map(schedule -> Schedule.builder()
-                        .content(schedule.title())
+                        .title(schedule.title())
                         .startTime(schedule.startTime())
                         .plan(plan)
                         .build())
