@@ -12,7 +12,7 @@ public record ScheduleListDTO(
                 .map(schedule -> new ScheduleGetDTO(
                         schedule.getId(),
                         schedule.getStartTime(),
-                        schedule.getContent()
+                        schedule.getTitle()
                 )).toList();
 
         return new ScheduleListDTO(

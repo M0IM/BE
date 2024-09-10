@@ -32,7 +32,7 @@ public class Schedule extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    private String title;
 
     @Column(name = "start_time")
     private LocalTime startTime;

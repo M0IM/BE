@@ -5,6 +5,6 @@ import java.time.LocalTime;
 public record ScheduleGetDTO(
         Long scheduleId,
         LocalTime startTime,
-        String content
+        String title
 ) {
 }
