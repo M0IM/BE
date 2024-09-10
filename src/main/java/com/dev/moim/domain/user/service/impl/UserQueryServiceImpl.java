@@ -74,7 +74,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
         int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
 
-        return ProfileDetailDTO.from(user, userProfile, userProfile.getImageUrl(), participateMoimCnt);
+        return ProfileDetailDTO.from(user, userProfile, participateMoimCnt);
     }
 
     @Override

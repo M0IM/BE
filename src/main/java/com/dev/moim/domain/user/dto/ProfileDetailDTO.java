@@ -17,10 +17,10 @@ public record ProfileDetailDTO(
         int participateMoimCnt,
         String introduction
 ) {
-        public static ProfileDetailDTO from(User user, UserProfile userProfile, String imageUrl, int participateMoimCnt) {
+        public static ProfileDetailDTO from(User user, UserProfile userProfile, int participateMoimCnt) {
                 return new ProfileDetailDTO(
                         user.getId(),
-                        imageUrl,
+                        userProfile.getImageUrl()!= null && !userProfile.getImageUrl().isEmpty() ? userProfile.getImageUrl() : null,
                         userProfile.getName(),
                         userProfile.getResidence(),
                         user.getBirth(),
