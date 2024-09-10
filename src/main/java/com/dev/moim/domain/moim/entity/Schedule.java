@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -35,7 +35,7 @@ public class Schedule extends BaseEntity {
     private String content;
 
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalTime startTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")

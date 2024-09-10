@@ -1,10 +1,10 @@
 package com.dev.moim.domain.moim.dto.calender;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record ScheduleGetDTO(
         Long scheduleId,
-        LocalDateTime startTime,
+        LocalTime startTime,
         String content
 ) {
 }

@@ -15,16 +15,17 @@ public record PlanDetailDTO(
         String locationDetail,
         String cost,
         long participant,
-        List<ScheduleCreateDTO> schedules,
+        List<ScheduleGetDTO> schedules,
         boolean isParticipant
 ) {
 
     public static PlanDetailDTO from(Plan plan, long participant, List<Schedule> scheduleList, Boolean isParticipant) {
 
-        List<ScheduleCreateDTO> scheduleCreateDTOList = scheduleList.stream()
-                .map(schedule -> new ScheduleCreateDTO(
-                        schedule.getContent(),
-                        schedule.getStartTime()
+        List<ScheduleGetDTO> scheduleGetDTOList = scheduleList.stream()
+                .map(schedule -> new ScheduleGetDTO(
+                        schedule.getId(),
+                        schedule.getStartTime(),
+                        schedule.getContent()
                 )).toList();
 
         return new PlanDetailDTO(
@@ -36,7 +37,7 @@ public record PlanDetailDTO(
                 plan.getLocationDetail(),
                 plan.getCost(),
                 participant,
-                scheduleCreateDTOList,
+                scheduleGetDTOList,
                 isParticipant
         );
     }

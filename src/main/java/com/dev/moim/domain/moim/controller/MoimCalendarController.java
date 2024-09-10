@@ -69,8 +69,7 @@ public class MoimCalendarController {
     public BaseResponse<PlanDetailDTO> getPlanDetails(
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
-            @PlanValidation @PathVariable Long planId,
-            @Parameter(description = "표시할 일정 스케줄 개수", example = "5") @RequestParam(defaultValue = "5") int scheduleCntLimit
+            @PlanValidation @PathVariable Long planId
     ) {
         return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, planId));
     }
