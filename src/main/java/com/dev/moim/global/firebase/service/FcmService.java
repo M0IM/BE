@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.user.dto.EventDTO;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
+import com.dev.moim.global.error.ExceptionAdvice;
 import com.dev.moim.global.error.feign.dto.DiscordMessage;
 import com.dev.moim.global.error.feign.service.DiscordClient;
 import com.google.firebase.messaging.*;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,21 +87,27 @@ public class FcmService {
             } catch (FirebaseMessagingException e) {
                 userCommandService.notDeadLockFcmSignOut(receiver);
                 if (!Arrays.asList(environment.getActiveProfiles()).contains("local")) {
-                    discordClient.sendAlarm(createMessage(receiver, title, body));
+                    discordClient.sendAlarm(createMessage(receiver, title, e));
                 }
             }
         }
     }
 
-    private DiscordMessage createMessage(User receiver, String title, String content) {
+    private DiscordMessage createMessage(User receiver, String title, Exception e) {
         return DiscordMessage.builder()
                 .content("# 🚨 에러 발생 비이이이이사아아아앙")
                 .embeds(
                         List.of(
                                 DiscordMessage.Embed.builder()
                                         .title("ℹ️ 에러 정보")
-                                        .description(String.format("%d가 유효하지 않은 fcm token값을 가지고 있습니다.", receiver.getId()))
+                                        .description(String.format("%d가 유효하지 않은 fcm token값을 가지고 있습니다. \n 이유: %s\n", receiver.getId(), getStackTrace(e).substring(0, 1000)))
                                         .build()))
                 .build();
+    }
+
+    private String getStackTrace(Exception e) {
+        StringWriter stringWriter = new StringWriter();
+        e.printStackTrace(new PrintWriter(stringWriter));
+        return stringWriter.toString();
     }
 }

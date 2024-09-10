@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import jakarta.validation.Valid;
 
 public interface MoimCommandService {
@@ -25,4 +26,6 @@ public interface MoimCommandService {
     void findMyRequestMoimsConfirm(User user, Long moimId);
 
     void moimExpel(User user, Long userId, Long moimId);
+
+    MoimRole moimsMyRole(User user, Long moimId);
 }

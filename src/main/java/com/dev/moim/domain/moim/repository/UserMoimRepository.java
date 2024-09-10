@@ -43,12 +43,12 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
 
-    @Query("SELECT COUNT(um) > 0 " +
+    @Query("SELECT um " +
             "FROM UserMoim um " +
             "WHERE um.user = :user " +
             "AND um.moim = :moim " +
             "AND um.joinStatus IN :joinStatuses")
-    Boolean findByUserAndMoimAndJoinRequest(User user, Moim moim, List<JoinStatus> joinStatuses);
+    List<UserMoim> findByUserAndMoimAndJoinRequest(User user, Moim moim, List<JoinStatus> joinStatuses);
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.id < :cursor order by um.id desc")
     Slice<JoinRequestDTO> findMyRequestMoims(User user, Long cursor, Pageable pageable);

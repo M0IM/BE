@@ -28,6 +28,7 @@ import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,9 +141,9 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     public void joinMoim(User user, Long moimId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        Boolean isRequest = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+        List<UserMoim> userMoims = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
 
-        if (isRequest) {
+        if (!userMoims.isEmpty()) {
             throw new MoimException(ErrorStatus.ALREADY_REQUEST);
         }
 
@@ -260,6 +261,14 @@ public class MoimCommandServiceImpl implements MoimCommandService {
         UserMoim targetMoim = userMoimRepository.findByUserAndMoim(target, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
         userMoimRepository.delete(targetMoim);
+    }
+
+    @Override
+    public MoimRole moimsMyRole(User user, Long moimId) {
+
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+
+        return userMoim.getMoimRole();
     }
 
     private String imageNullProcess(String imageKeyName) {
