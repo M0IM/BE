@@ -165,6 +165,21 @@ public class MoimController {
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
+    @Operation(summary = "모임 멤버 API (모임장 제외)", description = "모임장을 제외한 모임 멤버들을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/{moimId}/members/owner")
+    public BaseResponse<UserPreviewListDTO> getMoimMembersExcludeOwner(
+            @AuthUser User user,
+            @CheckOwnerValidation @UserMoimValidaton @PathVariable Long moimId,
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take,
+            @RequestParam(name = "search") String search) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembersExcludeOwner(moimId, cursor, take, search);
+        return BaseResponse.onSuccess(userPreviewListDTO);
+    }
+
     @Operation(summary = "모임 탈퇴 하기 API", description = "모임을 탈퇴 합니다. _by 제이미_")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
