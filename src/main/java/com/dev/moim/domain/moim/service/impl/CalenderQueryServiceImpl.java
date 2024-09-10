@@ -60,8 +60,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
 
             LocalDateTime dayStart = YearMonth.of(year, month).atDay(day).atStartOfDay();
             LocalDateTime dayEnd = dayStart.plusDays(1).minusNanos(1);
-            log.info("비교 시작 일 : {}", dayStart);
-            log.info("비교 종료 일 : {}", dayEnd);
+
             int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(moimId, dayStart, dayEnd);
 
             List<MoimPlanDTO> planList = dayPlans.stream()

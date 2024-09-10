@@ -1,9 +1,12 @@
 package com.dev.moim.domain.moim.dto.calender;
 
-import java.time.LocalDateTime;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.time.LocalTime;
 
 public record ScheduleCreateDTO(
         String title,
-        LocalDateTime startTime
+        @Schema(type = "string", example = "12:00:00")
+        LocalTime startTime
 ) {
 }
