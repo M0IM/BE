@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PRIVATE;
 import static com.dev.moim.domain.moim.entity.enums.ProfileStatus.PUBLIC;
@@ -70,14 +69,11 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        Optional.ofNullable(request.imageKey())
-                .map(s3Service::generateStaticUrl)
-                .ifPresent(userProfile::updateImageUrl);
-
         userProfile.updateUser(
                 request.nickname(),
                 request.residence(),
-                request.introduction()
+                request.introduction(),
+                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null
         );
 
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
