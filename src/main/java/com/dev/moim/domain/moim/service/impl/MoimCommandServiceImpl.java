@@ -141,9 +141,9 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     public void joinMoim(User user, Long moimId) {
         Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
-        Boolean isRequest = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
+        List<UserMoim> userMoims = userMoimRepository.findByUserAndMoimAndJoinRequest(user, moim, List.of(JoinStatus.LOADING, JoinStatus.COMPLETE));
 
-        if (isRequest) {
+        if (!userMoims.isEmpty()) {
             throw new MoimException(ErrorStatus.ALREADY_REQUEST);
         }
 
