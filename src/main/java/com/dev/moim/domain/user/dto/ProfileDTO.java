@@ -14,7 +14,7 @@ public record ProfileDTO(
         return new ProfileDTO(
                 user.getId(),
                 userProfile.getName(),
-                userProfile.getImageUrl(),
+                userProfile.getImageUrl()!= null && !userProfile.getImageUrl().isEmpty() ? userProfile.getImageUrl() : null,
                 user.getProvider()
         );
     }
