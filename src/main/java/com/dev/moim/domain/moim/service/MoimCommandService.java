@@ -24,5 +24,5 @@ public interface MoimCommandService {
 
     void findMyRequestMoimsConfirm(User user, Long moimId);
 
-    void moimExpel(User user, MoimExpelRequestDTO moimExpelRequestDTO);
+    void moimExpel(User user, Long userId, Long moimId);
 }
