@@ -36,7 +36,7 @@ public class CheckOwnerValidator implements ConstraintValidator<CheckOwnerValida
 
         if (userMoim.isEmpty()) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(INVALID_MOIM_MEMBER.toString())
+            context.buildConstraintViolationWithTemplate(INVALID_MOIM_MEMBER.getMessage())
                     .addPropertyNode("userId")
                     .addPropertyNode("moimId")
                     .addConstraintViolation();
@@ -46,7 +46,7 @@ public class CheckOwnerValidator implements ConstraintValidator<CheckOwnerValida
                 return true;
             } else {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(MOIM_NOT_ADMIN.toString())
+                context.buildConstraintViolationWithTemplate(MOIM_NOT_ADMIN.getMessage())
                         .addPropertyNode("userId")
                         .addPropertyNode("moimId")
                         .addConstraintViolation();
