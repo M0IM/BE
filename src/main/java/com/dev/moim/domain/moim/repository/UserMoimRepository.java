@@ -96,4 +96,7 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Modifying
     @Query("delete from UserMoim um where um.confirm = true and um.joinStatus not in :joinStatusList")
     void deleteAllByConfirmUserMoim(List<JoinStatus> joinStatusList);
+
+    @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList")
+    List<UserMoim> findAllByUserIdAndMoimIdList(Long userId, List<Long> moimIdList);
 }

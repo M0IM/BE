@@ -82,4 +82,8 @@ public class UserMoim extends BaseEntity {
     public void confirm () {
         this.confirm = true;
     }
+
+    public void updateUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
 }

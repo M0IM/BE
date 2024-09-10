@@ -50,6 +50,19 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getProfile(user));
     }
 
+    @Operation(summary = "유저 프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+    })
+    @PostMapping("/profile")
+    public BaseResponse<String> createProfile(
+            @AuthUser User user,
+            @Valid @RequestBody CreateProfileDTO request
+    ) {
+        userCommandService.createProfile(user, request);
+        return BaseResponse.onSuccess("유저 프로필 생성 성공");
+    }
+
     @Operation(summary = "유저 프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),

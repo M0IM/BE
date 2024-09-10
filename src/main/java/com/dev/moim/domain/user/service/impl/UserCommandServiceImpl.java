@@ -40,6 +40,31 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final AlarmRepository alarmRepository;
 
     @Override
+    public void createProfile(User user, CreateProfileDTO request) {
+
+        if (request.profileType() == ProfileType.MAIN) {
+            UserProfile mainProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
+                    .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND_MAIN));
+
+            mainProfile.updateProfileType(ProfileType.SUB);
+        }
+
+        UserProfile userProfile = UserProfile.builder()
+                .user(user)
+                .name(request.nickname())
+                .residence(request.residence())
+                .introduction(request.introduction())
+                .imageUrl(request.imageKey() != null && !request.imageKey().isEmpty() ? s3Service.generateStaticUrl(request.imageKey()) : null)
+                .profileType(request.profileType())
+                .build();
+
+        userProfileRepository.save(userProfile);
+
+        userMoimRepository.findAllByUserIdAndMoimIdList(user.getId(), request.targetMoimIdList())
+                .forEach(userMoim -> userMoim.updateUserProfile(userProfile));
+    }
+
+    @Override
     public void updateInfo(User user, UpdateUserInfoDTO request) {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)

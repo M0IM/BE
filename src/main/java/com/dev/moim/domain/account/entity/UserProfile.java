@@ -72,4 +72,8 @@ public class UserProfile extends BaseEntity {
     public void preRemove() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void updateProfileType(ProfileType profileType) {
+        this.profileType = profileType;
+    }
 }
