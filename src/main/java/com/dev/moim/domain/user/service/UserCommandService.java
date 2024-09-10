@@ -5,6 +5,8 @@ import com.dev.moim.domain.user.dto.*;
 
 public interface UserCommandService {
 
+    void createProfile(User user, CreateProfileDTO request);
+
     void updateInfo(User user, UpdateUserInfoDTO request);
 
     AlarmDTO settingPushAlarm(User user);

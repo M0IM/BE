@@ -58,18 +58,19 @@ public class UserProfile extends BaseEntity {
         this.user = user;
     }
 
-    public void updateUser(String name, String residence, String introduction) {
+    public void updateUser(String name, String residence, String introduction, String imageUrl) {
         this.name = name;
         this.residence = residence;
         this.introduction = introduction;
-    }
-
-    public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
     @PreRemove
     public void preRemove() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void updateProfileType(ProfileType profileType) {
+        this.profileType = profileType;
     }
 }
