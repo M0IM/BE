@@ -138,12 +138,14 @@ public class TodoCommandServiceImpl implements TodoCommandService {
             }
         }
 
-        List<TodoImage> newImageList = request.imageKeyList().stream()
-                .map(imageKey -> TodoImage.builder()
-                        .imageUrl(s3Service.generateStaticUrl(imageKey))
-                        .todo(todo)
-                        .build())
-                .toList();
+        List<TodoImage> newImageList = (request.imageKeyList() != null) ?
+                request.imageKeyList().stream()
+                        .map(imageKey -> TodoImage.builder()
+                                .imageUrl(s3Service.generateStaticUrl(imageKey))
+                                .todo(todo)
+                                .build())
+                        .toList()
+                : null;
 
         todo.updateTodo(
                 request.title(),
