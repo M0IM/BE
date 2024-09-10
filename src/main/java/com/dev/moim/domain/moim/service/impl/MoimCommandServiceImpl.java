@@ -246,8 +246,8 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public void moimExpel(User user, MoimExpelRequestDTO moimExpelRequestDTO) {
-        Moim moim = moimRepository.findById(moimExpelRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
+    public void moimExpel(User user, Long userId, Long moimId) {
+        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
 
         UserMoim ownerMoim = userMoimRepository.findByUserAndMoim(user, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
@@ -255,7 +255,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
             throw new MoimException(ErrorStatus.USER_NOT_MOIM_ADMIN);
         }
 
-        User target = userRepository.findById(moimExpelRequestDTO.targetId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+        User target = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
 
         UserMoim targetMoim = userMoimRepository.findByUserAndMoim(target, moim).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 

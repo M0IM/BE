@@ -274,9 +274,9 @@ public class MoimController {
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @DeleteMapping("/moims/expel")
-    public BaseResponse<String> moimExpel(@AuthUser User user, @RequestBody MoimExpelRequestDTO moimExpelRequestDTO) {
-        moimCommandService.moimExpel(user, moimExpelRequestDTO);
+    @DeleteMapping("/users/{userId}/moims/{moimId}/expel")
+    public BaseResponse<String> moimExpel(@AuthUser User user, @PathVariable Long userId, @PathVariable Long moimId) {
+        moimCommandService.moimExpel(user, userId, moimId);
         return BaseResponse.onSuccess("모임 탈퇴 시키기에 성공하였습니다.");
     }
 }
