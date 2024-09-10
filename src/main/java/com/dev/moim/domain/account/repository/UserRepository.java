@@ -69,4 +69,15 @@ public interface UserRepository extends JpaRepository<User, Long>, CustomUserRep
     void updateLastReadTime(User user, LocalDateTime lastReadTime);
 
     List<User> findAllByIsPushAlarmTrueAndDeviceIdNotNull();
+
+    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) " +
+            "from UserMoim um " +
+            "join um.userProfile up " +
+            "where um.moim.id = :moimId " +
+            "and um.joinStatus = :joinStatus " +
+            "and um.moimRole <> 'OWNER' " +
+            "and um.id > :cursor " +
+            "and up.name like %:searching% " +
+            "order by um.id")
+    Slice<UserProfileDTO> findUserByMoimIdExcludeOwner(Long moimId, String searching, JoinStatus joinStatus, Long cursor, Pageable pageable);
 }
