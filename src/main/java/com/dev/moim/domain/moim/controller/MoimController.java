@@ -279,4 +279,14 @@ public class MoimController {
         moimCommandService.moimExpel(user, userId, moimId);
         return BaseResponse.onSuccess("모임 탈퇴 시키기에 성공하였습니다.");
     }
+
+    @Operation(summary = "자신의 role 반환 API", description = "자신의 role 반환합니다. _by 제이미_")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @GetMapping("/moims/{moimId}/my-roles")
+    public BaseResponse<String> moimsMyRole(@AuthUser User user, @PathVariable Long moimId) {
+        MoimRole role = moimCommandService.moimsMyRole(user, moimId);
+        return BaseResponse.onSuccess(role.toString());
+    }
 }
