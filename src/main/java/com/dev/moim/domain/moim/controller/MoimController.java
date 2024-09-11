@@ -285,8 +285,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/my-roles")
-    public BaseResponse<String> moimsMyRole(@AuthUser User user, @PathVariable Long moimId) {
-        MoimRole role = moimCommandService.moimsMyRole(user, moimId);
-        return BaseResponse.onSuccess(role.toString());
+    public BaseResponse<MoimRoleResponse> moimsMyRole(@AuthUser User user, @PathVariable Long moimId) {
+        MoimRoleResponse moimRoleResponse = moimCommandService.moimsMyRole(user, moimId);
+        return BaseResponse.onSuccess(moimRoleResponse);
     }
 }

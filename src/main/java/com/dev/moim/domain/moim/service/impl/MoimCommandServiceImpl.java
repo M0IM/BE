@@ -264,11 +264,11 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public MoimRole moimsMyRole(User user, Long moimId) {
+    public MoimRoleResponse moimsMyRole(User user, Long moimId) {
 
         UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
-        return userMoim.getMoimRole();
+        return MoimRoleResponse.toMoimRoleResponse(userMoim.getMoimRole(), userMoim.getJoinStatus());
     }
 
     private String imageNullProcess(String imageKeyName) {
