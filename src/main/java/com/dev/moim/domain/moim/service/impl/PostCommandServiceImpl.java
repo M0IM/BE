@@ -272,10 +272,10 @@ public class PostCommandServiceImpl implements PostCommandService {
             if (comment.getChildren().isEmpty()) {
                 // 자식이 없는 댓글일 시
                 commentRepository.delete(comment);
+            } else {
+                comment.delete();
             }
         }
-
-        comment.delete();
     }
 
     @Override
