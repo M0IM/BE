@@ -262,6 +262,19 @@ public class PostCommandServiceImpl implements PostCommandService {
         if (!user.equals(comment.getUserMoim().getUser())){
             throw new PostException(ErrorStatus.NOT_MY_POST);
         }
+
+
+        if (comment.getParent() != null) {
+            // 대댓 일시
+            commentRepository.delete(comment);
+        } else {
+            // 댓글 일시
+            if (comment.getChildren().isEmpty()) {
+                // 자식이 없는 댓글일 시
+                commentRepository.delete(comment);
+            }
+        }
+
         comment.delete();
     }
 
