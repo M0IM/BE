@@ -27,5 +27,5 @@ public interface MoimCommandService {
 
     void moimExpel(User user, Long userId, Long moimId);
 
-    MoimRole moimsMyRole(User user, Long moimId);
+    MoimRoleResponse moimsMyRole(User user, Long moimId);
 }
