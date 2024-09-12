@@ -1,6 +1,7 @@
 package com.dev.moim.domain.user.controller;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanDetailDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
@@ -78,6 +79,22 @@ public class UserController {
             @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(userQueryService.getUserProfileList(user, cursor, take));
+    }
+
+    @Operation(summary = "(멀티 프로필 도입 ver) 특정 유저 프로필 사용하는 모임 리스트 조회", description = "유저의 특정 프로필을 사용하는 모임 리스트를 조회하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "USERPROFILE_003", description = "해당 유저의 프로필이 아닙니다."),
+    })
+    @GetMapping("/profile/{profileId}/target-moims")
+    public BaseResponse<MoimPreviewListDTO> getUserProfileTargetMoimList(
+            @AuthUser User user,
+            @ProfileOwnerValidation @PathVariable Long profileId,
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(userQueryService.getUserProfileTargetMoimList(profileId, cursor, take));
     }
 
     // 유저 멀티 프로필 수정

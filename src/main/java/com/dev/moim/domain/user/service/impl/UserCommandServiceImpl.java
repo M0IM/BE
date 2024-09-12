@@ -52,6 +52,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = UserProfile.builder()
                 .user(user)
                 .name(request.nickname())
+                .residence(request.residence())
                 .introduction(request.introduction())
                 .imageUrl(request.imageKey() != null && !request.imageKey().isEmpty() ? s3Service.generateStaticUrl(request.imageKey()) : null)
                 .profileType(request.profileType())

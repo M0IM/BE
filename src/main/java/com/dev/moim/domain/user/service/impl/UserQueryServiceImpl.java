@@ -7,6 +7,8 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
+import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -79,6 +81,24 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .toList();
 
         return ProfilePageDTO.toProfileListDTO(profileDTOList, userProfileSlice);
+    }
+
+    @Override
+    public MoimPreviewListDTO getUserProfileTargetMoimList(Long profileId, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == 1) ? 0L : cursor;
+        Pageable pageable = PageRequest.of(0, take);
+
+        Slice<UserMoim> userMoimSlice = userMoimRepository.findAllByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE, startCursor, pageable);
+        List<MoimPreviewDTO> moimPreviewDTOList = userMoimSlice.stream().map(userMoim -> {
+                    return MoimPreviewDTO.toMoimPreviewDTO(userMoim.getMoim(), userMoim.getMoim().getImageUrl()!= null && !userMoim.getMoim().getImageUrl().isEmpty() ? userMoim.getMoim().getImageUrl() : null);
+                }).toList();
+
+        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
+                ? userMoimSlice.getContent().get(userMoimSlice.getNumberOfElements() - 1).getId()
+                : null;
+
+        return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, userMoimSlice.hasNext());
     }
 
     @Override

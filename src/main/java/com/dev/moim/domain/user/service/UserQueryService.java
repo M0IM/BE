@@ -3,6 +3,7 @@ package com.dev.moim.domain.user.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
+import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
@@ -17,6 +18,8 @@ public interface UserQueryService {
     ProfileDTO getProfile(User user);
 
     ProfilePageDTO getUserProfileList(User user, Long cursor, Integer take);
+
+    MoimPreviewListDTO getUserProfileTargetMoimList(Long profileId, Long cursor, Integer take);
 
     ProfileDetailDTO getDetailProfile(Long userId);
 

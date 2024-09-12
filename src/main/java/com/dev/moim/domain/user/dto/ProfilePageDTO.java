@@ -6,7 +6,7 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 public record ProfilePageDTO(
-        List<?> list,
+        List<ProfileDTO> profileList,
         Long nextCursor,
         Boolean hasNext
 ) {
