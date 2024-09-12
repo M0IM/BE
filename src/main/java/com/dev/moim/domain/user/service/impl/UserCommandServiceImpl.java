@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.*;
@@ -51,7 +52,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = UserProfile.builder()
                 .user(user)
                 .name(request.nickname())
-                .residence(request.residence())
                 .introduction(request.introduction())
                 .imageUrl(request.imageKey() != null && !request.imageKey().isEmpty() ? s3Service.generateStaticUrl(request.imageKey()) : null)
                 .profileType(request.profileType())
@@ -64,14 +64,36 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public void updateInfo(User user, UpdateUserInfoDTO request) {
+    public void updateUserProfile(User user, Long profileId, UpdateMultiProfileDTO request) {
+
+        UserProfile userProfile = userProfileRepository.findById(profileId)
+                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
+
+        userProfile.updateUserProfile(
+                request.nickname(),
+                request.introduction(),
+                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null
+        );
+
+        userMoimRepository.findAllByUserIdAndMoimIdListAndJoinStatus(user.getId(), request.targetMoimIdList(), JoinStatus.COMPLETE)
+                .forEach(userMoim -> userMoim.updateUserProfile(userProfile));
+    }
+
+    @Override
+    public void deleteUserProfile(Long profileId) {
+        userProfileRepository.deleteById(profileId);
+    }
+
+    @Override
+    public void updateUserInfo(User user, UpdateUserInfoDTO request) {
+
+        user.updateResidence(request.residence());
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        userProfile.updateUser(
+        userProfile.updateUserProfile(
                 request.nickname(),
-                request.residence(),
                 request.introduction(),
                 request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null
         );
@@ -79,6 +101,11 @@ public class UserCommandServiceImpl implements UserCommandService {
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
         );
+    }
+
+    @Override
+    public void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request) {
+        user.updateUserInfo(request.residence(), request.gender(), request.birth());
     }
 
     @Override

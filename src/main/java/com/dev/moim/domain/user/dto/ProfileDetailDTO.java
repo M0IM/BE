@@ -22,7 +22,7 @@ public record ProfileDetailDTO(
                         user.getId(),
                         userProfile.getImageUrl()!= null && !userProfile.getImageUrl().isEmpty() ? userProfile.getImageUrl() : null,
                         userProfile.getName(),
-                        userProfile.getResidence(),
+                        user.getResidence(),
                         user.getBirth(),
                         userProfile.getCreatedAt(),
                         user.getRating(),

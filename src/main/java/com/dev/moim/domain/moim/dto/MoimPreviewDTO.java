@@ -4,7 +4,6 @@ import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record MoimPreviewDTO(
         Long moimId,

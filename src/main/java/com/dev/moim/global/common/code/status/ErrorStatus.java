@@ -89,6 +89,9 @@ public enum ErrorStatus implements BaseErrorCode {
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
     USER_PROFILE_NOT_FOUND_MAIN(HttpStatus.NOT_FOUND, "USERPROFILE_002", "메인 프로필을 찾을 수 없습니다."),
+    NOT_USER_PROFILE_OWNER(HttpStatus.UNAUTHORIZED, "USERPROFILE_003", "해당 유저의 프로필이 아닙니다."),
+    USER_PROFILE_IN_USE(HttpStatus.FORBIDDEN, "USERPROFILE_004", "해당 프로필을 사용 중인 모임이 있습니다."),
+    CANNOT_DELETE_MAIN_USER_PROFILE(HttpStatus.FORBIDDEN, "USERPROFILE_005", "대표 프로필은 삭제할 수 없습니다. 대표 프로필을 변경해주세요."),
 
     // page 관련
     NOT_VALID_CURSOR(HttpStatus.BAD_REQUEST, "PAGE_001", "커서 값이 유효하지 않습니다."),

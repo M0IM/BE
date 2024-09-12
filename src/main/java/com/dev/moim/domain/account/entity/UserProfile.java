@@ -39,9 +39,6 @@ public class UserProfile extends BaseEntity {
 
     private String imageUrl;
 
-    @Column(nullable = false)
-    private String residence;
-
     private String introduction;
 
     private LocalDateTime deletedAt;
@@ -58,13 +55,6 @@ public class UserProfile extends BaseEntity {
         this.user = user;
     }
 
-    public void updateUser(String name, String residence, String introduction, String imageUrl) {
-        this.name = name;
-        this.residence = residence;
-        this.introduction = introduction;
-        this.imageUrl = imageUrl;
-    }
-
     @PreRemove
     public void preRemove() {
         this.deletedAt = LocalDateTime.now();
@@ -72,5 +62,11 @@ public class UserProfile extends BaseEntity {
 
     public void updateProfileType(ProfileType profileType) {
         this.profileType = profileType;
+    }
+
+    public void updateUserProfile(String nickname, String imageUrl, String introduction) {
+        this.name = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
     }
 }

@@ -99,4 +99,20 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList")
     List<UserMoim> findAllByUserIdAndMoimIdList(Long userId, List<Long> moimIdList);
+
+    @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList AND um.joinStatus = :joinStatus")
+    List<UserMoim> findAllByUserIdAndMoimIdListAndJoinStatus(Long userId, List<Long> moimIdList, JoinStatus joinStatus);
+
+    boolean existsByUserProfileIdAndJoinStatus(Long profileId, JoinStatus joinStatus);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "JOIN FETCH um.moim " +
+            "WHERE um.userProfile.id = :userProfileId AND um.joinStatus = :joinStatus " +
+            "AND um.id > :cursor " +
+            "ORDER BY um.id ASC")
+    Slice<UserMoim> findAllByUserProfileIdAndJoinStatus(
+            @Param("userProfileId") Long userProfileId,
+            @Param("joinStatus") JoinStatus joinStatus,
+            @Param("cursor") Long cursor,
+            Pageable pageable);
 }

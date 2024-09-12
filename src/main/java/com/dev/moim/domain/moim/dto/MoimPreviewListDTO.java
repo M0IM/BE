@@ -1,8 +1,5 @@
 package com.dev.moim.domain.moim.dto;
 
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewDTO;
-import com.dev.moim.domain.moim.dto.post.MoimPostPreviewListDTO;
-
 import java.util.List;
 
 public record MoimPreviewListDTO(

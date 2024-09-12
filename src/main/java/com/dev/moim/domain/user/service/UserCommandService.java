@@ -7,7 +7,13 @@ public interface UserCommandService {
 
     void createProfile(User user, CreateProfileDTO request);
 
-    void updateInfo(User user, UpdateUserInfoDTO request);
+    void updateUserProfile(User user, Long profileId, UpdateMultiProfileDTO request);
+
+    void deleteUserProfile(Long profileId);
+
+    void updateUserInfo(User user, UpdateUserInfoDTO request);
+
+    void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request);
 
     AlarmDTO settingPushAlarm(User user);
 
