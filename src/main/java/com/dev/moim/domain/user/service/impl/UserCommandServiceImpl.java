@@ -7,6 +7,7 @@ import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.*;
@@ -64,7 +65,23 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public void updateInfo(User user, UpdateUserInfoDTO request) {
+    public void updateUserProfile(User user, Long profileId, UpdateMultiProfileDTO request) {
+
+        UserProfile userProfile = userProfileRepository.findById(profileId)
+                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
+
+        userProfile.updateProfile(
+                request.nickname(),
+                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null,
+                request.introduction()
+        );
+
+        userMoimRepository.findAllByUserIdAndMoimIdListAndJoinStatus(user.getId(), request.targetMoimIdList(), JoinStatus.COMPLETE)
+                .forEach(userMoim -> userMoim.updateUserProfile(userProfile));
+    }
+
+    @Override
+    public void updateUserDefaultInfo(User user, UpdateUserInfoDTO request) {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));

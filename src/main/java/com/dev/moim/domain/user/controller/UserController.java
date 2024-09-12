@@ -39,9 +39,11 @@ public class UserController {
     private final ReviewQueryService reviewQueryService;
     private final ReviewCommandService reviewCommandService;
 
+    // 유저 대표 프로필 조회
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다.")
     })
     @GetMapping("/profile")
     public BaseResponse<ProfileDTO> getProfile(
@@ -53,6 +55,7 @@ public class UserController {
     @Operation(summary = "유저 프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
     })
     @PostMapping("/profile")
     public BaseResponse<String> createProfile(
@@ -63,16 +66,39 @@ public class UserController {
         return BaseResponse.onSuccess("유저 프로필 생성 성공");
     }
 
-    @Operation(summary = "유저 프로필 수정", description = "유저의 프로필을 수정하는 기능입니다.")
+    // 유저 프로필 수정
+    // TODO: residence 프로필마다 설정 가능 or default 정보로
+    // TODO: 대표 프로필 설정 여부
+    @Operation(summary = "유저 멀티 프로필 수정", description = "유저의 멀티 프로필을 수정하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "USERPROFILE_003", description = "해당 유저의 프로필이 아닙니다."),
+    })
+    @PutMapping("/profile/{profileId}")
+    public BaseResponse<String> updateUserProfile(
+            @AuthUser User user,
+            @ProfileOwnerValidation @PathVariable Long profileId,
+            @Valid @RequestBody UpdateMultiProfileDTO request
+    ) {
+        userCommandService.updateUserProfile(user, profileId, request);
+        return BaseResponse.onSuccess("멀티 프로필 수정 성공했습니다.");
+    }
+
+    // 유저 기본 정보 수정
+    // TODO: DTO 변경 (성별, 생년월일 필드 추가)
+    // TODO: residence 여기서 수정할지 고려 -> residence User or UserProfile 엔티티 수정
+    @Operation(summary = "유저 프로필 수정", description = "유저의 기본 정보를 수정하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
     })
     @PutMapping("/profile")
-    public BaseResponse<Void> updateProfile(
+    public BaseResponse<Void> updateUserDefaultInfo(
             @AuthUser User user,
             @Valid @RequestBody UpdateUserInfoDTO request
     ) {
-        userCommandService.updateInfo(user, request);
+        userCommandService.updateUserDefaultInfo(user, request);
         return BaseResponse.onSuccess(null);
     }
 
@@ -87,6 +113,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getDetailProfile(user.getId()));
     }
 
+    // TODO: moimId 받는걸로 수정 (해당 모임에서의 프로필 조회)
     @Operation(summary = "멤버 프로필 상세 조회", description = "다른 멤버의 프로필을 상세 조회하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),

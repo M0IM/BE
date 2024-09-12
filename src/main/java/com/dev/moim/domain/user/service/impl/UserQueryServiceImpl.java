@@ -303,6 +303,10 @@ public class UserQueryServiceImpl implements UserQueryService {
         return alarmByUser.size();
     }
 
+    @Override
+    public Optional<UserProfile> findUserProfile(Long profileId) {
+        return userProfileRepository.findById(profileId);
+    }
 }
 
 //    @Override

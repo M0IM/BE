@@ -73,4 +73,10 @@ public class UserProfile extends BaseEntity {
     public void updateProfileType(ProfileType profileType) {
         this.profileType = profileType;
     }
+
+    public void updateProfile(String nickname, String imageUrl, String introduction) {
+        this.name = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
+    }
 }
