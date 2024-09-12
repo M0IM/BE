@@ -85,7 +85,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public void updateUserDefaultInfo(User user, UpdateUserInfoDTO request) {
+    public void updateUserInfo(User user, UpdateUserInfoDTO request) {
 
         user.updateUserInfo(request.gender(), request.birth());
 
@@ -101,6 +101,11 @@ public class UserCommandServiceImpl implements UserCommandService {
         userMoimRepository.findByUserId(user.getId()).forEach(userMoim ->
                 userMoim.updateProfileStatus(request.publicMoimList().contains(userMoim.getMoim().getId()) ? PUBLIC : PRIVATE)
         );
+    }
+
+    @Override
+    public void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request) {
+        user.updateUserInfo(request.gender(), request.birth());
     }
 
     @Override
