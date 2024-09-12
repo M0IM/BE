@@ -102,4 +102,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList AND um.joinStatus = :joinStatus")
     List<UserMoim> findAllByUserIdAndMoimIdListAndJoinStatus(Long userId, List<Long> moimIdList, JoinStatus joinStatus);
+
+    boolean existsByUserProfileIdAndJoinStatus(Long profileId, JoinStatus joinStatus);
 }

@@ -102,6 +102,28 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
+    // 특정 프로필 삭제
+    // TODO: 해당 프로필이 대표 프로필인 경우 처리 -> 현재 : 에러 처리
+    // TODO: 해당 프로필을 사용중인 모임이 있는 경우 처리 -> 현재 : 에러 처리
+    @Operation(summary = "유저 프로필 삭제", description = "유저의 특정 프로필을 삭제하는 기능입니다." +
+            " 대표 프로필이거나 해당 프로필을 사용중인 모임이 있는 경우 삭제 불가능합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "USERPROFILE_003", description = "해당 유저의 프로필이 아닙니다."),
+            @ApiResponse(responseCode = "USERPROFILE_004", description = "해당 프로필을 사용 중인 모임이 있습니다."),
+            @ApiResponse(responseCode = "USERPROFILE_005", description = "대표 프로필은 삭제할 수 없습니다. 대표 프로필을 변경해주세요.")
+    })
+    @DeleteMapping(("/profile/{profileId}"))
+    public BaseResponse<String> deleteUserProfile(
+            @AuthUser User user,
+            @DeletableProfileValidation @PathVariable Long profileId
+    ) {
+        userCommandService.deleteUserProfile(profileId);
+        return BaseResponse.onSuccess("프로필 삭제 성공했습니다.");
+    }
+
+    // TODO: 특정 프로필 상세 조회로 변경
     @Operation(summary = "유저 프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),

@@ -81,6 +81,11 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
+    public void deleteUserProfile(Long profileId) {
+        userProfileRepository.deleteById(profileId);
+    }
+
+    @Override
     public void updateUserDefaultInfo(User user, UpdateUserInfoDTO request) {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)

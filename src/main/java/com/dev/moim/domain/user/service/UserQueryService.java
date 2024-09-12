@@ -60,5 +60,7 @@ public interface UserQueryService {
 
     Optional<UserProfile> findUserProfile(Long profileId);
 
+    boolean existsByUserProfileIdAndJoinStatus(Long profileId);
+
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

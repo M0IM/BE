@@ -307,6 +307,11 @@ public class UserQueryServiceImpl implements UserQueryService {
     public Optional<UserProfile> findUserProfile(Long profileId) {
         return userProfileRepository.findById(profileId);
     }
+
+    @Override
+    public boolean existsByUserProfileIdAndJoinStatus(Long profileId) {
+        return userMoimRepository.existsByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE);
+    }
 }
 
 //    @Override
