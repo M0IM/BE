@@ -52,7 +52,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = UserProfile.builder()
                 .user(user)
                 .name(request.nickname())
-                .residence(request.residence())
                 .introduction(request.introduction())
                 .imageUrl(request.imageKey() != null && !request.imageKey().isEmpty() ? s3Service.generateStaticUrl(request.imageKey()) : null)
                 .profileType(request.profileType())
@@ -88,7 +87,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public void updateUserInfo(User user, UpdateUserInfoDTO request) {
 
-        user.updateUserInfo(request.gender(), request.birth());
+        user.updateUserInfo(request.residence(), request.gender(), request.birth());
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
@@ -106,7 +105,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request) {
-        user.updateUserInfo(request.gender(), request.birth());
+        user.updateUserInfo(request.residence(), request.gender(), request.birth());
     }
 
     @Override

@@ -39,9 +39,6 @@ public class UserProfile extends BaseEntity {
 
     private String imageUrl;
 
-    @Column(nullable = false)
-    private String residence;
-
     private String introduction;
 
     private LocalDateTime deletedAt;

@@ -57,11 +57,11 @@ public class AuthService {
                 .userProfileList(new ArrayList<>())
                 .gender(request.gender())
                 .birth(request.birth())
+                .residence(request.residence())
                 .build();
 
         UserProfile userProfile = UserProfile.builder()
                 .name(request.nickname())
-                .residence(request.residence())
                 .profileType(ProfileType.MAIN)
                 .build();
 

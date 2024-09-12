@@ -61,6 +61,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private LocalDate birth;
 
+    @Column(nullable = false)
+    private String residence;
+
     private double rating;
 
     @Enumerated(EnumType.STRING)
@@ -146,7 +149,8 @@ public class User extends BaseEntity {
         this.lastAlarmTime = LocalDateTime.now();
     }
 
-    public void updateUserInfo( Gender gender, LocalDate birth) {
+    public void updateUserInfo(String residence, Gender gender, LocalDate birth) {
+        this.residence = residence;
         this.gender = gender;
         this.birth = birth;
     }
