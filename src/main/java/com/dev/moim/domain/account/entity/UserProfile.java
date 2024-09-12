@@ -58,13 +58,6 @@ public class UserProfile extends BaseEntity {
         this.user = user;
     }
 
-    public void updateUser(String name, String residence, String introduction, String imageUrl) {
-        this.name = name;
-        this.residence = residence;
-        this.introduction = introduction;
-        this.imageUrl = imageUrl;
-    }
-
     @PreRemove
     public void preRemove() {
         this.deletedAt = LocalDateTime.now();
@@ -74,7 +67,7 @@ public class UserProfile extends BaseEntity {
         this.profileType = profileType;
     }
 
-    public void updateProfile(String nickname, String imageUrl, String introduction) {
+    public void updateUserProfile(String nickname, String imageUrl, String introduction) {
         this.name = nickname;
         this.imageUrl = imageUrl;
         this.introduction = introduction;

@@ -52,7 +52,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = UserProfile.builder()
                 .user(user)
                 .name(request.nickname())
-                .residence(request.residence())
                 .introduction(request.introduction())
                 .imageUrl(request.imageKey() != null && !request.imageKey().isEmpty() ? s3Service.generateStaticUrl(request.imageKey()) : null)
                 .profileType(request.profileType())
@@ -70,10 +69,10 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = userProfileRepository.findById(profileId)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        userProfile.updateProfile(
+        userProfile.updateUserProfile(
                 request.nickname(),
-                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null,
-                request.introduction()
+                request.introduction(),
+                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null
         );
 
         userMoimRepository.findAllByUserIdAndMoimIdListAndJoinStatus(user.getId(), request.targetMoimIdList(), JoinStatus.COMPLETE)
@@ -88,12 +87,13 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public void updateUserDefaultInfo(User user, UpdateUserInfoDTO request) {
 
+        user.updateUserInfo(request.gender(), request.birth());
+
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
-        userProfile.updateUser(
+        userProfile.updateUserProfile(
                 request.nickname(),
-                request.residence(),
                 request.introduction(),
                 request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null
         );

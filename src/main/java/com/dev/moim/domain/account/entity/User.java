@@ -146,6 +146,11 @@ public class User extends BaseEntity {
         this.lastAlarmTime = LocalDateTime.now();
     }
 
+    public void updateUserInfo( Gender gender, LocalDate birth) {
+        this.gender = gender;
+        this.birth = birth;
+    }
+
     @PreRemove
     public void preRemove() {
         for (Todo todo : todoList) {
