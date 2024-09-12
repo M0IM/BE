@@ -65,6 +65,23 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
+    public ProfilePageDTO getUserProfileList(User user, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == 1) ? 0L : cursor;
+        Pageable pageable = PageRequest.of(0, take);
+
+        Slice <UserProfile> userProfileSlice = userProfileRepository.findAllByUserIdAndCursor(user.getId(), startCursor, pageable);
+
+        List<ProfileDTO> profileDTOList = userProfileSlice.stream()
+                .map(userProfile -> {
+                    return ProfileDTO.of(user, userProfile);
+                })
+                .toList();
+
+        return ProfilePageDTO.toProfileListDTO(profileDTOList, userProfileSlice);
+    }
+
+    @Override
     public ProfileDetailDTO getDetailProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));

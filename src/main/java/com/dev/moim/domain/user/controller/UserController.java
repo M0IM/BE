@@ -39,6 +39,20 @@ public class UserController {
     private final ReviewQueryService reviewQueryService;
     private final ReviewCommandService reviewCommandService;
 
+    @Operation(summary = "유저 프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
+    })
+    @PostMapping("/profile")
+    public BaseResponse<String> createProfile(
+            @AuthUser User user,
+            @Valid @RequestBody CreateProfileDTO request
+    ) {
+        userCommandService.createProfile(user, request);
+        return BaseResponse.onSuccess("유저 프로필 생성 성공");
+    }
+
     // 유저 대표 프로필 조회
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -52,18 +66,18 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getProfile(user));
     }
 
-    @Operation(summary = "유저 프로필 생성", description = "유저의 프로필을 생성하는 기능입니다.")
+    // 유저 프로필 리스트 조회
+    @Operation(summary = "유저 프로필 리스트 조회", description = "유저 프로필 리스트를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
-            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
-    @PostMapping("/profile")
-    public BaseResponse<String> createProfile(
+    @GetMapping("/profile/list")
+    public BaseResponse<ProfilePageDTO> getUserProfileList(
             @AuthUser User user,
-            @Valid @RequestBody CreateProfileDTO request
+            @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
-        userCommandService.createProfile(user, request);
-        return BaseResponse.onSuccess("유저 프로필 생성 성공");
+        return BaseResponse.onSuccess(userQueryService.getUserProfileList(user, cursor, take));
     }
 
     // 유저 프로필 수정
