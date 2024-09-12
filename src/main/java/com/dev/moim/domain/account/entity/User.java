@@ -155,6 +155,10 @@ public class User extends BaseEntity {
         this.birth = birth;
     }
 
+    public void updateResidence(String residence) {
+        this.residence = residence;
+    }
+
     @PreRemove
     public void preRemove() {
         for (Todo todo : todoList) {

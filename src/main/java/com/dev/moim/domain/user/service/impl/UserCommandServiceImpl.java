@@ -87,7 +87,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public void updateUserInfo(User user, UpdateUserInfoDTO request) {
 
-        user.updateUserInfo(request.residence(), request.gender(), request.birth());
+        user.updateResidence(request.residence());
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
