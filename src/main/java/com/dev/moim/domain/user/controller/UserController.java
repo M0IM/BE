@@ -188,6 +188,24 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getDetailProfile(userId));
     }
 
+    @Operation(summary = "(멀티 프로필 도입 ver) 특정 모임에서 사용할 프로필 변경", description = "특정 모임에서 사용할 프로필을 변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_001", description =  "모임을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "USERPROFILE_003", description = "해당 유저의 프로필이 아닙니다.")
+    })
+    @PutMapping(("/profile/moim/{moimId}"))
+    public BaseResponse<String> updateMoimProfile(
+            @AuthUser User user,
+            @UserMoimValidaton @PathVariable Long moimId,
+            @Valid @RequestBody UpdateMoimProfileDTO request
+    ) {
+        userCommandService.updateMoimProfile(user, moimId, request);
+        return BaseResponse.onSuccess("특정 모임에서 사용할 프로필 변경 성공했습니다");
+    }
+
     @Operation(summary = "유저 후기 리스트 조회", description = "유저 자신의 후기를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),

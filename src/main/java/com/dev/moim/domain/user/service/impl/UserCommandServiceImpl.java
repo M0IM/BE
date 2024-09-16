@@ -7,12 +7,14 @@ import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.IndividualPlanRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.user.dto.*;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.global.error.handler.IndividualPlanException;
+import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -106,6 +108,18 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     public void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request) {
         user.updateUserInfo(request.residence(), request.gender(), request.birth());
+    }
+
+    @Override
+    public void updateMoimProfile(User user, Long moimId, UpdateMoimProfileDTO request) {
+
+        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE)
+                .orElseThrow(() -> new MoimException(INVALID_MOIM_MEMBER));
+
+        UserProfile userProfile = userProfileRepository.findById(request.profileId())
+                        .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
+
+        userMoim.updateUserProfile(userProfile);
     }
 
     @Override

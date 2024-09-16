@@ -15,6 +15,8 @@ public interface UserCommandService {
 
     void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request);
 
+    void updateMoimProfile(User user, Long moimId, UpdateMoimProfileDTO request);
+
     AlarmDTO settingPushAlarm(User user);
 
     AlarmDTO settingEventAlarm(User user);
