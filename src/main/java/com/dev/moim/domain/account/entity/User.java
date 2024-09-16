@@ -54,14 +54,10 @@ public class User extends BaseEntity {
     private Boolean isEventAlarm;
 
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("'FEMALE'")
-    @Column(nullable = false)
     private Gender gender;
 
-    @Column(nullable = false)
     private LocalDate birth;
 
-    @Column(nullable = false)
     private String residence;
 
     private double rating;

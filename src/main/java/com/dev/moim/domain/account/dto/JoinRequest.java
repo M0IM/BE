@@ -7,6 +7,7 @@ import com.dev.moim.global.validation.annotation.LocalAccountValidation;
 import com.dev.moim.global.validation.annotation.JoinPasswordValidation;
 import com.dev.moim.global.validation.annotation.OAuthAccountValidation;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.lang.NonNull;
@@ -14,6 +15,7 @@ import org.springframework.lang.NonNull;
 import java.time.LocalDate;
 
 // @JoinFcmTokenValidtaion
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @OAuthAccountValidation
 @LocalAccountValidation
 @JoinPasswordValidation
@@ -28,12 +30,12 @@ public record JoinRequest(
         @NotBlank
         String email,
         String password,
-        @Schema(description = "성별", defaultValue = "FEMALE", allowableValues = {"FEMALE", "MALE"})
-        @NonNull
+        @Schema(description = "성별", defaultValue = "FEMALE", allowableValues = {"FEMALE", "MALE"}, nullable = true)
         Gender gender,
+        @Schema(nullable = true)
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate birth,
-        @NotBlank
+        @Schema(nullable = true)
         String residence
 ) {
 }
