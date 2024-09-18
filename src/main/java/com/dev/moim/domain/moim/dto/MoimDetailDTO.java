@@ -23,13 +23,14 @@ public record MoimDetailDTO(
         int moimReviewCount,
         Long maleCount,
         Long femaleCount,
+        Long nonSelectCount,
         int memberCount,
         String address,
         LocalDateTime createAt,
         LocalDateTime updateAt,
         List<UserPreviewDTO> userPreviewDTOList
 ) {
-    public static MoimDetailDTO toMoimDetailDTO(Moim moim, MoimRole myMoimRole,JoinStatus joinStatus, String profileImageUrl, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, int memberCount, List<UserPreviewDTO> userPreviewDTOList) {
+    public static MoimDetailDTO toMoimDetailDTO(Moim moim, MoimRole myMoimRole,JoinStatus joinStatus, String profileImageUrl, Double averageAge, int diaryCount, int moimReviewCount, Long maleCount, Long femaleCount, Long nonSelectCount, int memberCount, List<UserPreviewDTO> userPreviewDTOList) {
         return new MoimDetailDTO(
                 moim.getId(),
                 joinStatus,
@@ -43,6 +44,7 @@ public record MoimDetailDTO(
                 moimReviewCount,
                 maleCount,
                 femaleCount,
+                nonSelectCount,
                 memberCount,
                 moim.getLocation(),
                 moim.getCreatedAt(),
