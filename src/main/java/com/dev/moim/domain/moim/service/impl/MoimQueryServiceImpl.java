@@ -237,8 +237,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             averageAge = totalAge / count;
         }
 
-        MoimRole moimRole;
-        moimRole = moimRoleByUser.orElse(null);
+        MoimRole moimRole = moimRoleByUser.orElse(null);
 
         return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userPreviewDTOList);
     }
