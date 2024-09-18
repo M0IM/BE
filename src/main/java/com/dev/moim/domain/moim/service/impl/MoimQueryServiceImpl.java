@@ -33,6 +33,7 @@ import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PlanException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ import java.util.Optional;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -213,31 +215,31 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Long femaleSize = 0L;
         Long nonSelectCount = 0L;
         Long count = 0L;
-        for(User u : users) {
-            if (u.getGender().equals(Gender.MALE)) {
-                maleSize += 1L;
-            } else if (u.getGender().equals(Gender.FEMALE)) {
-                femaleSize += 1L;
+
+        for (User u : users) {
+            Gender gender = u.getGender();
+            if (Gender.MALE.equals(gender)) {
+                maleSize++;
+            } else if (Gender.FEMALE.equals(gender)) {
+                femaleSize++;
             } else {
-                nonSelectCount += 1L;
+                nonSelectCount++;
             }
-            totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear())) + 1;
-            count ++;
+
+            LocalDate birthDate = u.getBirth();
+            if (birthDate != null) {
+                totalAge += LocalDate.now().getYear() - birthDate.getYear();
+                count++;
+            }
         }
 
         if (count > 0) {
             averageAge = totalAge / count;
         }
 
-        MoimRole moimRole;
-        if (moimRoleByUser.isPresent()) {
-            moimRole = moimRoleByUser.get();
-        } else {
-            moimRole = null;
-        }
+        MoimRole moimRole = moimRoleByUser.orElse(null);
 
         return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userPreviewDTOList);
-
     }
 
     @Override
