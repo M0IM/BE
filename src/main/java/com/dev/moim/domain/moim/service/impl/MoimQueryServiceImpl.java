@@ -211,12 +211,15 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         Double averageAge = 0.0;
         Long maleSize = 0L;
         Long femaleSize = 0L;
+        Long nonSelectCount = 0L;
         Long count = 0L;
         for(User u : users) {
             if (u.getGender().equals(Gender.MALE)) {
                 maleSize += 1L;
-            } else {
+            } else if (u.getGender().equals(Gender.FEMALE)) {
                 femaleSize += 1L;
+            } else {
+                nonSelectCount += 1L;
             }
             totalAge += Integer.parseInt(String.valueOf(LocalDate.now().getYear() - u.getBirth().getYear())) + 1;
             count ++;
@@ -233,7 +236,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
             moimRole = null;
         }
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, users.size(), userPreviewDTOList);
+        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userPreviewDTOList);
 
     }
 
