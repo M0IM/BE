@@ -9,7 +9,7 @@ public record CreateMoimPostDTO(
         Long moimId,
         @Length(min = 1, max = 255)
         String title,
-        @Length(min = 1, max = 2000)
+        @Length(min = 1, max = 1500)
         String content,
         List<String> imageKeyNames,
         PostType postType
