@@ -27,7 +27,7 @@ public class Post extends BaseEntity {
 
     private String title;
 
-    @Lob
+    @Column(length = 1500)
     private String content;
 
     @Enumerated(EnumType.STRING)
