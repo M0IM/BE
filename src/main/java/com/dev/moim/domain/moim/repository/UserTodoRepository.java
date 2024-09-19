@@ -1,6 +1,7 @@
 package com.dev.moim.domain.moim.repository;
 
 import com.dev.moim.domain.account.entity.User;
+import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.UserTodo;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import org.springframework.data.domain.Pageable;
@@ -54,4 +55,19 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
             @Param("endDate") LocalDateTime endDate);
 
     List<UserTodo> findAllByTodoIdAndStatusNot(Long todoId, TodoAssigneeStatus todoAssigneeStatus);
+
+    @Query("SELECT ut " +
+            "FROM UserTodo ut " +
+            "JOIN FETCH ut.todo t " +
+            "JOIN FETCH t.moim m " +
+            "WHERE ut.user.id = :userId " +
+            "AND m.id = :moimId " +
+            "AND ut.id < :cursor " +
+            "ORDER BY ut.id DESC")
+    Slice<UserTodo> findUserTodosByUserIdAndMoimId(
+            @Param("userId") Long userId,
+            @Param("moimId") Long moimId,
+            @Param("cursor") Long cursor,
+            Pageable pageable
+    );
 }

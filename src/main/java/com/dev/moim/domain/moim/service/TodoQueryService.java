@@ -23,6 +23,8 @@ public interface TodoQueryService {
 
     TodoPageDTO getSpecificMoimTodoListByMe(User user, Long moimId, Long cursor, Integer take);
 
+    TodoPageDTO getAssignedTodoListForUserInSpecificMoim(User user, Long moimId, Long cursor, Integer take);
+
     TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take);
 
     boolean existsByUserIdAndTodoId(Long userId, Long todoId);

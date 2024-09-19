@@ -173,6 +173,23 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
+    public TodoPageDTO getAssignedTodoListForUserInSpecificMoim(User user, Long moimId, Long cursor, Integer take) {
+
+        Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
+        Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
+
+        Slice<UserTodo> userTodoSlice = userTodoRepository.findUserTodosByUserIdAndMoimId(user.getId(), moimId, startCursor, pageable);
+
+        List<TodoDTO> todoDTOList = userTodoSlice.getContent().stream()
+                .map(userTodo -> TodoDTO.forAssignee(userTodo.getTodo(), userTodo))
+                .toList();
+
+        Long nextCursor = userTodoSlice.hasNext() ? userTodoSlice.getContent().get(userTodoSlice.getNumberOfElements() - 1).getId() : null;
+
+        return new TodoPageDTO(todoDTOList, nextCursor, userTodoSlice.hasNext());
+    }
+
+    @Override
     public TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take) {
 
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
