@@ -3,7 +3,9 @@ package com.dev.moim.domain.moim.dto.todo;
 import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.TodoImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.UserTodo;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 
 import java.time.LocalDateTime;
@@ -16,13 +18,13 @@ public record TodoDTO(
         LocalDateTime dueDate,
         List<String> imageUrlList,
         TodoStatus todoStatus,
+        TodoAssigneeStatus todoAssigneeStatus,
         String writerNickname,
         String writerProfileImageUrl,
         MoimRole writerMoimRole,
         Long moimId,
         String moimName
 ) {
-
     public static TodoDTO forMoimAdmins(Todo todo, Optional<UserMoim> userMoim) {
         return new TodoDTO(
                 todo.getId(),
@@ -30,6 +32,7 @@ public record TodoDTO(
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 todo.getStatus(),
+                null,
                 userMoim.map(moim -> moim.getUserProfile().getName()).orElse(null),
                 userMoim.map(value -> value.getUserProfile().getImageUrl()).orElse(null),
                 userMoim.map(UserMoim::getMoimRole).orElse(null),
@@ -45,6 +48,23 @@ public record TodoDTO(
                 todo.getDueDate(),
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 todo.getStatus(),
+                null,
+                null,
+                null,
+                null,
+                todo.getMoim().getId(),
+                todo.getMoim().getName()
+        );
+    }
+
+    public static TodoDTO forAssignee(Todo todo, UserTodo userTodo) {
+        return new TodoDTO(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getDueDate(),
+                todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
+                todo.getStatus(),
+                userTodo.getStatus(),
                 null,
                 null,
                 null,

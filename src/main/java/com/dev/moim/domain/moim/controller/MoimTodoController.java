@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -139,6 +140,22 @@ public class MoimTodoController {
             @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
         return BaseResponse.onSuccess(todoQueryService.getSpecificMoimTodoListByMe(user, moimId, cursor, take));
+    }
+
+    @Operation(summary = "특정 모임에서 부여받은 todo 리스트 조회 (모임 멤버)", description = "특정 멤버가 특정 모임에서 자신이 부여받은 todo 리스트를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @ApiResponse(responseCode = "MOIM_001", description = "모임을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다.")
+    })
+    @GetMapping("/moims/{moimId}/todos/for-assignee")
+    public BaseResponse<TodoPageDTO> getAssignedTodoListForUserInSpecificMoim(
+            @AuthUser User user,
+            @UserMoimValidaton @PathVariable Long moimId,
+            @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
+            @CheckTakeValidation @RequestParam(name = "take") Integer take
+    ) {
+        return BaseResponse.onSuccess(todoQueryService.getAssignedTodoListForUserInSpecificMoim(user, moimId, cursor, take));
     }
 
     @Operation(summary = "자신이 부여한 todo 리스트 조회", description = "회원이 자신이 부여한 todo 리스트를 조회합니다.")
