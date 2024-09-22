@@ -81,7 +81,6 @@ public class OIDCService {
 
     public OIDCDecodePayload getPayloadFromIdToken(String token, String iss, String aud, OIDCPublicKeyListDTO oidcPublicKeyList) {
         String kid = jwtOIDCUtil.getKidFromUnsignedTokenHeader(token, iss, aud);
-        System.out.println("KID : " + kid);
 
         OIDCPublicKeyDTO oidcPublicKey = oidcPublicKeyList.keys().stream()
                 .filter(o -> o.kid().equals(kid))

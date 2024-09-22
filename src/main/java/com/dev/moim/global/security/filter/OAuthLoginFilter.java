@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import static com.dev.moim.domain.account.entity.enums.Provider.NAVER;
 import static com.dev.moim.domain.account.entity.enums.Provider.UNREGISTERED;
 import static com.dev.moim.global.common.code.status.ErrorStatus.FCM_TOKEN_REQUIRED;
+import static com.dev.moim.global.common.code.status.ErrorStatus.REDIS_CONNECTION_ERROR;
 import static com.dev.moim.global.common.code.status.SuccessStatus.UNREGISTERED_OAUTH_LOGIN_USER;
 import static com.dev.moim.global.common.code.status.SuccessStatus._OK;
 
@@ -97,8 +99,12 @@ public class OAuthLoginFilter extends AbstractAuthenticationProcessingFilter {
 
             String accessToken = jwtUtil.createAccessToken(principalDetails);
             String refreshToken = jwtUtil.createRefreshToken(principalDetails);
-            redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
 
+            try {
+                redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+            } catch (RedisConnectionFailureException e) {
+                throw new AuthException(REDIS_CONNECTION_ERROR);
+            }
             eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 
             HttpResponseUtil.setSuccessResponse(response, _OK, new LoginResponseDTO(accessToken, refreshToken, principalDetails.getProvider(), authResult.getName()));
