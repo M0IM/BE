@@ -17,6 +17,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,7 +75,11 @@ public class AuthService {
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        try {
+            redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
+        }
 
         return new TokenResponse(accessToken, refreshToken, request.provider());
     }
@@ -99,6 +104,8 @@ public class AuthService {
             redisUtil.setValue(userId, newRefresh, jwtUtil.getRefreshTokenValiditySec());
 
             return new TokenResponse(newAccess, newRefresh, principalDetails.getProvider());
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
         } catch (IllegalArgumentException e) {
             throw new AuthException(AUTH_INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
@@ -133,7 +140,11 @@ public class AuthService {
 
     @Transactional
     public void quit(User user) {
-        redisUtil.deleteValue(user.getId().toString());
+        try {
+            redisUtil.deleteValue(user.getId().toString());
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
+        }
         userRepository.delete(user);
     }
 

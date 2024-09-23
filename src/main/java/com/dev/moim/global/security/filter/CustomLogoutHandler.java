@@ -11,13 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import java.util.Date;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.AUTH_EXPIRED_TOKEN;
-import static com.dev.moim.global.common.code.status.ErrorStatus.USER_NOT_FOUND;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -46,6 +46,8 @@ public class CustomLogoutHandler implements LogoutHandler {
             redisUtil.deleteValue(userId);
         } catch (ExpiredJwtException e) {
             throw new AuthException(AUTH_EXPIRED_TOKEN);
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
         }
     }
 }

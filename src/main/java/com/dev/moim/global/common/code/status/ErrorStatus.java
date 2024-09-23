@@ -21,6 +21,9 @@ public enum ErrorStatus implements BaseErrorCode {
     NO_MATCHING_ERROR_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON_003", "서버 에러. 일치하는 errorStatus를 찾을 수 없습니다."),
     REQUEST_BODY_INVALID(HttpStatus.BAD_REQUEST, "COMMON_004", "요청 본문을 읽을 수 없습니다. 빈 문자열 또는 null이 있는지 확인해주세요."),
 
+    // Redis 관련 에러
+    REDIS_CONNECTION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "REDIS_001", "Redis 연결에 실패했습니다. 관리자에게 문의 바랍니다."),
+
     // S3 관련
     S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3_001", "S3 오브젝트를 찾을 수 없습니다."),
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S3_002", "S3 업로드 실패"),

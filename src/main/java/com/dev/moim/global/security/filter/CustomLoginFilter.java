@@ -19,6 +19,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -75,7 +76,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accessToken = jwtUtil.createAccessToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
-        redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+
+        try {
+            redisUtil.setValue(principalDetails.user().getId().toString(), refreshToken, jwtUtil.getRefreshTokenValiditySec());
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
+        }
 
         eventPublisher.publishEvent(new CustomAuthenticationSuccessEvent(principalDetails, request.getAttribute("fcmToken").toString()));
 

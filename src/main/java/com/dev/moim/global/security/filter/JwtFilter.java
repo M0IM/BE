@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,8 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static com.dev.moim.global.common.code.status.ErrorStatus.FCM_TOKEN_REQUIRED;
-import static com.dev.moim.global.common.code.status.ErrorStatus.LOGOUT_ACCESS_TOKEN;
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,12 +44,19 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (Objects.equals(redisUtil.getValue(accessToken), "deviceId_missing")) {
-            throw new AuthException(FCM_TOKEN_REQUIRED);
-        }
+        try {
+            String redisValue = redisUtil.getValue(accessToken);
 
-        if (Objects.equals(redisUtil.getValue(accessToken), "logout")) {
-            throw new AuthException(LOGOUT_ACCESS_TOKEN);
+            if (Objects.equals(redisValue, "deviceId_missing")) {
+                throw new AuthException(FCM_TOKEN_REQUIRED);
+            }
+
+            if (Objects.equals(redisValue, "logout")) {
+                throw new AuthException(LOGOUT_ACCESS_TOKEN);
+            }
+
+        } catch (RedisConnectionFailureException e) {
+            throw new AuthException(REDIS_CONNECTION_ERROR);
         }
 
         if(jwtUtil.isTokenValid(accessToken)) {
