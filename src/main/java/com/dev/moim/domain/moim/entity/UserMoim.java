@@ -1,32 +1,27 @@
 package com.dev.moim.domain.moim.entity;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.entity.enums.Role;
+import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE user_moim SET join_status = 'DELETED' WHERE id = ?")
+@SQLRestriction(value = "join_status <> 'DELETED'")
 public class UserMoim extends BaseEntity {
 
     @Id
@@ -34,7 +29,19 @@ public class UserMoim extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "moim_role", nullable = false)
+    private MoimRole moimRole;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "join_status", nullable = false)
+    private JoinStatus joinStatus;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean confirm;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "profile_status", nullable = false)
+    private ProfileStatus profileStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -44,25 +51,39 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<Calendar> calendarList = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<GroupAlarm> groupAlarmList = new ArrayList<>();
+    public void accept() {
+        this.joinStatus = JoinStatus.COMPLETE;
+    }
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<ExitReason> exitReasonList = new ArrayList<>();
+    public void reject() {
+        this.joinStatus = JoinStatus.REJECT;
+    }
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<TakingOverPost> takingOverPostList = new ArrayList<>();
+    public void changeStatus(MoimRole moimRole) {
+        this.moimRole = moimRole;
+    }
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<Post> postList = new ArrayList<>();
+    public void updateProfileStatus (ProfileStatus profileStatus) {
+        this.profileStatus = profileStatus;
+    }
 
-    @OneToMany(mappedBy = "userMoim")
-    private List<Comment> commentList = new ArrayList<>();
+    public void leaveOwner () {
+        this.moimRole = MoimRole.ADMIN;
+    }
 
-    public enum MoimType {
-        COMMON, THUNDER
+    public void enterOwner () {
+        this.moimRole = MoimRole.OWNER;
+    }
+
+    public void confirm () {
+        this.confirm = true;
+    }
+
+    public void updateUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 }

@@ -1,19 +1,15 @@
 package com.dev.moim.domain.moim.entity;
 
+import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +25,42 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> commentList = new ArrayList<>();
+    private String title;
 
-    @OneToMany(mappedBy = "post")
-    private List<PostCategory> postCategoryList = new ArrayList<>();
+    @Column(length = 1500)
+    private String content;
 
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_group_id")
+    @JoinColumn(name = "moim_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Moim moim;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_moim_id")
     private UserMoim userMoim;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImage> postImageList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostBlock> postBlockList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReadPost> readPostList = new ArrayList<>();
+
+    public void updatePost(String title, String content, List<PostImage> postImages) {
+        this.title = title;
+        this.content = content;
+        postImageList.clear();
+        postImageList.addAll(postImages);
+    }
 }

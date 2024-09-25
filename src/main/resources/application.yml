@@ -1,14 +1,34 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 spring:
-  datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    url: jdbc:mysql://localhost:3306/moim
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    name: moim
   jpa:
+    show-sql: true
+    generate-ddl: true
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
         hbm2ddl:
-          auto: update
+          auto: none
+        format_sql: false
+        use_sql_comments: true
+        default_batch_fetch_size: 1000
+        dialect: org.hibernate.dialect.MySQLDialect
+    database: mysql
+  profiles:
+    include:
+      - database
+      - jwt
+      - redis
+      - oauth
+      - mail
+      - discord
+      - s3
+      - firebase
+      - image

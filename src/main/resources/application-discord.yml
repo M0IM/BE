@@ -1,0 +1,2 @@
+spring:
+  discord-url: ${DISCORD_URL}
