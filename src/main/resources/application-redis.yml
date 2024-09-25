@@ -18,7 +18,7 @@ spring:
       host: ${REDIS_URL}
       port: 6379
 ---
-# Dev Profile
+# Release Profile
 spring:
   config:
     activate:
