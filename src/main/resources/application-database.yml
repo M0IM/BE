@@ -18,3 +18,13 @@ spring:
     password: ${DEV_DB_PASSWORD}
     url: ${DEV_DB_URL}
 ---
+# Release Profile
+spring:
+  config:
+    activate:
+      on-profile: release
+  datasource:
+    username: ${RELEASE_DB_USERNAME}
+    password: ${RELEASE_DB_PASSWORD}
+    url: ${RELEASE_DB_URL}
+---
