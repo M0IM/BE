@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -34,6 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+
+import java.util.Arrays;
 
 @Configuration
 // @EnableWebSecurity(debug = true)
@@ -50,6 +53,7 @@ public class SecurityConfig {
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
     private final FcmQueryService fcmQueryService;
+    private final Environment environment;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -91,13 +95,22 @@ public class SecurityConfig {
             "/api/v1/auth/emails/**",
             "/api/v1/auth/reissueToken/**",
             "/health",
-            "/chat",
+            "/api/v1/auth/password/**",
+            "/api/v1/regions/**"
+    };
+
+    private static final String[] releaseAllowUrls = {
+            "/api/v1/auth/join/**",
+            "/api/v1/auth/emails/**",
+            "/api/v1/auth/reissueToken/**",
+            "/health",
             "/api/v1/auth/password/**",
             "/api/v1/regions/**"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtUtil jwtUtil, RedisUtil redisUtil, UserRepository userRepository) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors
                 .configurationSource(CorsConfig.apiConfigurationSource()));
@@ -116,7 +129,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(jwtAccessDeniedHandler));
 
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(allowUrls).permitAll()
+                .requestMatchers(Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls).permitAll()
                 .requestMatchers("/**").authenticated()
                 .anyRequest().permitAll());
 
@@ -129,8 +142,8 @@ public class SecurityConfig {
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil, allowUrls), CustomLoginFilter.class);
-        http.addFilterBefore(new JwtExceptionFilter(allowUrls), JwtFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil, Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), CustomLoginFilter.class);
+        http.addFilterBefore(new JwtExceptionFilter(Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), JwtFilter.class);
 
         http.logout(logout -> logout
                 .logoutUrl("/api/v1/auth/logout")

@@ -18,3 +18,13 @@ spring:
       host: ${REDIS_URL}
       port: 6379
 ---
+# Release Profile
+spring:
+  config:
+    activate:
+      on-profile: release
+  data:
+    redis:
+      host: ${RELEASE_REDIS_URL}
+      port: 6379
+---
