@@ -53,7 +53,6 @@ public class SecurityConfig {
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
     private final FcmQueryService fcmQueryService;
-    private final Environment environment;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
