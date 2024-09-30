@@ -129,7 +129,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(jwtAccessDeniedHandler));
 
         http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls).permitAll()
+                .requestMatchers(allowUrls).permitAll()
                 .requestMatchers("/**").authenticated()
                 .anyRequest().permitAll());
 
@@ -142,8 +142,8 @@ public class SecurityConfig {
 
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil, Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), CustomLoginFilter.class);
-        http.addFilterBefore(new JwtExceptionFilter(Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), JwtFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil, allowUrls), CustomLoginFilter.class);
+        http.addFilterBefore(new JwtExceptionFilter(allowUrls), JwtFilter.class);
 
         http.logout(logout -> logout
                 .logoutUrl("/api/v1/auth/logout")
