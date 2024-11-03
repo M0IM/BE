@@ -132,4 +132,13 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
             "AND um.joinStatus = :joinStatus " +
             "AND um.moimRole IN :moimRoleList " )
     Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(Long userId, Long moimId, JoinStatus joinStatus, List<MoimRole> moimRoleList);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "JOIN FETCH um.moim " +
+            "JOIN FETCH um.user " +
+            "WHERE um.user.id = :userId " +
+            "AND um.moim.id = :moimId " +
+            "AND um.joinStatus = :joinStatus " +
+            "AND um.moimRole = :moimRole " )
+    Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(Long userId, Long moimId, JoinStatus joinStatus, MoimRole moimRole);
 }

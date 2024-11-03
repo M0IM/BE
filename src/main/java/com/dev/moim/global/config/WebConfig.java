@@ -1,9 +1,6 @@
 package com.dev.moim.global.config;
 
-import com.dev.moim.global.security.annotation.resolver.AuthUserArgumentResolver;
-import com.dev.moim.global.security.annotation.resolver.AuthUserMoimAdminArgumentResolver;
-import com.dev.moim.global.security.annotation.resolver.AuthUserMoimArgumentResolver;
-import com.dev.moim.global.security.annotation.resolver.ExtractTokenArgumentResolver;
+import com.dev.moim.global.security.annotation.resolver.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -19,6 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
     private final ExtractTokenArgumentResolver extractTokenArgumentResolver;
     private final AuthUserMoimArgumentResolver authUserMoimArgumentResolver;
     private final AuthUserMoimAdminArgumentResolver authUserMoimAdminArgumentResolver;
+    private final AuthUserMoimOwnerArgumentResolver authUserMoimOwnerArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -26,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
         resolvers.add(extractTokenArgumentResolver);
         resolvers.add(authUserMoimArgumentResolver);
         resolvers.add(authUserMoimAdminArgumentResolver);
+        resolvers.add(authUserMoimOwnerArgumentResolver);
     }
 
     @Override
