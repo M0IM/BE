@@ -43,9 +43,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     private final FcmService fcmService;
 
     @Override
-    public Long createTodo(User user, Long moimId, CreateTodoDTO request) {
+    public Long createTodo(UserMoim userMoim, CreateTodoDTO request) {
 
-        Moim moim = moimRepository.findById(moimId)
+        Moim moim = moimRepository.findById(userMoim.getMoim().getId())
                 .orElseThrow(() -> new MoimException(MOIM_NOT_FOUND));
 
         Todo todo = Todo.builder()
@@ -54,7 +54,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 .dueDate(request.dueDate().atTime(23, 59, 59, 999999000))
                 .status(TodoStatus.IN_PROGRESS)
                 .moim(moim)
-                .writer(user)
+                .writer(userMoim.getUser())
                 .build();
 
         todoRepository.save(todo);
@@ -66,7 +66,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                                 .build()));
 
         List<User> userList = request.isAssigneeSelectAll()
-                ? userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE).stream()
+                ? userMoimRepository.findByMoimIdAndJoinStatus(userMoim.getMoim().getId(), JoinStatus.COMPLETE).stream()
                 .map(UserMoim::getUser).toList()
                 : userRepository.findAllById(request.targetUserIdList());
 
@@ -80,9 +80,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         userTodoRepository.saveAll(userTodoList);
 
-        userList.stream().filter(assignee -> !assignee.equals(user))
+        userList.stream().filter(assignee -> !assignee.equals(userMoim.getUser()))
                 .forEach(assignee -> {
-                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
+                    alarmService.saveAlarm(userMoim.getUser(), assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
                         fcmService.sendPushNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
