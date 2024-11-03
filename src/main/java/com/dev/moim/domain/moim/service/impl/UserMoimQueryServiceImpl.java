@@ -33,4 +33,11 @@ public class UserMoimQueryServiceImpl implements UserMoimQueryService {
         return userMoimRepository.findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(
                 userId, moimId, joinStatus, moimRoleList);
     }
+
+    @Override
+    public Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
+            Long userId, Long moimId, JoinStatus joinStatus, MoimRole moimRole) {
+        return userMoimRepository.findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
+                userId, moimId, joinStatus, moimRole);
+    }
 }

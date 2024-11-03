@@ -14,4 +14,7 @@ public interface UserMoimQueryService {
 
     Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(
             Long userId, Long moimId, JoinStatus joinStatus, List<MoimRole> moimRoleList);
+
+    Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
+            Long userId, Long moimId, JoinStatus joinStatus, MoimRole moimRole);
 }
