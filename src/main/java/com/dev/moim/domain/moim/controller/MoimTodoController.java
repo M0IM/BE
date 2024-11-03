@@ -5,7 +5,7 @@ import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
