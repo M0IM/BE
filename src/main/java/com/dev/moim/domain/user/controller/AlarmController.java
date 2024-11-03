@@ -6,7 +6,7 @@ import com.dev.moim.domain.user.dto.EventDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.firebase.service.FcmService;
-import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

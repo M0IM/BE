@@ -1,4 +1,4 @@
-package com.dev.moim.global.security.annotation;
+package com.dev.moim.global.security.annotation.annotation;
 
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-@Parameter(name = "user", hidden = true)
-public @interface AuthUser {}
+@Parameter(name = "userMoim", hidden = true)
+public @interface AuthUserMoim {}

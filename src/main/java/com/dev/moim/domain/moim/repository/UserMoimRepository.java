@@ -115,4 +115,12 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
             @Param("joinStatus") JoinStatus joinStatus,
             @Param("cursor") Long cursor,
             Pageable pageable);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "JOIN FETCH um.moim " +
+            "JOIN FETCH um.user " +
+            "WHERE um.user.id = :userId " +
+            "AND um.moim.id = :moimId " +
+            "AND um.joinStatus = :joinStatus")
+    Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusWithUserAndMoim(Long userId, Long moimId, JoinStatus joinStatus);
 }
