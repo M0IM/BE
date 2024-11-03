@@ -2,10 +2,11 @@ package com.dev.moim.global.security.annotation.resolver;
 
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.UserMoimQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
-import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,17 +20,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
-import static com.dev.moim.global.common.code.status.ErrorStatus.AUTH_INVALID_TOKEN;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AuthUserMoimArgumentResolver implements HandlerMethodArgumentResolver {
+public class AuthUserMoimAdminArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final UserMoimQueryService userMoimQueryService;
     private final RedisUtil redisUtil;
@@ -37,7 +35,7 @@ public class AuthUserMoimArgumentResolver implements HandlerMethodArgumentResolv
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthUserMoim.class) && parameter.getParameterType().equals(UserMoim.class);
+        return parameter.hasParameterAnnotation(AuthUserMoimAdmin.class) && parameter.getParameterType().equals(UserMoim.class);
     }
 
     @Override
@@ -60,11 +58,12 @@ public class AuthUserMoimArgumentResolver implements HandlerMethodArgumentResolv
                 .map(authentication -> {
                     String userId = authentication.getName();
                     Long moimId = extractMoimIdFromUri(httpServletRequest.getRequestURI());
-                    UserMoim userMoim = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusWithUserAndMoim(
-                            Long.valueOf(userId), moimId, JoinStatus.COMPLETE)
-                            .orElseThrow(() -> new AuthException(USER_NOT_MOIM_JOIN));
+                    List<MoimRole> moimRoleList = new ArrayList<>(Arrays.asList(MoimRole.OWNER, MoimRole.ADMIN));
+                    UserMoim userMoimAdmin = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(
+                                    Long.valueOf(userId), moimId, JoinStatus.COMPLETE, moimRoleList)
+                            .orElseThrow(() -> new AuthException(USER_NOT_MOIM_ADMIN));
 
-                    if (userMoim.getUser().getDeviceId() == null) {
+                    if (userMoimAdmin.getUser().getDeviceId() == null) {
                         Long now = new Date().getTime();
                         Long expiration = jwtUtil.getExpiration(accessToken) - now;
                         redisUtil.setValue(accessToken, "deviceId_missing", expiration);
@@ -72,7 +71,7 @@ public class AuthUserMoimArgumentResolver implements HandlerMethodArgumentResolv
                         throw new AuthException(FCM_TOKEN_REQUIRED);
                     }
 
-                    return userMoim;
+                    return userMoimAdmin;
                 }).orElseThrow(() -> new AuthException(AUTH_INVALID_TOKEN));
     }
 

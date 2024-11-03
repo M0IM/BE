@@ -88,6 +88,8 @@ public enum ErrorStatus implements BaseErrorCode {
     NOT_REQUEST_JOIN(HttpStatus.NOT_FOUND, "MOIM_011", "신청하지 않은 모임입니다."),
     USER_MOIM_NOT_FOUND(HttpStatus.NOT_FOUND, "MOIM_012", "user moim을 찾을 수 없습니다."),
     OWNER_NOT_EXIT(HttpStatus.NOT_FOUND, "MOIM_013", "owner는 모임을 나갈 수 없습니다."),
+    INVALID_MOIM_ID_FORMAT(HttpStatus.BAD_REQUEST, "MOIM_014", "잘못된 모임 ID 형식입니다."),
+    MISSING_MOIM_ID_IN_URI(HttpStatus.BAD_REQUEST, "MOIM_015", "URI에서 모임 ID가 누락되었습니다."),
 
     // UserProfile 관련
     USER_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "USERPROFILE_001", "프로필을 찾을 수 없습니다."),
