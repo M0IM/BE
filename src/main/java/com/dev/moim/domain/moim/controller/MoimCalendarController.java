@@ -37,12 +37,12 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/calender")
     public BaseResponse<PlanMonthListDTO<PlanDayListDTO>> getMoimPlans(
-            @AuthUserMoim UserMoim userMoim,
+            @AuthUser User user,
             @PathVariable Long moimId,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(userMoim, year, month));
+        return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(user, moimId, year, month));
     }
 
     @Operation(summary = "모임 일정 생성", description = "모임의 새로운 일정을 추가합니다.")

@@ -43,7 +43,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final UserMoimRepository userMoimRepository;
 
     @Override
-    public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(UserMoim userMoim, int year, int month) {
+    public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
@@ -62,11 +62,11 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
             LocalDateTime dayStart = YearMonth.of(year, month).atDay(day).atStartOfDay();
             LocalDateTime dayEnd = dayStart.plusDays(1).minusNanos(1);
 
-            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(userMoim.getMoim().getId(), dayStart, dayEnd);
+            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(moimId, dayStart, dayEnd);
 
             List<MoimPlanDTO> planList = dayPlans.stream()
-                    .filter(plan -> plan.getMoim().getId().equals(userMoim.getMoim().getId()))
-                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), userMoim.getUser().getId())))
+                    .filter(plan -> plan.getMoim().getId().equals(moimId))
+                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), user.getId())))
                     .collect(Collectors.toList());
 
             planDayListMap.put(day, new PlanDayListDTO(memberWithPlanCnt, planList));

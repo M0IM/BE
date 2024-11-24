@@ -6,7 +6,7 @@ import com.dev.moim.domain.moim.entity.UserMoim;
 
 public interface TodoCommandService {
 
-    Long createTodo(UserMoim userMoim, CreateTodoDTO request);
+    Long createTodo(User user, Long moimId, CreateTodoDTO request);
 
     UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request);
 

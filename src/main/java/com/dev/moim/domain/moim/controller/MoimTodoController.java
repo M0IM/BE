@@ -40,11 +40,11 @@ public class MoimTodoController {
     })
     @PostMapping("/moims/{moimId}/todos")
     public BaseResponse<Long> createTodo(
-            @AuthUserMoimAdmin UserMoim userMoim,
-            @PathVariable Long moimId,
+            @AuthUser User user,
+            @CheckAdminValidation @UserMoimValidaton @PathVariable Long moimId,
             @Valid @RequestBody CreateTodoDTO request
     ) {
-        return BaseResponse.onSuccess(todoCommandService.createTodo(userMoim, request));
+        return BaseResponse.onSuccess(todoCommandService.createTodo(user, moimId, request));
     }
 
     @Operation(summary = "todo 상세 조회 (할당된 유저)", description = "유저가 자신에게 할당된 특정 todo의 세부사항을 상세 조회합니다.")
