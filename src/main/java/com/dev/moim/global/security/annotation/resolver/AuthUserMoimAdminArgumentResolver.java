@@ -1,0 +1,93 @@
+package com.dev.moim.global.security.annotation.resolver;
+
+import com.dev.moim.domain.moim.entity.UserMoim;
+import com.dev.moim.domain.moim.entity.enums.JoinStatus;
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.service.UserMoimQueryService;
+import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.redis.util.RedisUtil;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
+import com.dev.moim.global.security.util.JwtUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.util.*;
+
+import static com.dev.moim.global.common.code.status.ErrorStatus.*;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class AuthUserMoimAdminArgumentResolver implements HandlerMethodArgumentResolver {
+
+    private final UserMoimQueryService userMoimQueryService;
+    private final RedisUtil redisUtil;
+    private final JwtUtil jwtUtil;
+
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(AuthUserMoimAdmin.class) && parameter.getParameterType().equals(UserMoim.class);
+    }
+
+    @Override
+    public Object resolveArgument(
+            @Nonnull MethodParameter parameter,
+            ModelAndViewContainer mavContainer,
+            @Nonnull NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory)
+            throws Exception {
+
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+
+        if (httpServletRequest == null) {
+            throw new AuthException(HTTP_REQUEST_NULL);
+        }
+
+        String accessToken = jwtUtil.resolveToken(httpServletRequest);
+
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(authentication -> {
+                    String userId = authentication.getName();
+                    Long moimId = extractMoimIdFromUri(httpServletRequest.getRequestURI());
+                    List<MoimRole> moimRoleList = new ArrayList<>(Arrays.asList(MoimRole.OWNER, MoimRole.ADMIN));
+                    UserMoim userMoimAdmin = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(
+                                    Long.valueOf(userId), moimId, JoinStatus.COMPLETE, moimRoleList)
+                            .orElseThrow(() -> new AuthException(USER_NOT_MOIM_ADMIN));
+
+                    if (userMoimAdmin.getUser().getDeviceId() == null) {
+                        Long now = new Date().getTime();
+                        Long expiration = jwtUtil.getExpiration(accessToken) - now;
+                        redisUtil.setValue(accessToken, "deviceId_missing", expiration);
+
+                        throw new AuthException(FCM_TOKEN_REQUIRED);
+                    }
+
+                    return userMoimAdmin;
+                }).orElseThrow(() -> new AuthException(AUTH_INVALID_TOKEN));
+    }
+
+    private Long extractMoimIdFromUri(String uri) {
+        return Arrays.stream(uri.split("/"))
+                .sequential()
+                .dropWhile(part -> !"moims".equals(part))
+                .skip(1)
+                .findFirst()
+                .map(part -> {
+                    try {
+                        return Long.parseLong(part);
+                    } catch (NumberFormatException e) {
+                        throw new AuthException(INVALID_MOIM_ID_FORMAT);
+                    }
+                })
+                .orElseThrow(() -> new AuthException(MISSING_MOIM_ID_IN_URI));
+    }
+}

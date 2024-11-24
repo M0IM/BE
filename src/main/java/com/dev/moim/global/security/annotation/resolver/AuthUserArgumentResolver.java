@@ -1,9 +1,10 @@
-package com.dev.moim.global.security.annotation;
+package com.dev.moim.global.security.annotation.resolver;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.repository.UserRepository;
+import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @RequiredArgsConstructor
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final UserRepository userRepository;
+    private final UserQueryService userQueryService;
     private final RedisUtil redisUtil;
     private final JwtUtil jwtUtil;
 
@@ -55,7 +56,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(authentication -> {
                     String userId = authentication.getName();
-                    User user = userRepository.findById(Long.valueOf(userId))
+                    User user = userQueryService.findUserById(Long.valueOf(userId))
                             .orElseThrow(() -> new AuthException(USER_NOT_FOUND));
 
                     if (user.getDeviceId() == null) {

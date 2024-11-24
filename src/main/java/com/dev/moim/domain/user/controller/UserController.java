@@ -13,7 +13,7 @@ import com.dev.moim.domain.user.service.ReviewQueryService;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

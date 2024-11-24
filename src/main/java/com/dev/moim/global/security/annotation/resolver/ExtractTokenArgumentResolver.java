@@ -1,6 +1,7 @@
-package com.dev.moim.global.security.annotation;
+package com.dev.moim.global.security.annotation.resolver;
 
 import com.dev.moim.global.error.handler.AuthException;
+import com.dev.moim.global.security.annotation.annotation.ExtractToken;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;

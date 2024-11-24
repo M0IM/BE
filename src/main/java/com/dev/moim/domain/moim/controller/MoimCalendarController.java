@@ -5,7 +5,7 @@ import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

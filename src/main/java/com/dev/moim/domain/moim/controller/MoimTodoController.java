@@ -5,7 +5,7 @@ import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +32,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "COMMON_002", description = "입력된 정보에 오류가 있습니다. 필드별 오류 메시지를 참조하세요."),
             @ApiResponse(responseCode = "MOIM_002", description = "모임 관리자 회원이 아닙니다."),
             @ApiResponse(responseCode = "MOIM_003", description = "모임의 멤버가 아닙니다."),
+            @ApiResponse(responseCode = "MOIM_007", description = "모임 관리자가 아닙니다."),
             @ApiResponse(responseCode = "TODO_004", description = "Todo를 할당받을 유저를 지정하지 않았습니다."),
             @ApiResponse(responseCode = "TODO_005", description = "전체 선택인 경우 특정 assignee를 지정할 수 없습니다.")
     })

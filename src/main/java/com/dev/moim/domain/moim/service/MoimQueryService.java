@@ -9,7 +9,6 @@ import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
 import com.dev.moim.domain.moim.dto.MoimJoinRequestListDTO;
 import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
-import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 
 import java.util.List;
