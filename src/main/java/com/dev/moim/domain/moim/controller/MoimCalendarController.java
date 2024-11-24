@@ -2,11 +2,9 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/moims")
+@RequestMapping("/api/v1/moim")
 @Tag(name = "모임 캘린더 관련 컨트롤러")
 public class MoimCalendarController {
 
@@ -38,7 +36,7 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/calender")
     public BaseResponse<PlanMonthListDTO<PlanDayListDTO>> getMoimPlans(
             @AuthUser User user,
-            @PathVariable Long moimId,
+            @UserMoimValidaton @PathVariable Long moimId,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month
     ) {

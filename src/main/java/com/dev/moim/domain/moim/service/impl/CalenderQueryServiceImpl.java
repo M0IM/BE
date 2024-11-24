@@ -5,7 +5,6 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserPlan;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
