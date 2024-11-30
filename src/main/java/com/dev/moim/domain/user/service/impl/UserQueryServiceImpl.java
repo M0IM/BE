@@ -7,8 +7,6 @@ import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
-import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -64,41 +62,6 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
         return ProfileDTO.of(user, userProfile);
-    }
-
-    @Override
-    public ProfilePageDTO getUserProfileList(User user, Long cursor, Integer take) {
-
-        Long startCursor = (cursor == 1) ? 0L : cursor;
-        Pageable pageable = PageRequest.of(0, take);
-
-        Slice <UserProfile> userProfileSlice = userProfileRepository.findAllByUserIdAndCursor(user.getId(), startCursor, pageable);
-
-        List<ProfileDTO> profileDTOList = userProfileSlice.stream()
-                .map(userProfile -> {
-                    return ProfileDTO.of(user, userProfile);
-                })
-                .toList();
-
-        return ProfilePageDTO.toProfileListDTO(profileDTOList, userProfileSlice);
-    }
-
-    @Override
-    public MoimPreviewListDTO getUserProfileTargetMoimList(Long profileId, Long cursor, Integer take) {
-
-        Long startCursor = (cursor == 1) ? 0L : cursor;
-        Pageable pageable = PageRequest.of(0, take);
-
-        Slice<UserMoim> userMoimSlice = userMoimRepository.findAllByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE, startCursor, pageable);
-        List<MoimPreviewDTO> moimPreviewDTOList = userMoimSlice.stream().map(userMoim -> {
-                    return MoimPreviewDTO.toMoimPreviewDTO(userMoim.getMoim(), userMoim.getMoim().getImageUrl()!= null && !userMoim.getMoim().getImageUrl().isEmpty() ? userMoim.getMoim().getImageUrl() : null);
-                }).toList();
-
-        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
-                ? userMoimSlice.getContent().get(userMoimSlice.getNumberOfElements() - 1).getId()
-                : null;
-
-        return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, userMoimSlice.hasNext());
     }
 
     @Override
@@ -241,17 +204,6 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .orElseThrow(() -> new PlanException(INDIVIDUAL_PLAN_NOT_FOUND));
 
         return UserPlanDTO.toIndividualPlan(individualPlan);
-    }
-
-    @Override
-    public UserPlanDTO getUserMoimPlanDetail(User user, Long userMoimPlanId) {
-        UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), userMoimPlanId)
-                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
-
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, userPlan.getPlan().getMoim())
-                .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
-
-        return UserPlanDTO.toUserMoimPlan(userPlan.getPlan(), userMoim);
     }
 
     @Override
