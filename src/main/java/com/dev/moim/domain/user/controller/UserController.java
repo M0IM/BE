@@ -41,8 +41,7 @@ public class UserController {
 
     @Operation(summary = "유저 기본 프로필 조회", description = "유저가 기본으로 설정한 프로필 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @ApiResponse(responseCode = "USERPROFILE_001", description = "프로필을 찾을 수 없습니다.")
+            @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
     @GetMapping("/profile")
     public BaseResponse<ProfileDTO> getProfile(

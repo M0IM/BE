@@ -14,7 +14,7 @@ public record PlanParticipantListPageDTO(
 ) {
     public static PlanParticipantListPageDTO from(List<UserProfile> userProfileList, Slice<UserPlan> userPlanSlice) {
         List<ProfileDTO> profileDTOList = userProfileList.stream()
-                .map(userProfile -> ProfileDTO.of(userProfile.getUser(), userProfile))
+                .map(userProfile -> ProfileDTO.of(userProfile.getUser()))
                 .toList();
 
         return new PlanParticipantListPageDTO(

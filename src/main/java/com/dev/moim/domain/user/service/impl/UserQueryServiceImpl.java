@@ -58,10 +58,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     public ProfileDTO getProfile(User user) {
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
-        return ProfileDTO.of(user, userProfile);
+        return ProfileDTO.of(user);
     }
 
     @Override
