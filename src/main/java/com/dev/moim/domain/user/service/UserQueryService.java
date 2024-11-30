@@ -1,7 +1,6 @@
 package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
@@ -55,10 +54,6 @@ public interface UserQueryService {
     boolean existsByEmail(String email);
 
     Integer countAlarm(User user);
-
-    Optional<UserProfile> findUserProfile(Long profileId);
-
-    boolean existsByUserProfileIdAndJoinStatus(Long profileId);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

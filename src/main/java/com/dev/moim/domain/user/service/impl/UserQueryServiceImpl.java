@@ -2,7 +2,6 @@ package com.dev.moim.domain.user.service.impl;
 
 import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
@@ -35,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -281,16 +279,6 @@ public class UserQueryServiceImpl implements UserQueryService {
     public Integer countAlarm(User user) {
         List<Alarm> alarmByUser = userRepository.findAlarmByUser(user);
         return alarmByUser.size();
-    }
-
-    @Override
-    public Optional<UserProfile> findUserProfile(Long profileId) {
-        return userProfileRepository.findById(profileId);
-    }
-
-    @Override
-    public boolean existsByUserProfileIdAndJoinStatus(Long profileId) {
-        return userMoimRepository.existsByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE);
     }
 }
 
