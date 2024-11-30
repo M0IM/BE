@@ -2,10 +2,12 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.CalenderCommandService;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,12 +37,12 @@ public class MoimCalendarController {
     })
     @GetMapping("/{moimId}/calender")
     public BaseResponse<PlanMonthListDTO<PlanDayListDTO>> getMoimPlans(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @Parameter(description = "연도") @RequestParam int year,
             @Parameter(description = "월") @RequestParam int month
     ) {
-        return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(user, moimId, year, month));
+        return BaseResponse.onSuccess(calenderQueryService.getMoimPlans(userMoim, year, month));
     }
 
     @Operation(summary = "모임 일정 생성", description = "모임의 새로운 일정을 추가합니다.")
@@ -51,11 +53,11 @@ public class MoimCalendarController {
     })
     @PostMapping("/{moimId}/calender")
     public BaseResponse<Long> createPlan(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @Valid @RequestBody PlanCreateDTO request
     ) {
-        return BaseResponse.onSuccess(calenderCommandService.createPlan(user, moimId, request));
+        return BaseResponse.onSuccess(calenderCommandService.createPlan(userMoim, request));
     }
 
     @Operation(summary = "모임 특정 일정 세부사항 조회", description = "특정 일정의 상세 내용과 일정 스케줄을 조회합니다.")
@@ -118,12 +120,12 @@ public class MoimCalendarController {
     })
     @PutMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> updatePlan(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanAuthorityValidation @PathVariable Long planId,
             @RequestBody PlanCreateDTO request
     ) {
-        calenderCommandService.updatePlan(user, moimId, planId, request);
+        calenderCommandService.updatePlan(userMoim, planId, request);
         return BaseResponse.onSuccess(null);
     }
 
@@ -137,11 +139,11 @@ public class MoimCalendarController {
     })
     @DeleteMapping("/{moimId}/plan/{planId}")
     public BaseResponse<?> deletePlan(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @PlanAuthorityValidation @PathVariable Long planId
     ) {
-        calenderCommandService.deletePlan(user, moimId, planId);
+        calenderCommandService.deletePlan(userMoim, planId);
         return BaseResponse.onSuccess(null);
     }
 
@@ -155,11 +157,11 @@ public class MoimCalendarController {
     })
     @PostMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<Long> joinPlan(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @UserPlanDuplicateValidation @PathVariable Long planId
     ) {
-        return BaseResponse.onSuccess(calenderCommandService.joinPlan(user, moimId, planId));
+        return BaseResponse.onSuccess(calenderCommandService.joinPlan(userMoim, planId));
     }
 
     @Operation(summary = "모임 일정 참여 신청 취소", description = "모임 멤버가 모임 일정 신청을 취소하는 기능입니다.")
@@ -173,11 +175,11 @@ public class MoimCalendarController {
     })
     @DeleteMapping("/{moimId}/plan/{planId}/participate")
     public BaseResponse<?> cancelPlanParticipation(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @UserPlanValidation @PathVariable Long planId
     ) {
-        calenderCommandService.cancelPlanParticipation(user, moimId, planId);
+        calenderCommandService.cancelPlanParticipation(userMoim, planId);
         return BaseResponse.onSuccess(null);
     }
 }

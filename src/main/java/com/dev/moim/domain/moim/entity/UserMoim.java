@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -64,6 +67,9 @@ public class UserMoim extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "userMoim", cascade = CascadeType.REMOVE)
+    private List<UserPlan> userPlanList = new ArrayList<>();
 
     public void accept() {
         this.joinStatus = JoinStatus.COMPLETE;

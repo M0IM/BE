@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserPlan;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
@@ -42,7 +43,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final UserMoimRepository userMoimRepository;
 
     @Override
-    public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month) {
+    public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(UserMoim userMoim, int year, int month) {
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startDate = yearMonth.atDay(1).atStartOfDay();
@@ -61,11 +62,11 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
             LocalDateTime dayStart = YearMonth.of(year, month).atDay(day).atStartOfDay();
             LocalDateTime dayEnd = dayStart.plusDays(1).minusNanos(1);
 
-            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(moimId, dayStart, dayEnd);
+            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(userMoim.getId(), dayStart, dayEnd);
 
             List<MoimPlanDTO> planList = dayPlans.stream()
-                    .filter(plan -> plan.getMoim().getId().equals(moimId))
-                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), user.getId())))
+                    .filter(plan -> plan.getMoim().getId().equals(userMoim.getId()))
+                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), userMoim.getUser().getId())))
                     .collect(Collectors.toList());
 
             planDayListMap.put(day, new PlanDayListDTO(memberWithPlanCnt, planList));

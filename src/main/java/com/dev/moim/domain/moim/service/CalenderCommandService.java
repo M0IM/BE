@@ -1,17 +1,17 @@
 package com.dev.moim.domain.moim.service;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.PlanCreateDTO;
+import com.dev.moim.domain.moim.entity.UserMoim;
 
 public interface CalenderCommandService {
 
-    Long createPlan(User user, Long moimId, PlanCreateDTO request);
+    Long createPlan(UserMoim userMoim, PlanCreateDTO request);
 
-    Long joinPlan(User user, Long moimId, Long planId);
+    Long joinPlan(UserMoim userMoim, Long planId);
 
-    void cancelPlanParticipation(User user, Long moidId, Long planId);
+    void cancelPlanParticipation(UserMoim userMoim, Long planId);
 
-    void updatePlan(User user, Long moimId, Long planId, PlanCreateDTO request);
+    void updatePlan(UserMoim userMoim, Long planId, PlanCreateDTO request);
 
-    void deletePlan(User user, Long moimId, Long planId);
+    void deletePlan(UserMoim userMoim, Long planId);
 }

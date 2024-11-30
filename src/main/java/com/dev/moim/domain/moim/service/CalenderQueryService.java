@@ -2,10 +2,11 @@ package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.calender.*;
+import com.dev.moim.domain.moim.entity.UserMoim;
 
 public interface CalenderQueryService {
 
-    PlanMonthListDTO<PlanDayListDTO> getMoimPlans(User user, Long moimId, int year, int month);
+    PlanMonthListDTO<PlanDayListDTO> getMoimPlans(UserMoim userMoim, int year, int month);
 
     PlanDetailDTO getPlanDetails(User user, Long planId);
 
