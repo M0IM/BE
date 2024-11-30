@@ -154,7 +154,16 @@ public class User extends BaseEntity {
         this.lastAlarmTime = LocalDateTime.now();
     }
 
-    public void updateUserInfo(String residence, Gender gender, LocalDate birth) {
+    public void updateUserInfo(
+            String nickname,
+            String imageUrl,
+            String introduction,
+            String residence,
+            Gender gender,
+            LocalDate birth) {
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
         this.residence = residence;
         this.gender = gender;
         this.birth = birth;

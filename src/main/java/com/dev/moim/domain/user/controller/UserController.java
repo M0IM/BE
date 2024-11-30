@@ -51,7 +51,7 @@ public class UserController {
         return BaseResponse.onSuccess(userQueryService.getProfile(user));
     }
 
-    @Operation(summary = "(멀티 프로필 도입 전 ver) 유저 프로필 수정", description = "(멀티 프로필 도입 전 ver) 유저의 프로필을 수정하는 기능입니다.")
+    @Operation(summary = "유저 기본 정보 수정", description = "유저의 기본 정보를 수정하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON201", description = "요청 성공 및 리소스 생성됨"),
     })

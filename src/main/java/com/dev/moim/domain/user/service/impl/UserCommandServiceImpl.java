@@ -42,6 +42,9 @@ public class UserCommandServiceImpl implements UserCommandService {
     public void updateUserInfo(User user, UpdateUserInfoDTO request) {
 
         user.updateUserInfo(
+                request.nickname(),
+                request.imageKey() != null && !request.imageKey().isEmpty()? s3Service.generateStaticUrl(request.imageKey()) : null,
+                request.introduction(),
                 request.residence(),
                 request.gender(),
                 request.birth());
@@ -49,6 +52,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN)
                 .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
 
+        // TODO: userProfile 제거
         userProfile.updateUserProfile(
                 request.nickname(),
                 request.introduction(),
