@@ -28,6 +28,15 @@ public class UserMoim extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "introduction")
+    private String introduction;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "moim_role", nullable = false)
     private MoimRole moimRole;
@@ -51,6 +60,7 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "moim_id")
     private Moim moim;
 
+    // TODO: userProfile 제거
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
@@ -81,9 +91,5 @@ public class UserMoim extends BaseEntity {
 
     public void confirm () {
         this.confirm = true;
-    }
-
-    public void updateUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
     }
 }

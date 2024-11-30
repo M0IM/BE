@@ -28,7 +28,6 @@ import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,14 +148,17 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
         UserMoim userMoim = UserMoim.builder()
-                            .userProfile(userProfile)
-                            .joinStatus(JoinStatus.LOADING)
-                            .user(user)
-                            .moimRole(MoimRole.MEMBER)
-                            .moim(moim)
-                            .profileStatus(ProfileStatus.PRIVATE)
-                            .confirm(false)
-                            .build();
+                .userProfile(userProfile)
+                .joinStatus(JoinStatus.LOADING)
+                .user(user)
+                .moimRole(MoimRole.MEMBER)
+                .moim(moim)
+                .profileStatus(ProfileStatus.PRIVATE)
+                .confirm(false)
+                .nickname(user.getNickname())
+                .imageUrl(user.getImageUrl())
+                .introduction(user.getIntroduction())
+                .build();
 
         Optional<UserMoim> owner = userRepository.findOwnerByMoim(moim);
 
