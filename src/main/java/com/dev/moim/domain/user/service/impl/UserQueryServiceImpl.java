@@ -186,10 +186,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         int moimPlanCnt = userPlanRepository.countPlansByUserAndDateBetween(user, startOfDay, endOfDay);
         int todoPlanCnt = userTodoRepository.countByUserAndTodoDueDateBetween(user, startOfDay, endOfDay);
 
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
-        return new UserDailyPlanCntDTO(userProfile.getName(), individualPlanCnt + moimPlanCnt + todoPlanCnt);
+        return new UserDailyPlanCntDTO(user.getNickname(), individualPlanCnt + moimPlanCnt + todoPlanCnt);
     }
 
     @Override
