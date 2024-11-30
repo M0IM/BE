@@ -1,12 +1,10 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
 import com.dev.moim.domain.moim.entity.UserPlan;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.error.handler.MoimException;
@@ -24,7 +22,6 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
@@ -99,16 +96,9 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     @Override
     public PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "id"));
-        Slice<UserPlan> userPlanPage = userPlanRepository.findByPlanIdWithUserAndUserMoim(planId, moimId, pageRequest);
+        Slice<UserPlan> userPlanPage = userPlanRepository.findByPlanIdWithUserMoim(planId, pageRequest);
 
-        List<UserProfile> userProfileList = userPlanPage.stream()
-                .map(UserPlan::getUser)
-                .map(user -> userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE))
-                .filter(Optional::isPresent)
-                .map(optionalUserMoim -> optionalUserMoim.get().getUserProfile())
-                .toList();
-
-        return PlanParticipantListPageDTO.from(userProfileList, userPlanPage);
+        return PlanParticipantListPageDTO.from(userPlanPage);
     }
 
     @Override

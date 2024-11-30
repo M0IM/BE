@@ -1,6 +1,5 @@
 package com.dev.moim.domain.user.dto;
 
-import com.dev.moim.domain.account.entity.UserProfile;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;

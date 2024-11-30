@@ -2,13 +2,10 @@ package com.dev.moim.domain.user.service.impl;
 
 import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
-import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
-import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -37,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.dev.moim.domain.account.entity.enums.ProfileType.MAIN;
 import static com.dev.moim.domain.moim.entity.enums.MoimRole.OWNER;
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -60,45 +56,7 @@ public class UserQueryServiceImpl implements UserQueryService {
 
     @Override
     public ProfileDTO getProfile(User user) {
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
-        return ProfileDTO.of(user, userProfile);
-    }
-
-    @Override
-    public ProfilePageDTO getUserProfileList(User user, Long cursor, Integer take) {
-
-        Long startCursor = (cursor == 1) ? 0L : cursor;
-        Pageable pageable = PageRequest.of(0, take);
-
-        Slice <UserProfile> userProfileSlice = userProfileRepository.findAllByUserIdAndCursor(user.getId(), startCursor, pageable);
-
-        List<ProfileDTO> profileDTOList = userProfileSlice.stream()
-                .map(userProfile -> {
-                    return ProfileDTO.of(user, userProfile);
-                })
-                .toList();
-
-        return ProfilePageDTO.toProfileListDTO(profileDTOList, userProfileSlice);
-    }
-
-    @Override
-    public MoimPreviewListDTO getUserProfileTargetMoimList(Long profileId, Long cursor, Integer take) {
-
-        Long startCursor = (cursor == 1) ? 0L : cursor;
-        Pageable pageable = PageRequest.of(0, take);
-
-        Slice<UserMoim> userMoimSlice = userMoimRepository.findAllByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE, startCursor, pageable);
-        List<MoimPreviewDTO> moimPreviewDTOList = userMoimSlice.stream().map(userMoim -> {
-                    return MoimPreviewDTO.toMoimPreviewDTO(userMoim.getMoim(), userMoim.getMoim().getImageUrl()!= null && !userMoim.getMoim().getImageUrl().isEmpty() ? userMoim.getMoim().getImageUrl() : null);
-                }).toList();
-
-        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
-                ? userMoimSlice.getContent().get(userMoimSlice.getNumberOfElements() - 1).getId()
-                : null;
-
-        return MoimPreviewListDTO.toMoimPreviewListDTO(moimPreviewDTOList, nextCursor, userMoimSlice.hasNext());
+        return ProfileDTO.of(user);
     }
 
     @Override
@@ -106,12 +64,9 @@ public class UserQueryServiceImpl implements UserQueryService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(userId, MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
         int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
 
-        return ProfileDetailDTO.from(user, userProfile, participateMoimCnt);
+        return ProfileDetailDTO.from(user, participateMoimCnt);
     }
 
     @Override
@@ -229,10 +184,7 @@ public class UserQueryServiceImpl implements UserQueryService {
         int moimPlanCnt = userPlanRepository.countPlansByUserAndDateBetween(user, startOfDay, endOfDay);
         int todoPlanCnt = userTodoRepository.countByUserAndTodoDueDateBetween(user, startOfDay, endOfDay);
 
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
-        return new UserDailyPlanCntDTO(userProfile.getName(), individualPlanCnt + moimPlanCnt + todoPlanCnt);
+        return new UserDailyPlanCntDTO(user.getNickname(), individualPlanCnt + moimPlanCnt + todoPlanCnt);
     }
 
     @Override
@@ -241,17 +193,6 @@ public class UserQueryServiceImpl implements UserQueryService {
                 .orElseThrow(() -> new PlanException(INDIVIDUAL_PLAN_NOT_FOUND));
 
         return UserPlanDTO.toIndividualPlan(individualPlan);
-    }
-
-    @Override
-    public UserPlanDTO getUserMoimPlanDetail(User user, Long userMoimPlanId) {
-        UserPlan userPlan = userPlanRepository.findByUserIdAndPlanId(user.getId(), userMoimPlanId)
-                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
-
-        UserMoim userMoim = userMoimRepository.findByUserAndMoim(user, userPlan.getPlan().getMoim())
-                .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
-
-        return UserPlanDTO.toUserMoimPlan(userPlan.getPlan(), userMoim);
     }
 
     @Override
@@ -338,16 +279,6 @@ public class UserQueryServiceImpl implements UserQueryService {
     public Integer countAlarm(User user) {
         List<Alarm> alarmByUser = userRepository.findAlarmByUser(user);
         return alarmByUser.size();
-    }
-
-    @Override
-    public Optional<UserProfile> findUserProfile(Long profileId) {
-        return userProfileRepository.findById(profileId);
-    }
-
-    @Override
-    public boolean existsByUserProfileIdAndJoinStatus(Long profileId) {
-        return userMoimRepository.existsByUserProfileIdAndJoinStatus(profileId, JoinStatus.COMPLETE);
     }
 }
 

@@ -1,8 +1,7 @@
 package com.dev.moim.domain.moim.dto.calender;
 
-import com.dev.moim.domain.account.entity.UserProfile;
+import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDTO;
 import com.dev.moim.domain.moim.entity.UserPlan;
-import com.dev.moim.domain.user.dto.ProfileDTO;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
@@ -10,11 +9,11 @@ import java.util.List;
 public record PlanParticipantListPageDTO(
         Boolean isFirst,
         Boolean hasNext,
-        List<ProfileDTO> planParticipantList
+        List<UserMoimProfileDTO> planParticipantList
 ) {
-    public static PlanParticipantListPageDTO from(List<UserProfile> userProfileList, Slice<UserPlan> userPlanSlice) {
-        List<ProfileDTO> profileDTOList = userProfileList.stream()
-                .map(userProfile -> ProfileDTO.of(userProfile.getUser(), userProfile))
+    public static PlanParticipantListPageDTO from(Slice<UserPlan> userPlanSlice) {
+        List<UserMoimProfileDTO> profileDTOList = userPlanSlice.stream()
+                .map(userPlan -> UserMoimProfileDTO.of(userPlan.getUserMoim()))
                 .toList();
 
         return new PlanParticipantListPageDTO(

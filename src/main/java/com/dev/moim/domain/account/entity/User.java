@@ -27,6 +27,15 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "introduction")
+    private String introduction;
+
     @Column(nullable = false)
     private String email;
 
@@ -145,7 +154,11 @@ public class User extends BaseEntity {
         this.lastAlarmTime = LocalDateTime.now();
     }
 
-    public void updateUserInfo(String residence, Gender gender, LocalDate birth) {
+    public void updateUserInfo(
+            String nickname, String imageUrl, String introduction, String residence, Gender gender, LocalDate birth) {
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
         this.residence = residence;
         this.gender = gender;
         this.birth = birth;

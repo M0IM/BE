@@ -2,8 +2,9 @@ package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.dto.profile.UpdateUserMoimProfileDTO;
 import com.dev.moim.domain.moim.entity.Moim;
-import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import jakarta.validation.Valid;
 
 public interface MoimCommandService {
@@ -28,4 +29,6 @@ public interface MoimCommandService {
     void moimExpel(User user, Long userId, Long moimId);
 
     MoimRoleResponse moimsMyRole(User user, Long moimId);
+
+    void udateUserMoimProfile(UserMoim userMoim, UpdateUserMoimProfileDTO request);
 }

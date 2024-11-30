@@ -1,7 +1,6 @@
 package com.dev.moim.domain.user.dto;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.entity.enums.Provider;
@@ -24,21 +23,21 @@ public record ProfileDetailDTO(
         int participateMoimCnt,
         String introduction
 ) {
-        public static ProfileDetailDTO from(User user, UserProfile userProfile, int participateMoimCnt) {
+        public static ProfileDetailDTO from(User user, int participateMoimCnt) {
                 return new ProfileDetailDTO(
                         user.getId(),
-                        userProfile.getId(),
-                        userProfile.getProfileType(),
+                        null,
+                        null,
                         user.getProvider(),
-                        userProfile.getImageUrl()!= null && !userProfile.getImageUrl().isEmpty() ? userProfile.getImageUrl() : null,
-                        userProfile.getName(),
+                        user.getImageUrl()!= null && !user.getImageUrl().isEmpty() ? user.getImageUrl() : null,
+                        user.getNickname(),
                         user.getResidence(),
                         user.getBirth(),
                         user.getGender(),
-                        userProfile.getCreatedAt(),
+                        user.getCreatedAt(),
                         user.getRating(),
                         participateMoimCnt,
-                        userProfile.getIntroduction()
+                        user.getIntroduction()
                 );
         }
 }

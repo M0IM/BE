@@ -96,7 +96,9 @@ public class SecurityConfig {
             "/api/v1/auth/reissueToken/**",
             "/health",
             "/api/v1/auth/password/**",
-            "/api/v1/regions/**"
+            "/api/v1/regions/**",
+            "/api/v1/auth/login/**",
+            "/api/v1/auth/oAuth/**"
     };
 
     private static final String[] releaseAllowUrls = {
@@ -105,7 +107,9 @@ public class SecurityConfig {
             "/api/v1/auth/reissueToken/**",
             "/health",
             "/api/v1/auth/password/**",
-            "/api/v1/regions/**"
+            "/api/v1/regions/**",
+            "/api/v1/auth/login/**",
+            "/api/v1/auth/oAuth/**"
     };
 
     @Bean
@@ -140,9 +144,11 @@ public class SecurityConfig {
         OAuthLoginFilter oAuthLoginFilter = new OAuthLoginFilter(
                 jwtUtil, redisUtil, authenticationManager(), userRepository, eventPublisher, fcmQueryService);
 
+        JwtFilter jwtFilter = new JwtFilter(jwtUtil,redisUtil, Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls);
+
         http.addFilterAt(customLoginFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAt(oAuthLoginFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JwtFilter(jwtUtil,redisUtil, Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), CustomLoginFilter.class);
+        http.addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtExceptionFilter(Arrays.asList(environment.getActiveProfiles()).contains("release") ? releaseAllowUrls : allowUrls), JwtFilter.class);
 
         http.logout(logout -> logout

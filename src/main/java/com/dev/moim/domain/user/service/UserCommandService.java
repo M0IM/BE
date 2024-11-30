@@ -5,17 +5,7 @@ import com.dev.moim.domain.user.dto.*;
 
 public interface UserCommandService {
 
-    void createProfile(User user, CreateProfileDTO request);
-
-    void updateUserProfile(User user, Long profileId, UpdateMultiProfileDTO request);
-
-    void deleteUserProfile(Long profileId);
-
     void updateUserInfo(User user, UpdateUserInfoDTO request);
-
-    void updateUserDefaultInfo(User user, UpdateUserDefaultInfoDTO request);
-
-    void updateMoimProfile(User user, Long moimId, UpdateMoimProfileDTO request);
 
     AlarmDTO settingPushAlarm(User user);
 

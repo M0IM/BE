@@ -21,6 +21,10 @@ public class UserPlan extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_moim_id")
+    private UserMoim userMoim;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id")
     private Plan plan;
 }

@@ -36,12 +36,10 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
     List<UserPlan> findByUserIdAndPlanDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     @Query("SELECT up FROM UserPlan up " +
-            "JOIN FETCH up.user u " +
-            "JOIN FETCH UserMoim um ON u.id = um.user.id AND um.moim.id = :moimId " +
+            "JOIN FETCH UserMoim um ON up.userMoim.id = um.id  " +
             "WHERE up.plan.id = :planId")
-    Slice<UserPlan> findByPlanIdWithUserAndUserMoim(@Param("planId") Long planId,
-                                                    @Param("moimId") Long moimId,
-                                                    Pageable pageable);
+    Slice<UserPlan> findByPlanIdWithUserMoim(@Param("planId") Long planId,
+                                             Pageable pageable);
 
     Optional<UserPlan> findByUserIdAndPlanId(Long userId, Long planId);
 

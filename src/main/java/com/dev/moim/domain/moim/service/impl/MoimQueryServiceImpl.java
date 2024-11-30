@@ -1,16 +1,15 @@
 package com.dev.moim.domain.moim.service.impl;
 
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.dto.MoimDetailDTO;
 import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.dto.profile.GetUserMoimProfileDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.dto.*;
-import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PostType;
@@ -240,6 +239,17 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         MoimRole moimRole = moimRoleByUser.orElse(null);
 
         return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userPreviewDTOList);
+    }
+
+    @Override
+    public GetUserMoimProfileDTO getUserMoimProfile(Long userMoimId) {
+
+        UserMoim userMoim = userMoimRepository.findByIdAndJoinStatusWithUser(userMoimId, JoinStatus.COMPLETE)
+                .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
+
+        int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userMoim.getUser().getId(), JoinStatus.COMPLETE);
+
+        return GetUserMoimProfileDTO.from(userMoim, userMoim.getUser(), participateMoimCnt);
     }
 
     @Override

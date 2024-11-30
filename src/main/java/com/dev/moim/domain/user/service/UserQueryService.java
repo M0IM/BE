@@ -1,9 +1,7 @@
 package com.dev.moim.domain.user.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.IndividualPlan;
 import com.dev.moim.domain.user.dto.UserDailyPlanPageDTO;
@@ -16,10 +14,6 @@ import java.util.Optional;
 public interface UserQueryService {
 
     ProfileDTO getProfile(User user);
-
-    ProfilePageDTO getUserProfileList(User user, Long cursor, Integer take);
-
-    MoimPreviewListDTO getUserProfileTargetMoimList(Long profileId, Long cursor, Integer take);
 
     ProfileDetailDTO getDetailProfile(Long userId);
 
@@ -38,8 +32,6 @@ public interface UserQueryService {
     UserDailyPlanCntDTO getUserDailyPlanCnt(User user, int year, int month, int day);
 
     UserPlanDTO getIndividualPlanDetail(User user, Long individualPlanId);
-
-    UserPlanDTO getUserMoimPlanDetail(User user, Long userMoimPlanId);
 
     List<Long> findUserMoimIdListByUserId(Long userId);
 
@@ -62,10 +54,6 @@ public interface UserQueryService {
     boolean existsByEmail(String email);
 
     Integer countAlarm(User user);
-
-    Optional<UserProfile> findUserProfile(Long profileId);
-
-    boolean existsByUserProfileIdAndJoinStatus(Long profileId);
 
 //    ChatRoomUserListResponse getUserByChatRoom(User user, Long chatRoomId);
 }

@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -27,6 +30,15 @@ public class UserMoim extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "introduction")
+    private String introduction;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "moim_role", nullable = false)
@@ -54,6 +66,9 @@ public class UserMoim extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "userMoim", cascade = CascadeType.REMOVE)
+    private List<UserPlan> userPlanList = new ArrayList<>();
 
     public void accept() {
         this.joinStatus = JoinStatus.COMPLETE;
@@ -83,7 +98,9 @@ public class UserMoim extends BaseEntity {
         this.confirm = true;
     }
 
-    public void updateUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
+    public void updateInfo(String nickname, String imageUrl, String introduction) {
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
     }
 }

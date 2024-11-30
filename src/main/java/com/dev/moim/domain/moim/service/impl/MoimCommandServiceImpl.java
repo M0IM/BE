@@ -1,7 +1,6 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
 import com.dev.moim.domain.account.entity.enums.ProfileType;
@@ -9,6 +8,7 @@ import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.dto.profile.UpdateUserMoimProfileDTO;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.ExitReason;
 import com.dev.moim.domain.moim.entity.Moim;
@@ -28,7 +28,6 @@ import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -273,5 +272,10 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
     private String imageNullProcess(String imageKeyName) {
         return imageKeyName == null || imageKeyName.isEmpty() || imageKeyName.isBlank() ? null : s3Service.generateStaticUrl(imageKeyName);
+    }
+
+    @Override
+    public void udateUserMoimProfile(UserMoim userMoim, UpdateUserMoimProfileDTO request) {
+        userMoim.updateInfo(request.nickname(), request.imageUrl(), request.introduction());
     }
 }

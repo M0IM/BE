@@ -102,7 +102,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         } else {
             errorStatus = AUTHENTICATION_FAILED;
         }
-        log.error("[ERROR] : {}", errorStatus);
 
         BaseResponse<Object> errorResponse = BaseResponse.onFailure(
                 errorStatus.getCode(),
