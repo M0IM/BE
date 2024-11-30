@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.service.UserMoimQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
+import com.dev.moim.global.security.principal.MoimAuthentication;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,10 +59,13 @@ public class AuthUserMoimAdminArgumentResolver implements HandlerMethodArgumentR
                 .map(authentication -> {
                     String userId = authentication.getName();
                     Long moimId = extractMoimIdFromUri(httpServletRequest.getRequestURI());
-                    List<MoimRole> moimRoleList = new ArrayList<>(Arrays.asList(MoimRole.OWNER, MoimRole.ADMIN));
+
                     UserMoim userMoimAdmin = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusInMoimRoleListWithUserAndMoim(
-                                    Long.valueOf(userId), moimId, JoinStatus.COMPLETE, moimRoleList)
+                                    Long.valueOf(userId), moimId, JoinStatus.COMPLETE, Arrays.asList(MoimRole.OWNER, MoimRole.ADMIN))
                             .orElseThrow(() -> new AuthException(USER_NOT_MOIM_ADMIN));
+
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new MoimAuthentication(authentication, moimId, userMoimAdmin.getMoimRole(), userMoimAdmin.getId()));
 
                     if (userMoimAdmin.getUser().getDeviceId() == null) {
                         Long now = new Date().getTime();

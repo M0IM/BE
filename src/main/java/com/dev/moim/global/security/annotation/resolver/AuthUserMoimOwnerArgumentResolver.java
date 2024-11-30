@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.service.UserMoimQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
+import com.dev.moim.global.security.principal.MoimAuthentication;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,11 +62,15 @@ public class AuthUserMoimOwnerArgumentResolver implements HandlerMethodArgumentR
                 .map(authentication -> {
                     String userId = authentication.getName();
                     Long moimId = extractMoimIdFromUri(httpServletRequest.getRequestURI());
-                    UserMoim userMoim = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
+
+                    UserMoim userMoimOwner = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
                                     Long.valueOf(userId), moimId, JoinStatus.COMPLETE, MoimRole.OWNER)
                             .orElseThrow(() -> new AuthException(USER_NOT_MOIM_OWNER));
 
-                    if (userMoim.getUser().getDeviceId() == null) {
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new MoimAuthentication(authentication, moimId, userMoimOwner.getMoimRole(), userMoimOwner.getId()));
+
+                    if (userMoimOwner.getUser().getDeviceId() == null) {
                         Long now = new Date().getTime();
                         Long expiration = jwtUtil.getExpiration(accessToken) - now;
                         redisUtil.setValue(accessToken, "deviceId_missing", expiration);
@@ -73,7 +78,7 @@ public class AuthUserMoimOwnerArgumentResolver implements HandlerMethodArgumentR
                         throw new AuthException(FCM_TOKEN_REQUIRED);
                     }
 
-                    return userMoim;
+                    return userMoimOwner;
                 }).orElseThrow(() -> new AuthException(AUTH_INVALID_TOKEN));
     }
 
