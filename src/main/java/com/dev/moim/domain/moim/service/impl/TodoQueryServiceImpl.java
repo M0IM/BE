@@ -41,23 +41,20 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     private final UserMoimRepository userMoimRepository;
 
     @Override
-    public TodoDetailDTO getTotalDetailForAssignee(User user, Long todoId) {
+    public TodoDetailDTO getTotalDetailForAssignee(UserMoim userMoim, Long todoId) {
 
-        Todo todo = todoRepository.findById(todoId)
-                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
-
-        UserTodo userTodo = userTodoRepository.findByUserIdAndTodoId(user.getId(), todoId)
+        UserTodo userTodo = userTodoRepository.findByUserMoimIdAndTodoIdWithTodo(userMoim.getId(), todoId)
                 .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE));
 
         return new TodoDetailDTO(
-                todo.getId(),
-                todo.getMoim().getId(),
-                todo.getTitle(),
-                todo.getContent(),
-                todo.getDueDate(),
-                todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
+                userTodo.getTodo().getId(),
+                userTodo.getTodo().getMoim().getId(),
+                userTodo.getTodo().getTitle(),
+                userTodo.getTodo().getContent(),
+                userTodo.getTodo().getDueDate(),
+                userTodo.getTodo().getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 userTodo.getStatus(),
-                todo.getStatus()
+                userTodo.getTodo().getStatus()
         );
     }
 

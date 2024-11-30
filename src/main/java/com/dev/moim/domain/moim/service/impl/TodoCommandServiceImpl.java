@@ -65,14 +65,14 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                                 .todo(todo)
                                 .build()));
 
-        List<User> userList = request.isAssigneeSelectAll()
-                ? userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE).stream()
-                .map(UserMoim::getUser).toList()
-                : userRepository.findAllById(request.targetUserIdList());
+        List<UserMoim> userMoimList = request.isAssigneeSelectAll()
+                ? userMoimRepository.findByMoimIdAndJoinStatus(moimId, JoinStatus.COMPLETE)
+                : userMoimRepository.findAllByMoimIdAndUserIdList(moimId, request.targetUserIdList());
 
-        List<UserTodo> userTodoList = userList.stream()
-                .map(userEntity -> UserTodo.builder()
-                        .user(userEntity)
+        List<UserTodo> userTodoList = userMoimList.stream()
+                .map(userMoimEntity -> UserTodo.builder()
+                        .user(userMoimEntity.getUser())
+                        .userMoim(userMoimEntity)
                         .todo(todo)
                         .status(TodoAssigneeStatus.PENDING)
                         .build())
@@ -80,12 +80,12 @@ public class TodoCommandServiceImpl implements TodoCommandService {
 
         userTodoRepository.saveAll(userTodoList);
 
-        userList.stream().filter(assignee -> !assignee.equals(user))
+        userMoimList.stream().filter(assignee -> !assignee.getUser().equals(user))
                 .forEach(assignee -> {
-                    alarmService.saveAlarm(user, assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
+                    alarmService.saveAlarm(user, assignee.getUser(), "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moim.getId(), null, null);
 
-                    if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
-                        fcmService.sendPushNotification(assignee, "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
+                    if (assignee.getUser().getIsPushAlarm() && assignee.getUser().getDeviceId() != null) {
+                        fcmService.sendPushNotification(assignee.getUser(), "새로운 할 일이 도착했습니다", todo.getTitle(), AlarmDetailType.TODO);
                     }
                 });
 
@@ -93,16 +93,14 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public UpdateTodoStatusResponseDTO updateUserTodoStatus(User user, Long todoId, UpdateTodoStatusDTO request) {
+    public UpdateTodoStatusResponseDTO updateUserTodoStatus(UserMoim userMoim, Long todoId, UpdateTodoStatusDTO request) {
 
-        UserTodo userTodo = userTodoRepository.findByUserIdAndTodoId(user.getId(), todoId)
+        UserTodo userTodo = userTodoRepository.findByUserMoimIdAndTodoIdWithTodo(userMoim.getId(), todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
 
         userTodo.updateStatus(request.todoAssigneeStatus());
 
-        Todo todo = userTodo.getTodo();
-
-        todo.updateStatus(
+        userTodo.getTodo().updateStatus(
                 userTodoRepository.findAllByTodoId(todoId).stream()
                         .map(UserTodo::getStatus)
                         .allMatch(status -> status == TodoAssigneeStatus.COMPLETE)
@@ -113,7 +111,7 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     }
 
     @Override
-    public void updateTodo(User user, Long moimId, Long todoId, UpdateTodoDTO request) {
+    public void updateTodo(UserMoim userMoim, Long moimId, Long todoId, UpdateTodoDTO request) {
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
@@ -154,9 +152,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
                 newImageList
         );
 
-        todo.getUserTodoList().stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(user))
+        todo.getUserTodoList().stream().map(UserTodo::getUser).filter(assignee -> !assignee.equals(userMoim.getUser()))
                 .forEach(assignee -> {
-                    alarmService.saveAlarm(user, assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moimId, null, null);
+                    alarmService.saveAlarm(userMoim.getUser(), assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmType.PUSH, AlarmDetailType.TODO, moimId, null, null);
 
                     if (assignee.getIsPushAlarm() && assignee.getDeviceId() != null) {
                         fcmService.sendPushNotification(assignee, "할 일이 수정되었습니다", todo.getTitle(), AlarmDetailType.TODO);
@@ -200,14 +198,9 @@ public class TodoCommandServiceImpl implements TodoCommandService {
     @Override
     public void deleteAssignees(DeleteTodoAssigneeDTO request) {
 
-        Todo todo = todoRepository.findById(request.todoId())
-                .orElseThrow(() -> new TodoException(TODO_NOT_FOUND));
+        List<UserTodo> userTodoList = userTodoRepository.findAllByTodoIdAndUserIdList(request.todoId(), request.deleteAssigneeIdList());
 
-        List<UserTodo> userTodoList = request.deleteAssigneeIdList().stream()
-                .map(id -> userTodoRepository.findByUserIdAndTodoId(id, request.todoId())
-                        .orElseThrow(() -> new TodoException(NOT_TODO_ASSIGNEE))).toList();
-
-        todo.getUserTodoList().removeAll(userTodoList);
+        userTodoRepository.deleteAll(userTodoList);
     }
 
     @Override

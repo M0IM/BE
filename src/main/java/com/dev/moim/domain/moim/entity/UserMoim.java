@@ -71,6 +71,9 @@ public class UserMoim extends BaseEntity {
     @OneToMany(mappedBy = "userMoim", cascade = CascadeType.REMOVE)
     private List<UserPlan> userPlanList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "userMoim", cascade = CascadeType.REMOVE)
+    private List<UserTodo> userTodoList = new ArrayList<>();
+
     public void accept() {
         this.joinStatus = JoinStatus.COMPLETE;
     }

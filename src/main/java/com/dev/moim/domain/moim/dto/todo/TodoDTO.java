@@ -33,8 +33,8 @@ public record TodoDTO(
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 todo.getStatus(),
                 null,
-                userMoim.map(moim -> moim.getUserProfile().getName()).orElse(null),
-                userMoim.map(value -> value.getUserProfile().getImageUrl()).orElse(null),
+                userMoim.map(UserMoim::getNickname).orElse(null),
+                userMoim.map(UserMoim::getImageUrl).orElse(null),
                 userMoim.map(UserMoim::getMoimRole).orElse(null),
                 todo.getMoim().getId(),
                 todo.getMoim().getName()

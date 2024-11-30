@@ -2,10 +2,13 @@ package com.dev.moim.domain.moim.controller;
 
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.*;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,11 +57,11 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/{todoId}/for-me")
     public BaseResponse<TodoDetailDTO> getTodoDetailForAssignee(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @TodoAssigneeValidation @PathVariable Long todoId
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getTotalDetailForAssignee(user, todoId));
+        return BaseResponse.onSuccess(todoQueryService.getTotalDetailForAssignee(userMoim, todoId));
     }
 
     @Operation(summary = "todo 상세 조회 (모임 관리자)", description = "관리자 회원이 특정 모임의 특정 todo의 세부사항을 상세 조회합니다. ")
@@ -184,12 +187,12 @@ public class MoimTodoController {
     })
     @PutMapping("/moims/{moimId}/todos/assignee/{todoId}")
     public BaseResponse<UpdateTodoStatusResponseDTO> updateUserTodoStatus(
-            @AuthUser User user,
-            @UserMoimValidaton @PathVariable Long moimId,
+            @AuthUserMoim UserMoim userMoim,
+            @PathVariable Long moimId,
             @TodoAssigneeValidation @PathVariable Long todoId,
             @Valid @RequestBody UpdateTodoStatusDTO request
     ) {
-        return BaseResponse.onSuccess(todoCommandService.updateUserTodoStatus(user, todoId, request));
+        return BaseResponse.onSuccess(todoCommandService.updateUserTodoStatus(userMoim, todoId, request));
     }
 
     @Operation(summary = "todo 수정", description = "모임 관리자 회원이 특정 todo 내용을 수정합니다.")
@@ -204,12 +207,12 @@ public class MoimTodoController {
     })
     @PutMapping("/moims/{moimId}/todos/admin/{todoId}")
     public BaseResponse<?> updateTodo(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
             @Valid @RequestBody UpdateTodoDTO request
     ) {
-        todoCommandService.updateTodo(user, moimId, todoId, request);
+        todoCommandService.updateTodo(userMoim, moimId, todoId, request);
         return BaseResponse.onSuccess("todo 수정 성공했습니다.");
     }
 

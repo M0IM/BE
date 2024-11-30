@@ -13,6 +13,7 @@ public record CreateTodoDTO(
         String content,
         LocalDate dueDate,
         List<String> imageKeyList,
+        // TODO : userMoimIdList 받도록 수정
         List<Long> targetUserIdList,
         @Schema(description = "멤버 전체 선택 여부", defaultValue = "false")
         boolean isAssigneeSelectAll

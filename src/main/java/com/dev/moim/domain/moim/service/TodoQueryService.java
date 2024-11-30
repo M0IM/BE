@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.Todo;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserTodo;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 public interface TodoQueryService {
 
-    TodoDetailDTO getTotalDetailForAssignee(User user, Long todoId);
+    TodoDetailDTO getTotalDetailForAssignee(UserMoim userMoim, Long todoId);
 
     TodoDetailDTO getTodoDetailForAdmin(Long todoId);
 

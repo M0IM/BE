@@ -1,7 +1,6 @@
 package com.dev.moim.domain.moim.repository;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.UserTodo;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
+
+    @Query("SELECT ut FROM UserTodo ut " +
+            "JOIN FETCH ut.todo td " +
+            "WHERE ut.todo.id = :todoId " +
+            "AND ut.userMoim.id = :userMoimId ")
+    Optional<UserTodo> findByUserMoimIdAndTodoIdWithTodo(
+            @Param("userMoimId") Long userMoimId,
+            @Param("todoId") Long todoId);
 
     Optional<UserTodo> findByUserIdAndTodoId(Long userId, Long todoId);
 
@@ -68,6 +75,12 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
             @Param("userId") Long userId,
             @Param("moimId") Long moimId,
             @Param("cursor") Long cursor,
-            Pageable pageable
-    );
+            Pageable pageable);
+
+    @Query("SELECT ut  FROM UserTodo ut " +
+            "WHERE ut.todo.id = :todoId " +
+            "AND ut.user.id IN :userIdList " )
+    List<UserTodo> findAllByTodoIdAndUserIdList(
+            @Param("todoId") Long todoId,
+            @Param("userIdList") List<Long> userIdList);
 }
