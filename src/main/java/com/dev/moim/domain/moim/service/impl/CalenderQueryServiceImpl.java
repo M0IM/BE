@@ -14,6 +14,7 @@ import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PlanException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -100,16 +101,9 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     @Override
     public PlanParticipantListPageDTO getPlanParticipants(Long moimId, Long planId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.ASC, "id"));
-        Slice<UserPlan> userPlanPage = userPlanRepository.findByPlanIdWithUserAndUserMoim(planId, moimId, pageRequest);
+        Page<UserPlan> userPlanPage = userPlanRepository.findByPlanIdWithUserMoim(planId, moimId, pageRequest);
 
-        List<UserProfile> userProfileList = userPlanPage.stream()
-                .map(UserPlan::getUser)
-                .map(user -> userMoimRepository.findByUserIdAndMoimId(user.getId(), moimId, JoinStatus.COMPLETE))
-                .filter(Optional::isPresent)
-                .map(optionalUserMoim -> optionalUserMoim.get().getUserProfile())
-                .toList();
-
-        return PlanParticipantListPageDTO.from(userProfileList, userPlanPage);
+        return PlanParticipantListPageDTO.from(userPlanPage);
     }
 
     @Override
