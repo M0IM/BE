@@ -63,7 +63,7 @@ public class UserController {
         return BaseResponse.onSuccess(null);
     }
 
-    @Operation(summary = "유저 프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
+    @Operation(summary = "유저 기본 프로필 상세 조회", description = "유저의 프로필을 상세 조회하는 기능입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })

@@ -66,12 +66,9 @@ public class UserQueryServiceImpl implements UserQueryService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(userId, MAIN)
-                .orElseThrow(() -> new UserException(USER_PROFILE_NOT_FOUND));
-
         int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatus(userId, JoinStatus.COMPLETE);
 
-        return ProfileDetailDTO.from(user, userProfile, participateMoimCnt);
+        return ProfileDetailDTO.from(user, participateMoimCnt);
     }
 
     @Override
