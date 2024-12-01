@@ -6,6 +6,7 @@ import com.dev.moim.domain.moim.service.UserMoimQueryService;
 import com.dev.moim.global.error.handler.AuthException;
 import com.dev.moim.global.redis.util.RedisUtil;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
+import com.dev.moim.global.security.principal.MoimAuthentication;
 import com.dev.moim.global.security.util.JwtUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,9 +61,13 @@ public class AuthUserMoimArgumentResolver implements HandlerMethodArgumentResolv
                 .map(authentication -> {
                     String userId = authentication.getName();
                     Long moimId = extractMoimIdFromUri(httpServletRequest.getRequestURI());
+
                     UserMoim userMoim = userMoimQueryService.findByUserIdAndMoimIdAndJoinStatusWithUserAndMoim(
                             Long.valueOf(userId), moimId, JoinStatus.COMPLETE)
                             .orElseThrow(() -> new AuthException(USER_NOT_MOIM_JOIN));
+
+                    SecurityContextHolder.getContext().setAuthentication(
+                            new MoimAuthentication(authentication, moimId, userMoim.getMoimRole(), userMoim.getId()));
 
                     if (userMoim.getUser().getDeviceId() == null) {
                         Long now = new Date().getTime();
