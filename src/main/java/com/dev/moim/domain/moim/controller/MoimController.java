@@ -5,6 +5,7 @@ import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.dto.profile.MyUserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
@@ -300,5 +301,16 @@ public class MoimController {
             @PathVariable(name = "moimId") Long moimId,
             @PathVariable(name = "userMoimId") Long userMoimId) {
         return BaseResponse.onSuccess(userMoimQueryService.getUserMoimProfile(moimId, userMoimId));
+    }
+
+    @Operation(summary = "자신의 모임 프로필 조회", description = "특정 모임 스페이스에서의 자신의 프로필을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공")
+    })
+    @GetMapping("/moims/{moimId}/profiles")
+    public BaseResponse<MyUserMoimProfileDetailDTO> getMyUserMoimProfile(
+            @AuthUserMoim UserMoim userMoim,
+            @PathVariable(name = "moimId") Long moimId) {
+        return BaseResponse.onSuccess(userMoimQueryService.getMyUserMoimProfile(userMoim));
     }
 }

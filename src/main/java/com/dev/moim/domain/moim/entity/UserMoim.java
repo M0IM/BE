@@ -5,6 +5,7 @@ import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
+import com.dev.moim.domain.moim.entity.enums.VisibilityStatus;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -54,6 +55,18 @@ public class UserMoim extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "profile_status", nullable = false)
     private ProfileStatus profileStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender_visibility", nullable = false)
+    private VisibilityStatus genderVisibility;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "residence_visibility", nullable = false)
+    private VisibilityStatus residenceVisibility;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "birth_visibility", nullable = false)
+    private VisibilityStatus birthVisibility;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

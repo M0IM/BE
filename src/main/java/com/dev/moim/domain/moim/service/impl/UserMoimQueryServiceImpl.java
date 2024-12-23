@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.moim.dto.profile.MyUserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -54,5 +55,12 @@ public class UserMoimQueryServiceImpl implements UserMoimQueryService {
         int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatusAndProfileStatus(userMoim.getUser().getId(), JoinStatus.COMPLETE, ProfileStatus.PUBLIC);
 
         return UserMoimProfileDetailDTO.from(userMoim, participateMoimCnt);
+    }
+
+    @Override
+    public MyUserMoimProfileDetailDTO getMyUserMoimProfile(UserMoim userMoim) {
+        int participateMoimCnt = userMoimRepository.countByUserIdAndJoinStatusAndProfileStatus(userMoim.getUser().getId(), JoinStatus.COMPLETE, ProfileStatus.PUBLIC);
+
+        return MyUserMoimProfileDetailDTO.from(userMoim, participateMoimCnt);
     }
 }

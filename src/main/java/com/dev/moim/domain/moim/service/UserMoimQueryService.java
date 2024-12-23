@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service;
 
+import com.dev.moim.domain.moim.dto.profile.MyUserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
@@ -20,4 +21,6 @@ public interface UserMoimQueryService {
             Long userId, Long moimId, JoinStatus joinStatus, MoimRole moimRole);
 
     UserMoimProfileDetailDTO getUserMoimProfile(Long moimId, Long userMoimId);
+
+    MyUserMoimProfileDetailDTO getMyUserMoimProfile(UserMoim userMoim);
 }

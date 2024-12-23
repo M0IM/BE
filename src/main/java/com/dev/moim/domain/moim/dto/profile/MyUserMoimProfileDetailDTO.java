@@ -8,30 +8,36 @@ import com.dev.moim.domain.moim.entity.enums.VisibilityStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record UserMoimProfileDetailDTO(
+public record MyUserMoimProfileDetailDTO(
         Long userId,
         Long userMoimId,
         String nickname,
         String imageUrl,
         String introduction,
+        VisibilityStatus genderVisibility,
         Gender gender,
+        VisibilityStatus residenceVisibility,
         String residence,
+        VisibilityStatus birthVisibility,
         LocalDate birth,
         MoimRole moimRole,
         LocalDateTime createdAt,
         double rating,
         int participateMoimCnt
 ) {
-    public static UserMoimProfileDetailDTO from(UserMoim userMoim, int participateMoimCnt) {
-        return new UserMoimProfileDetailDTO(
+    public static MyUserMoimProfileDetailDTO from(UserMoim userMoim, int participateMoimCnt) {
+        return new MyUserMoimProfileDetailDTO(
                 userMoim.getUser().getId(),
                 userMoim.getId(),
                 userMoim.getNickname(),
                 userMoim.getImageUrl(),
                 userMoim.getIntroduction(),
-                userMoim.getGenderVisibility().equals(VisibilityStatus.PUBLIC) ? userMoim.getUser().getGender() : null,
-                userMoim.getResidenceVisibility().equals(VisibilityStatus.PUBLIC) ? userMoim.getUser().getResidence() : null,
-                userMoim.getBirthVisibility().equals(VisibilityStatus.PUBLIC) ? userMoim.getUser().getBirth() : null,
+                userMoim.getGenderVisibility(),
+                userMoim.getUser().getGender(),
+                userMoim.getResidenceVisibility(),
+                userMoim.getUser().getResidence(),
+                userMoim.getBirthVisibility(),
+                userMoim.getUser().getBirth(),
                 userMoim.getMoimRole(),
                 userMoim.getCreatedAt(),
                 userMoim.getUser().getRating(),
