@@ -5,12 +5,16 @@ import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.domain.moim.service.MoimQueryService;
+import com.dev.moim.domain.moim.service.UserMoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,7 +38,7 @@ public class MoimController {
 
     private final MoimQueryService moimQueryService;
     private final MoimCommandService moimCommandService;
-
+    private final UserMoimQueryService userMoimQueryService;
 
     // 홈 (모집 중인 모임 + 소개 하는 모임)
     @Operation(summary = "인기 모임 조회 API", description = "인기 있는 모임을 조회 합니다. _by 제이미_")
@@ -129,7 +133,6 @@ public class MoimController {
         MoimJoinRequestListDTO moimJoinRequestListDTO = moimQueryService.findMyRequestMoims(user, cursor, take, moimRequestJoin);
         return BaseResponse.onSuccess(moimJoinRequestListDTO);
     }
-
 
     // 모임 스페 이스 api 나누기
     @Operation(summary = "모임 스페이스 정보 API", description = "모임 카테고리, 인원수, 성별, 설명 등을 리턴합니다. _by 제이미_")
@@ -285,5 +288,17 @@ public class MoimController {
     public BaseResponse<MoimRoleResponse> moimsMyRole(@AuthUser User user, @PathVariable Long moimId) {
         MoimRoleResponse moimRoleResponse = moimCommandService.moimsMyRole(user, moimId);
         return BaseResponse.onSuccess(moimRoleResponse);
+    }
+
+    @Operation(summary = "모임 멤버 프로필 조회", description = "특정 모임 스페이스에서 특정 멤버의 모임 프로필을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "OK, 성공")
+    })
+    @GetMapping("/moims/{moimId}/profiles/{userMoimId}")
+    public BaseResponse<UserMoimProfileDetailDTO> getUserMoimProfile(
+            @AuthUserMoim UserMoim userMoim,
+            @PathVariable(name = "moimId") Long moimId,
+            @PathVariable(name = "userMoimId") Long userMoimId) {
+        return BaseResponse.onSuccess(userMoimQueryService.getUserMoimProfile(moimId, userMoimId));
     }
 }

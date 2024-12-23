@@ -7,6 +7,7 @@ import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
+import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
 import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 import org.springframework.data.domain.PageRequest;
@@ -149,4 +150,14 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     List<UserMoim> findAllByMoimIdAndUserIdList(
             @Param("moimId") Long moimId,
             @Param("userIdList") List<Long> userIdList);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "JOIN FETCH um.user " +
+            "WHERE um.id = :userMoimId " +
+            "AND um.moim.id IN :moimId ")
+    Optional<UserMoim> findByIdAndMoimId(
+            @Param("userMoimId") Long userMoimId,
+            @Param("moimId") Long moimId);
+
+    int countByUserIdAndJoinStatusAndProfileStatus(Long userId, JoinStatus joinStatus, ProfileStatus profileStatus);
 }

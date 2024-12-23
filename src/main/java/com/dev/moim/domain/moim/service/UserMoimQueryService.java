@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service;
 
+import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDetailDTO;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
@@ -17,4 +18,6 @@ public interface UserMoimQueryService {
 
     Optional<UserMoim> findByUserIdAndMoimIdAndJoinStatusAndMoimRoleWithUserAndMoim(
             Long userId, Long moimId, JoinStatus joinStatus, MoimRole moimRole);
+
+    UserMoimProfileDetailDTO getUserMoimProfile(Long moimId, Long userMoimId);
 }
