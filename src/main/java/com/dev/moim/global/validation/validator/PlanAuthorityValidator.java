@@ -1,9 +1,10 @@
 package com.dev.moim.global.validation.validator;
 
+import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
-import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PlanException;
+import com.dev.moim.global.security.principal.MoimAuthentication;
 import com.dev.moim.global.validation.annotation.PlanAuthorityValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -21,7 +22,6 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 public class PlanAuthorityValidator implements ConstraintValidator<PlanAuthorityValidation, Long> {
 
     private final CalenderQueryService calenderQueryService;
-    private final MoimQueryService moimQueryService;
 
     @Override
     public void initialize(PlanAuthorityValidation constraintAnnotation) {
@@ -31,13 +31,16 @@ public class PlanAuthorityValidator implements ConstraintValidator<PlanAuthority
     @Override
     public boolean isValid(Long planId, ConstraintValidatorContext context) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof MoimAuthentication moimAuth)) {
+            addConstraintViolation(context, AUTHENTICATION_FAILED.getMessage());
+            return false;
+        }
 
         try {
-            Long userId = Long.valueOf(authentication.getName());
-            Long writerId = calenderQueryService.findPlanWriter(planId);
-            Long ownerId = moimQueryService.findMoimOwner(planId);
+            Long userMoimId = moimAuth.userMoimId();
+            Long writerUserMoimId = calenderQueryService.findPlanWriter(planId);
 
-            if (userId.equals(writerId) || userId.equals(ownerId)) {
+            if (userMoimId.equals(writerUserMoimId) || moimAuth.moimRole().equals(MoimRole.OWNER)) {
                 return true;
             }
             addConstraintViolation(context, PLAN_EDIT_UNAUTHORIZED.getMessage());

@@ -116,7 +116,7 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new PlanException(PLAN_WRITER_NOT_FOUND));
 
-        return plan.getUserMoim().getUser().getId();
+        return plan.getUserMoimId();
     }
 
     @Override
