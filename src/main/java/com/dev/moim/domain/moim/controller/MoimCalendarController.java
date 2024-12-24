@@ -71,7 +71,7 @@ public class MoimCalendarController {
     public BaseResponse<PlanDetailDTO> getPlanDetails(
             @AuthUser User user,
             @UserMoimValidaton @PathVariable Long moimId,
-            @PlanValidation @PathVariable Long planId
+            @PathVariable Long planId
     ) {
         return BaseResponse.onSuccess(calenderQueryService.getPlanDetails(user, planId));
     }
@@ -86,7 +86,7 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/plan/{planId}/schedules")
     public BaseResponse<ScheduleListDTO> getSchedules(
             @UserMoimValidaton @PathVariable Long moimId,
-            @PlanValidation @PathVariable Long planId
+            @PathVariable Long planId
     ) {
         return BaseResponse.onSuccess(calenderQueryService.getSchedules(moimId, planId));
     }
@@ -103,7 +103,7 @@ public class MoimCalendarController {
     @GetMapping("/{moimId}/plan/{planId}/participants")
     public BaseResponse<PlanParticipantListPageDTO> getPlanParticipants(
             @UserMoimValidaton @PathVariable Long moimId,
-            @PlanValidation @PathVariable Long planId,
+            @PathVariable Long planId,
             @CheckPageValidation @RequestParam(name = "page") int page,
             @CheckSizeValidation @RequestParam(name = "size") int size
     ) {
