@@ -45,7 +45,7 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .locationDetail(request.locationDetail())
                 .cost(request.cost())
                 .scheduleList(new ArrayList<>())
-                .user(userMoim.getUser())
+                .userMoim(userMoim)
                 .moim(userMoim.getMoim())
                 .build();
 
@@ -74,13 +74,13 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
                 .plan(plan)
                 .build();
 
-        Optional.of(plan.getUser())
-                .filter(planUser -> !userPlan.getUser().equals(planUser))
-                .ifPresent(planUser -> {
-                    alarmService.saveAlarm(userMoim.getUser(), planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userMoim.getNickname()+ " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+        Optional.of(plan.getUserMoim())
+                .filter(writer -> !userPlan.getUserMoim().equals(writer))
+                .ifPresent(writer -> {
+                    alarmService.saveAlarm(userMoim.getUser(), writer.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userMoim.getNickname()+ " 님이 참여 신청했습니다", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
-                    if (planUser.getIsPushAlarm() && planUser.getDeviceId() != null) {
-                        fcmService.sendPushNotification(planUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userMoim.getNickname() + " 님이 참여 신청했습니다", AlarmDetailType.PLAN);
+                    if (writer.getUser().getIsPushAlarm() && writer.getUser().getDeviceId() != null) {
+                        fcmService.sendPushNotification(writer.getUser(), "[" + plan.getMoim().getName() + "]" + plan.getTitle(), userMoim.getNickname() + " 님이 참여 신청했습니다", AlarmDetailType.PLAN);
                     }
                 });
 
@@ -121,12 +121,12 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
         participantList.stream()
-                .filter(participant -> !userMoim.getUser().equals(participant))
-                .forEach(participant -> {
-            alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+                .filter(participantUser -> !userMoim.getUser().equals(participantUser))
+                .forEach(participantUser -> {
+            alarmService.saveAlarm(userMoim.getUser(), participantUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
-            if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
-                fcmService.sendPushNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmDetailType.PLAN);
+            if (participantUser.getIsPushAlarm() && participantUser.getDeviceId() != null) {
+                fcmService.sendPushNotification(participantUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 수정되었습니다. 변경사항을 확인해주세요.", AlarmDetailType.PLAN);
             }
 
         });
@@ -142,12 +142,12 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
         List<User> participantList = userPlanRepository.findByPlanId(planId).stream().map(UserPlan::getUser).toList();
 
         participantList.stream()
-                .filter(participant -> !userMoim.getUser().equals(participant))
-                .forEach(participant -> {
-            alarmService.saveAlarm(plan.getUser(), participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
+                .filter(participantUser -> !userMoim.getUser().equals(participantUser))
+                .forEach(participantUser -> {
+            alarmService.saveAlarm(userMoim.getUser(), participantUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmType.PUSH, AlarmDetailType.PLAN, plan.getMoim().getId(), null, null);
 
-            if (participant.getIsPushAlarm() && participant.getDeviceId() != null) {
-                fcmService.sendPushNotification(participant, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmDetailType.PLAN);
+            if (participantUser.getIsPushAlarm() && participantUser.getDeviceId() != null) {
+                fcmService.sendPushNotification(participantUser, "[" + plan.getMoim().getName() + "]" + plan.getTitle(), "일정이 취소되었습니다.", AlarmDetailType.PLAN);
             }
         });
 
