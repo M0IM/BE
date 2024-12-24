@@ -37,6 +37,9 @@ public class Plan extends BaseEntity {
 
     private String cost;
 
+    @Column(name = "user_moim_id", insertable = false, updatable = false)
+    private Long userMoimId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_moim_id")
     private UserMoim userMoim;
