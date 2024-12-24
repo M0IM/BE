@@ -114,4 +114,19 @@ public class UserMoim extends BaseEntity {
     public void confirm () {
         this.confirm = true;
     }
+
+    public void updateProfile (
+            String nickname,
+            String imageUrl,
+            String introduction,
+            VisibilityStatus genderVisibility,
+            VisibilityStatus residenceVisibility,
+            VisibilityStatus birthVisibility) {
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
+        this.genderVisibility = genderVisibility;
+        this.residenceVisibility = residenceVisibility;
+        this.birthVisibility = birthVisibility;
+    }
 }
