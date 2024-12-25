@@ -1,6 +1,5 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.moim;
 
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 
 public record ChangeAuthorityResponseDTO(

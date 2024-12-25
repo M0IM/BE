@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.profile;
 
 import com.dev.moim.domain.account.entity.enums.ProfileType;
 import com.dev.moim.domain.account.entity.enums.Provider;

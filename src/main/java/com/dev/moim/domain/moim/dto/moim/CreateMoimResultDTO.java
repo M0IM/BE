@@ -1,4 +1,4 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.moim;
 
 import com.dev.moim.domain.moim.entity.Moim;
 

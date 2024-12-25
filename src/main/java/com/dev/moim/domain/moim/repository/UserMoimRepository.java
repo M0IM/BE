@@ -8,7 +8,6 @@ import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
-import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +42,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     Boolean existsByUserAndMoim(User user, Moim moim);
 
     List<UserMoim> findByUserId(Long userId);
-
-    Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
 
     @Query("SELECT um " +
             "FROM UserMoim um " +
@@ -107,25 +104,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Modifying
     @Query("delete from UserMoim um where um.confirm = true and um.joinStatus not in :joinStatusList")
     void deleteAllByConfirmUserMoim(List<JoinStatus> joinStatusList);
-
-    @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList")
-    List<UserMoim> findAllByUserIdAndMoimIdList(Long userId, List<Long> moimIdList);
-
-    @Query("SELECT um FROM UserMoim um WHERE um.user.id = :userId AND um.moim.id IN :moimIdList AND um.joinStatus = :joinStatus")
-    List<UserMoim> findAllByUserIdAndMoimIdListAndJoinStatus(Long userId, List<Long> moimIdList, JoinStatus joinStatus);
-
-    boolean existsByUserProfileIdAndJoinStatus(Long profileId, JoinStatus joinStatus);
-
-    @Query("SELECT um FROM UserMoim um " +
-            "JOIN FETCH um.moim " +
-            "WHERE um.userProfile.id = :userProfileId AND um.joinStatus = :joinStatus " +
-            "AND um.id > :cursor " +
-            "ORDER BY um.id ASC")
-    Slice<UserMoim> findAllByUserProfileIdAndJoinStatus(
-            @Param("userProfileId") Long userProfileId,
-            @Param("joinStatus") JoinStatus joinStatus,
-            @Param("cursor") Long cursor,
-            Pageable pageable);
 
     @Query("SELECT um FROM UserMoim um " +
             "JOIN FETCH um.moim " +

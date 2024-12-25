@@ -1,9 +1,7 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.moim;
 
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.List;
 
 public record CreateMoimDTO(
         @Length(min = 1, max = 255)

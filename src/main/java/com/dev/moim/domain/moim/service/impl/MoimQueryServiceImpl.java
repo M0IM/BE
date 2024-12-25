@@ -1,28 +1,21 @@
 package com.dev.moim.domain.moim.service.impl;
 
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.account.entity.enums.Gender;
 import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
-import com.dev.moim.domain.moim.dto.MoimDetailDTO;
-import com.dev.moim.domain.moim.dto.MoimIntroduceDTO;
+import com.dev.moim.domain.moim.dto.moim.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.Plan;
-import com.dev.moim.domain.moim.dto.*;
-import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.PostType;
 import com.dev.moim.domain.moim.repository.*;
-import com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO;
 import com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO;
-import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
-import com.dev.moim.domain.moim.dto.MoimPreviewDTO;
-import com.dev.moim.domain.moim.dto.MoimPreviewListDTO;
+import com.dev.moim.domain.moim.dto.moim.MoimPreviewListDTO;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.service.MoimQueryService;
@@ -30,7 +23,6 @@ import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
-import com.dev.moim.global.error.handler.PlanException;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -234,17 +226,6 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         MoimRole moimRole = moimRoleByUser.orElse(null);
 
         return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userMoimList);
-    }
-
-    @Override
-    public Long findMoimOwner(Long planId) {
-        Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new PlanException(PLAN_NOT_FOUND));
-
-        UserMoim userMoim = userMoimRepository.findByMoimIdAndMoimRole(plan.getMoim().getId(), MoimRole.OWNER)
-                .orElseThrow(() -> new MoimException(MOIM_OWNER_NOT_FOUND));
-
-        return userMoim.getUser().getId();
     }
 
     @Override

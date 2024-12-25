@@ -1,10 +1,9 @@
-package com.dev.moim.domain.moim.dto;
+package com.dev.moim.domain.moim.dto.moim;
 
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.entity.enums.MoimCategory;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
-import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.user.dto.UserPreviewDTO;
 
 import java.time.LocalDateTime;

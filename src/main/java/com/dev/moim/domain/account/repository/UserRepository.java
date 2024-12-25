@@ -9,8 +9,6 @@ import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,16 +26,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByProviderAndProviderId(Provider provider, String providerId);
-
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) " +
-            "from UserMoim um " +
-            "join um.userProfile up " +
-            "where um.moim.id = :moimId " +
-            "and um.joinStatus = :joinStatus " +
-            "and um.id > :cursor " +
-            "and up.name like %:searching% " +
-            "order by um.id")
-    Slice<UserProfileDTO> findUserByMoimId(Long moimId, String searching, JoinStatus joinStatus, Long cursor,  Pageable pageable);
 
     @Query("select u from UserMoim um join um.user u where um.moim = :moim and um.joinStatus = :joinStatus")
     List<User> findUserByMoim(Moim moim, JoinStatus joinStatus);

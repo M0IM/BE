@@ -1,6 +1,6 @@
 package com.dev.moim.domain.moim.dto.calender;
 
-import com.dev.moim.domain.moim.dto.UserMoimProfileDTO;
+import com.dev.moim.domain.moim.dto.profile.UserMoimProfileDTO;
 import com.dev.moim.domain.moim.entity.UserPlan;
 import org.springframework.data.domain.Page;
 

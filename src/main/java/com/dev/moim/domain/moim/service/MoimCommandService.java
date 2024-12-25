@@ -1,10 +1,9 @@
 package com.dev.moim.domain.moim.service;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.moim.dto.*;
+import com.dev.moim.domain.moim.dto.moim.*;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import jakarta.validation.Valid;
 
 public interface MoimCommandService {
