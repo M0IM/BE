@@ -1,6 +1,5 @@
 package com.dev.moim.domain.moim.entity;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 import com.dev.moim.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -36,8 +35,8 @@ public class Todo extends BaseEntity {
     private TodoStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_id")
-    private User writer;
+    @JoinColumn(name = "user_moim_id")
+    private UserMoim userMoim;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moim_id")
@@ -49,8 +48,8 @@ public class Todo extends BaseEntity {
     @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TodoImage> todoImageList = new ArrayList<>();
 
-    public void updateWriter(User writer) {
-        this.writer = writer;
+    public void updateUserMoim(UserMoim userMoim) {
+        this.userMoim = userMoim;
     }
 
     public void updateTodo(

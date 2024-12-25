@@ -2,7 +2,6 @@ package com.dev.moim.domain.moim.dto.todo;
 
 import com.dev.moim.domain.moim.entity.Todo;
 import com.dev.moim.domain.moim.entity.TodoImage;
-import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserTodo;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import com.dev.moim.domain.moim.entity.enums.TodoAssigneeStatus;
@@ -10,7 +9,6 @@ import com.dev.moim.domain.moim.entity.enums.TodoStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public record TodoDTO(
         Long todoId,
@@ -25,7 +23,7 @@ public record TodoDTO(
         Long moimId,
         String moimName
 ) {
-    public static TodoDTO forMoimAdmins(Todo todo, Optional<UserMoim> userMoim) {
+    public static TodoDTO forMoimAdmins(Todo todo) {
         return new TodoDTO(
                 todo.getId(),
                 todo.getTitle(),
@@ -33,9 +31,9 @@ public record TodoDTO(
                 todo.getTodoImageList().stream().map(TodoImage::getImageUrl).toList(),
                 todo.getStatus(),
                 null,
-                userMoim.map(UserMoim::getNickname).orElse(null),
-                userMoim.map(UserMoim::getImageUrl).orElse(null),
-                userMoim.map(UserMoim::getMoimRole).orElse(null),
+                todo.getUserMoim() == null ? null : todo.getUserMoim().getNickname(),
+                todo.getUserMoim() == null ? null : todo.getUserMoim().getImageUrl(),
+                todo.getUserMoim() == null ? null : todo.getUserMoim().getMoimRole(),
                 todo.getMoim().getId(),
                 todo.getMoim().getName()
         );

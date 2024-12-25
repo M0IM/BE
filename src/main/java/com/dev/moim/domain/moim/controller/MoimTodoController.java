@@ -1,12 +1,10 @@
 package com.dev.moim.domain.moim.controller;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
-import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
 import com.dev.moim.global.validation.annotation.*;
@@ -41,11 +39,11 @@ public class MoimTodoController {
     })
     @PostMapping("/moims/{moimId}/todos")
     public BaseResponse<Long> createTodo(
-            @AuthUser User user,
-            @CheckAdminValidation @UserMoimValidaton @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @Valid @RequestBody CreateTodoDTO request
     ) {
-        return BaseResponse.onSuccess(todoCommandService.createTodo(user, moimId, request));
+        return BaseResponse.onSuccess(todoCommandService.createTodo(userMoim, moimId, request));
     }
 
     @Operation(summary = "todo 상세 조회 (할당된 유저)", description = "유저가 자신에게 할당된 특정 todo의 세부사항을 상세 조회합니다.")
@@ -58,7 +56,7 @@ public class MoimTodoController {
     @GetMapping("/moims/{moimId}/todos/{todoId}/for-me")
     public BaseResponse<TodoDetailDTO> getTodoDetailForAssignee(
             @AuthUserMoim UserMoim userMoim,
-            @UserMoimValidaton @PathVariable Long moimId,
+            @PathVariable Long moimId,
             @TodoAssigneeValidation @PathVariable Long todoId
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTotalDetailForAssignee(userMoim, todoId));
@@ -72,8 +70,8 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/{todoId}/admins/detail")
     public BaseResponse<TodoDetailDTO> getTodoDetailForAdmin(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId
     ) {
         return BaseResponse.onSuccess(todoQueryService.getTodoDetailForAdmin(todoId));
@@ -88,8 +86,8 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/{todoId}/admins/assignee-list")
     public BaseResponse<TodoPageDTO> getTodoAssigneeListForAdmin(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
             @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take
@@ -106,8 +104,8 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/{todoId}/admins/non-assignee-list")
     public BaseResponse<TodoPageDTO> getTodoNonAssigneeListForAdmin(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId,
             @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take
@@ -122,8 +120,8 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/admins")
     public BaseResponse<TodoPageDTO> getMoimTodoListForAdmin(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
@@ -137,12 +135,12 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/by-me")
     public BaseResponse<TodoPageDTO> getSpecificMoimTodoListByMe(
-            @AuthUser User user,
-            @CheckAdminValidation @PathVariable Long moimId,
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable Long moimId,
             @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getSpecificMoimTodoListByMe(user, moimId, cursor, take));
+        return BaseResponse.onSuccess(todoQueryService.getSpecificMoimTodoListByMe(userMoim, moimId, cursor, take));
     }
 
     @Operation(summary = "특정 모임에서 부여받은 todo 리스트 조회 (모임 멤버)", description = "특정 멤버가 특정 모임에서 자신이 부여받은 todo 리스트를 조회합니다.")
@@ -153,12 +151,12 @@ public class MoimTodoController {
     })
     @GetMapping("/moims/{moimId}/todos/for-assignee")
     public BaseResponse<TodoPageDTO> getAssignedTodoListForUserInSpecificMoim(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @UserMoimValidaton @PathVariable Long moimId,
             @CheckCursorValidation  @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getAssignedTodoListForUserInSpecificMoim(user, moimId, cursor, take));
+        return BaseResponse.onSuccess(todoQueryService.getAssignedTodoListForUserInSpecificMoim(userMoim, moimId, cursor, take));
     }
 
     @Operation(summary = "자신이 부여한 todo 리스트 조회", description = "회원이 자신이 부여한 todo 리스트를 조회합니다.")
@@ -167,11 +165,11 @@ public class MoimTodoController {
     })
     @GetMapping("/todos/by-me")
     public BaseResponse<TodoPageDTO> getTodoListByMe(
-            @AuthUser User user,
+            @AuthUserMoimAdmin UserMoim userMoim,
             @RequestParam(name = "cursor", required = false) Long cursor,
             @RequestParam(name = "take") Integer take
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(user, cursor, take));
+        return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(userMoim, cursor, take));
     }
 
     @Operation(summary = "부여된 todo 상태 업데이트", description = "회원이 자신에게 부여된 todo의 상태를 변경합니다.")
@@ -225,7 +223,7 @@ public class MoimTodoController {
     })
     @DeleteMapping("/moims/{moimId}/todos/admin/{todoId}")
     public BaseResponse<?> deleteTodo(
-            @AuthUser User user,
+            @AuthUserMoimAdmin UserMoim userMoim,
             @CheckAdminValidation @PathVariable Long moimId,
             @TodoValidation @PathVariable Long todoId
     ) {
@@ -244,10 +242,10 @@ public class MoimTodoController {
     })
     @PutMapping("/moims/todos/admin/assignees/new")
     public BaseResponse<?> addAssignees(
-            @AuthUser User user,
+            @AuthUserMoimAdmin UserMoim userMoim,
             @Valid @RequestBody AddTodoAssigneeDTO request
     ) {
-        todoCommandService.addAssignees(user, request);
+        todoCommandService.addAssignees(userMoim, request);
         return BaseResponse.onSuccess("todo assignee 추가 성공했습니다.");
     }
 
@@ -262,7 +260,7 @@ public class MoimTodoController {
     })
     @PutMapping("/moims/todos/admin/assignees/current")
     public BaseResponse<?> deleteAssignees(
-            @AuthUser User user,
+            @AuthUserMoimAdmin UserMoim userMoim,
             @Valid @RequestBody DeleteTodoAssigneeDTO request
     ) {
         todoCommandService.deleteAssignees(request);

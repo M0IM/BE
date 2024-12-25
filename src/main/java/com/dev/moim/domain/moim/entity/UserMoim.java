@@ -72,9 +72,15 @@ public class UserMoim extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private Long userId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moim_id")
     private Moim moim;
+
+    @Column(name = "moim_id", insertable = false, updatable = false)
+    private Long moimId;
 
     // TODO: userProfile 제거
     @ManyToOne(fetch = FetchType.LAZY)
@@ -86,6 +92,9 @@ public class UserMoim extends BaseEntity {
 
     @OneToMany(mappedBy = "userMoim", cascade = CascadeType.REMOVE)
     private List<UserTodo> userTodoList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userMoim", cascade = CascadeType.ALL)
+    private List<Todo> todoList = new ArrayList<>();
 
     public void accept() {
         this.joinStatus = JoinStatus.COMPLETE;
@@ -128,5 +137,12 @@ public class UserMoim extends BaseEntity {
         this.genderVisibility = genderVisibility;
         this.residenceVisibility = residenceVisibility;
         this.birthVisibility = birthVisibility;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        for (Todo todo : todoList) {
+            todo.updateUserMoim(null);
+        }
     }
 }

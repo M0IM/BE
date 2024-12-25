@@ -10,18 +10,18 @@ public record TodoAssigneeDetailDTO(
         String profileImageUrl,
         TodoAssigneeStatus todoAssigneeStatus
 ) {
-    public static TodoAssigneeDetailDTO toTodoAssignee(UserTodo userTodo, UserMoim userMoim) {
+    public static TodoAssigneeDetailDTO toTodoAssignee(UserTodo userTodo) {
         return new TodoAssigneeDetailDTO(
-                userTodo.getUser().getId(),
-                userMoim.getNickname(),
-                userMoim.getImageUrl(),
+                userTodo.getUserMoim().getId(),
+                userTodo.getUserMoim().getNickname(),
+                userTodo.getUserMoim().getImageUrl(),
                 userTodo.getStatus()
         );
     }
 
     public static TodoAssigneeDetailDTO toTodoNonAssignee(UserMoim userMoim) {
         return new TodoAssigneeDetailDTO(
-                userMoim.getUser().getId(),
+                userMoim.getId(),
                 userMoim.getNickname(),
                 userMoim.getImageUrl(),
                 null

@@ -1,12 +1,11 @@
 package com.dev.moim.domain.moim.service;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.entity.UserMoim;
 
 public interface TodoCommandService {
 
-    Long createTodo(User user, Long moimId, CreateTodoDTO request);
+    Long createTodo(UserMoim userMoim, Long moimId, CreateTodoDTO request);
 
     UpdateTodoStatusResponseDTO updateUserTodoStatus(UserMoim userMoim, Long todoId, UpdateTodoStatusDTO request);
 
@@ -14,7 +13,7 @@ public interface TodoCommandService {
 
     void deleteTodo(Long todoId);
 
-    void addAssignees(User user, AddTodoAssigneeDTO request);
+    void addAssignees(UserMoim userMoim, AddTodoAssigneeDTO request);
 
     void deleteAssignees(DeleteTodoAssigneeDTO request);
 

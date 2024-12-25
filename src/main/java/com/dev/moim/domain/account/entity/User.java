@@ -101,9 +101,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<UserTodo> userTodoList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL)
-    private List<Todo> todoList = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<ReadPost> readPostList = new ArrayList<>();
 
@@ -167,12 +164,5 @@ public class User extends BaseEntity {
         this.residence = residence;
         this.gender = gender;
         this.birth = birth;
-    }
-
-    @PreRemove
-    public void preRemove() {
-        for (Todo todo : todoList) {
-            todo.updateWriter(null);
-        }
     }
 }

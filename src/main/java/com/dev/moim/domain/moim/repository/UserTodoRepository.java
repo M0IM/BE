@@ -67,12 +67,12 @@ public interface UserTodoRepository extends JpaRepository<UserTodo, Long> {
             "FROM UserTodo ut " +
             "JOIN FETCH ut.todo t " +
             "JOIN FETCH t.moim m " +
-            "WHERE ut.user.id = :userId " +
+            "WHERE ut.userMoim.id = :userMoimId " +
             "AND m.id = :moimId " +
             "AND ut.id < :cursor " +
             "ORDER BY ut.id DESC")
-    Slice<UserTodo> findUserTodosByUserIdAndMoimId(
-            @Param("userId") Long userId,
+    Slice<UserTodo> findUserTodosByUserMoimIdAndMoimId(
+            @Param("userMoimId") Long userMoimId,
             @Param("moimId") Long moimId,
             @Param("cursor") Long cursor,
             Pageable pageable);

@@ -7,7 +7,7 @@ public record UserMoimPreviewDTO(
         Long userId,
         Long userMoimId,
         String nickname,
-        String imageUrl,
+        String imageKeyName,
         MoimRole moimRole
 ) {
     public static UserMoimPreviewDTO from(UserMoim userMoim) {

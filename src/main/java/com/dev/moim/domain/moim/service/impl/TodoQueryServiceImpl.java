@@ -1,6 +1,5 @@
 package com.dev.moim.domain.moim.service.impl;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.TodoAssigneeDetailDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
@@ -11,7 +10,6 @@ import com.dev.moim.domain.moim.repository.TodoRepository;
 import com.dev.moim.domain.moim.repository.UserMoimRepository;
 import com.dev.moim.domain.moim.repository.UserTodoRepository;
 import com.dev.moim.domain.moim.service.TodoQueryService;
-import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.TodoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 
@@ -85,17 +80,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
         Slice<UserTodo> userTodoSlice = userTodoRepository.findAllWithUserMoimAndUserProfileByTodoIdAndCursor(todoId, startCursor, pageable);
 
         List<TodoAssigneeDetailDTO> todoAssigneeDetailDTOList = userTodoSlice.stream()
-                .map(userTodo -> {
-                    User user = userTodo.getUser();
-                    Moim moim = userTodo.getTodo().getMoim();
-
-                    UserMoim userMoim = user.getUserMoimList().stream()
-                            .filter(um -> um.getMoim().equals(moim))
-                            .findFirst()
-                            .orElseThrow(() -> new MoimException(USER_MOIM_NOT_FOUND));
-
-                    return TodoAssigneeDetailDTO.toTodoAssignee(userTodo, userMoim);
-                })
+                .map(TodoAssigneeDetailDTO::toTodoAssignee)
                 .toList();
 
         Long nextCursor = userTodoSlice.hasNext() && !userTodoSlice.getContent().isEmpty()
@@ -130,21 +115,10 @@ public class TodoQueryServiceImpl implements TodoQueryService {
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
-        Slice<Todo> todoSlice = todoRepository.findByMoimIdAndCursorLessThan(moimId, startCursor, pageable);
+        Slice<Todo> todoSlice = todoRepository.findByMoimIdAndCursorLessThanWithUserMoim(moimId, startCursor, pageable);
 
-        Set<Long> writerIds = todoSlice.getContent().stream()
-                .map(todo -> todo.getWriter().getId())
-                .collect(Collectors.toSet());
-        List<UserMoim> userMoimList = userMoimRepository.findByMoimIdAndUserIds(moimId, writerIds);
-        Map<Long, UserMoim> userMoimMap = userMoimList.stream()
-                .collect(Collectors.toMap(um -> um.getUser().getId(), um -> um));
-
-        List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
-                .map(todo -> {
-                    Long writerId = todo.getWriter().getId();
-                    Optional<UserMoim> userMoim = Optional.ofNullable(userMoimMap.get(writerId));
-                    return TodoDTO.forMoimAdmins(todo, userMoim);
-                })
+        List<TodoDTO> todoDTOList = todoSlice.stream()
+                .map(TodoDTO::forMoimAdmins)
                 .toList();
 
         Long nextCursor = todoSlice.hasNext() ? todoSlice.getContent().get(todoSlice.getNumberOfElements() - 1).getId() : null;
@@ -153,12 +127,12 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public TodoPageDTO getSpecificMoimTodoListByMe(User user, Long moimId, Long cursor, Integer take) {
+    public TodoPageDTO getSpecificMoimTodoListByMe(UserMoim userMoim, Long moimId, Long cursor, Integer take) {
 
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
-        Slice<Todo> todoSlice = todoRepository.findByWriterIdAndMoimIdAndCursorLessThan(user.getId(), moimId, startCursor, pageable);
+        Slice<Todo> todoSlice = todoRepository.findByUserMoimIdAndMoimIdAndCursorLessThan(userMoim.getId(), moimId, startCursor, pageable);
 
         List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
                 .map(TodoDTO::forSpecificAdmin)
@@ -170,12 +144,12 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public TodoPageDTO getAssignedTodoListForUserInSpecificMoim(User user, Long moimId, Long cursor, Integer take) {
+    public TodoPageDTO getAssignedTodoListForUserInSpecificMoim(UserMoim userMoim, Long moimId, Long cursor, Integer take) {
 
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
-        Slice<UserTodo> userTodoSlice = userTodoRepository.findUserTodosByUserIdAndMoimId(user.getId(), moimId, startCursor, pageable);
+        Slice<UserTodo> userTodoSlice = userTodoRepository.findUserTodosByUserMoimIdAndMoimId(userMoim.getId(), moimId, startCursor, pageable);
 
         List<TodoDTO> todoDTOList = userTodoSlice.getContent().stream()
                 .map(userTodo -> TodoDTO.forAssignee(userTodo.getTodo(), userTodo))
@@ -187,12 +161,12 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take) {
+    public TodoPageDTO getTodoListByMe(UserMoim userMoim, Long cursor, Integer take) {
 
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
-        Slice<Todo> todoSlice = todoRepository.findByWriterIdAndCursorLessThan(user.getId(), startCursor, pageable);
+        Slice<Todo> todoSlice = todoRepository.findByUserMoimIdAndCursorLessThan(userMoim.getId(), startCursor, pageable);
 
         List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
                 .map(TodoDTO::forSpecificAdmin)
