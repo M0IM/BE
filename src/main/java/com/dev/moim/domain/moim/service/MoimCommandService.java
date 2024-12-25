@@ -3,6 +3,7 @@ package com.dev.moim.domain.moim.service;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.MoimRole;
 import jakarta.validation.Valid;
 
@@ -15,7 +16,7 @@ public interface MoimCommandService {
 
     void joinMoim(User user, Long moimId);
 
-    void acceptMoim(User user, MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
+    void acceptMoim(UserMoim userMoim, MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO);
 
     ChangeAuthorityResponseDTO changeMemberAuthorities(User user, ChangeAuthorityRequestDTO changeAuthorityRequestDTO);
 

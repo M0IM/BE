@@ -144,19 +144,16 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     }
 
     @Override
-    public UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take, String search) {
+    public UserPreviewListDTO getRequestMember(User user, Long moimId, Long cursor, Integer take, String search) {
 
+        Slice<UserMoim> userMoimSlice = userMoimRepository.findByMoimIdAndNickNameAndJoinStatusWithPageable(
+                moimId, JoinStatus.LOADING, search, cursor, PageRequest.of(0, take));
 
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimId(moimId, search, JoinStatus.LOADING, cursor, PageRequest.of(0, take));
+        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
+                ? userMoimSlice.getContent().get(userMoimSlice.getContent().size() - 1).getId()
+                : null;
 
-        List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
-
-        Long nextCursor = null;
-        if (!moimUsers.isLast()) {
-            nextCursor = moimUsers.toList().get(moimUsers.toList().size() - 1).getUserMoim().getId();
-        }
-
-        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewDTOList, moimUsers.hasNext(), nextCursor);
+        return UserPreviewListDTO.from(userMoimSlice, nextCursor);
     }
 
     @Override

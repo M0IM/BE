@@ -23,7 +23,7 @@ public interface MoimQueryService {
 
     UserPreviewListDTO getMoimMembersExcludeOwner(Long moimId, Long cursor, Integer take, String search);
 
-    UserPreviewListDTO findRequestMember(User user, Long moimId, Long cursor, Integer take, String search);
+    UserPreviewListDTO getRequestMember(User user, Long moimId, Long cursor, Integer take, String search);
 
     MoimIntroduceDTO getIntroduce(Long moimId);
 

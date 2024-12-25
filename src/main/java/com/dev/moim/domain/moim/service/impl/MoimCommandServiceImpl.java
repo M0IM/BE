@@ -25,6 +25,7 @@ import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,7 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final FcmService fcmService;
     private final AlarmService alarmService;
     private final PostRepository postRepository;
+    private final GroupedOpenApi user;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {
@@ -179,26 +181,23 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public void acceptMoim(User owner, MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
-        User user = userRepository.findById(moimJoinConfirmRequestDTO.userId()).orElseThrow(() -> new UserException(ErrorStatus.USER_NOT_FOUND));
+    public void acceptMoim(UserMoim userMoim, MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        UserMoim newMember = userMoimRepository.findByUserIdAndMoimId(moimJoinConfirmRequestDTO.userId(), moimJoinConfirmRequestDTO.moimId(), JoinStatus.LOADING)
+                .orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
+        Moim moim = userMoim.getMoim();
 
+        newMember.accept();
+        newMember.confirm();
 
-        Moim moim = moimRepository.findById(moimJoinConfirmRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(user.getId(), moim.getId(), JoinStatus.LOADING).orElseThrow(() -> new MoimException(ErrorStatus.NOT_REQUEST_JOIN));
-
-        userMoim.accept();
-        userMoim.confirm();
-
-
-        List<User> admins = userRepository.findAdmins(moim);
-
-        if (user.getIsPushAlarm() && user != owner) {
-            alarmService.saveAlarm(owner, user, moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
-            fcmService.sendPushNotification(user,  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmDetailType.MOIM);
+        if (newMember.getUser().getIsPushAlarm()) {
+            alarmService.saveAlarm(userMoim.getUser(), newMember.getUser(), moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+            fcmService.sendPushNotification(newMember.getUser(),  moim.getName() + " 모임에 가입되었습니다", moim.getName() + "에 가입되었습니다", AlarmDetailType.MOIM);
         }
 
-        admins.stream().filter(admin -> !admin.equals(owner) && admin.getIsPushAlarm()).forEach(admin -> {
-            alarmService.saveAlarm(owner, admin, moim.getName() + " 모임에 참여되었습니다", moim.getName() + "에 참여되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
+        List<User> admins = userRepository.findAdmins(userMoim.getMoim());
+
+        admins.stream().filter(admin -> !admin.equals(userMoim.getUser()) && admin.getIsPushAlarm()).forEach(admin -> {
+            alarmService.saveAlarm(userMoim.getUser(), admin, moim.getName() + " 모임에 참여되었습니다", moim.getName() + "에 참여되었습니다", AlarmType.PUSH, AlarmDetailType.MOIM, moim.getId(), null, null);
             fcmService.sendPushNotification(admin,  moim.getName() + " 모임에 참여하었습니다", moim.getName() + "에 참여하었습니다", AlarmDetailType.MOIM);
         });
     }

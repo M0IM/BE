@@ -6,11 +6,13 @@ import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestType;
 import com.dev.moim.domain.moim.dto.*;
 import com.dev.moim.domain.moim.entity.Moim;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.MoimCommandService;
 import com.dev.moim.domain.moim.service.MoimQueryService;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
 import com.dev.moim.global.validation.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -192,8 +194,8 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping ("/moims/{moimId}/requests/users")
-    public BaseResponse<UserPreviewListDTO> findRequestMember(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
-        UserPreviewListDTO userPreviewListDTO = moimQueryService.findRequestMember(user, moimId, cursor, take, search);
+    public BaseResponse<UserPreviewListDTO> getRequestMember(@AuthUser User user, @PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
+        UserPreviewListDTO userPreviewListDTO = moimQueryService.getRequestMember(user, moimId, cursor, take, search);
         return BaseResponse.onSuccess(userPreviewListDTO);
     }
 
@@ -222,8 +224,11 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PostMapping("/moims/{moimId}/accept")
-    public BaseResponse<String> acceptMoim(@AuthUser User user, @RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
-        moimCommandService.acceptMoim(user, moimJoinConfirmRequestDTO);
+    public BaseResponse<String> acceptMoim(
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable("moimId") Long moimId,
+            @RequestBody @Valid MoimJoinConfirmRequestDTO moimJoinConfirmRequestDTO) {
+        moimCommandService.acceptMoim(userMoim, moimJoinConfirmRequestDTO);
         return BaseResponse.onSuccess("모임 가입에 받아주기에 성공하였습니다.");
     }
 
