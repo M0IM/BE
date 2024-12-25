@@ -120,7 +120,8 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     @Override
     public UserPreviewListDTO getMoimMembers(Long moimId, Long cursor, Integer take, String search) {
 
-        Slice<UserMoim> userMoimSlice = userMoimRepository.findByMoimIdAndNickNameAndJoinStatusWithPageable(moimId, JoinStatus.COMPLETE, search, cursor, PageRequest.of(0, take));
+        Slice<UserMoim> userMoimSlice = userMoimRepository.findByMoimIdAndNickNameAndJoinStatusWithPageable(
+                moimId, JoinStatus.COMPLETE, search, cursor, PageRequest.of(0, take));
 
         Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
                 ? userMoimSlice.getContent().get(userMoimSlice.getContent().size() - 1).getId()
@@ -132,16 +133,14 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     @Override
     public UserPreviewListDTO getMoimMembersExcludeOwner(Long moimId, Long cursor, Integer take, String search) {
 
-        Slice<UserProfileDTO> moimUsers = userRepository.findUserByMoimIdExcludeOwner(moimId, search, JoinStatus.COMPLETE, cursor, PageRequest.of(0, take));
+        Slice<UserMoim> userMoimSlice = userMoimRepository.findByMoimIdAndJoinStatusAndNickNameAndMoimRoleNotWithPageable(
+                moimId, JoinStatus.COMPLETE, search, MoimRole.OWNER, cursor, PageRequest.of(0, take));
 
-        List<UserPreviewDTO> userPreviewDTOList = moimUsers.toList().stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+        Long nextCursor = userMoimSlice.hasNext() && !userMoimSlice.getContent().isEmpty()
+                ? userMoimSlice.getContent().get(userMoimSlice.getContent().size() - 1).getId()
+                : null;
 
-        Long nextCursor = null;
-        if (!moimUsers.isLast()) {
-            nextCursor = moimUsers.toList().get(moimUsers.toList().size() - 1).getUserMoim().getId();
-        }
-
-        return UserPreviewListDTO.toUserPreviewListDTO(userPreviewDTOList, moimUsers.hasNext(), nextCursor);
+        return UserPreviewListDTO.from(userMoimSlice, nextCursor);
     }
 
     @Override

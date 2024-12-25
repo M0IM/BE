@@ -173,9 +173,8 @@ public class MoimController {
             @CheckOwnerValidation @UserMoimValidaton @PathVariable Long moimId,
             @CheckCursorValidation @RequestParam(name = "cursor") Long cursor,
             @CheckTakeValidation @RequestParam(name = "take") Integer take,
-            @RequestParam(name = "search") String search) {
-        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembersExcludeOwner(moimId, cursor, take, search);
-        return BaseResponse.onSuccess(userPreviewListDTO);
+            @RequestParam(name = "search", required = false) String search) {
+        return BaseResponse.onSuccess(moimQueryService.getMoimMembersExcludeOwner(moimId, cursor, take, search));
     }
 
     @Operation(summary = "모임 탈퇴 하기 API", description = "모임을 탈퇴 합니다. _by 제이미_")

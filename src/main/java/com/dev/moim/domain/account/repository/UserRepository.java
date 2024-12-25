@@ -14,7 +14,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,15 +68,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateLastReadTime(User user, LocalDateTime lastReadTime);
 
     List<User> findAllByIsPushAlarmTrueAndDeviceIdNotNull();
-
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.UserProfileDTO(up, um) " +
-            "from UserMoim um " +
-            "join um.userProfile up " +
-            "where um.moim.id = :moimId " +
-            "and um.joinStatus = :joinStatus " +
-            "and um.moimRole <> 'OWNER' " +
-            "and um.id > :cursor " +
-            "and up.name like %:searching% " +
-            "order by um.id")
-    Slice<UserProfileDTO> findUserByMoimIdExcludeOwner(Long moimId, String searching, JoinStatus joinStatus, Long cursor, Pageable pageable);
 }
