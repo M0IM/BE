@@ -13,6 +13,7 @@ import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.service.UserQueryService;
 import com.dev.moim.global.common.BaseResponse;
 import com.dev.moim.global.security.annotation.annotation.AuthUser;
+import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.validation.annotation.CheckCursorValidation;
 import com.dev.moim.global.validation.annotation.CheckTakeValidation;
 import com.dev.moim.global.validation.annotation.UserMoimValidaton;
@@ -63,12 +64,11 @@ public class MoimPostController {
     })
     @GetMapping("/moims/{moimId}/posts/{postId}")
     public BaseResponse<MoimPostDetailDTO> getMoimPost(
-            @AuthUser User user,
+            @AuthUserMoim UserMoim userMoim,
             @PathVariable Long moimId,
             @PathVariable Long postId
     ) {
-        MoimPostDetailDTO postDetailDTO = postQueryService.getMoimPost(user, moimId, postId);
-        return BaseResponse.onSuccess(postDetailDTO);
+        return BaseResponse.onSuccess(postQueryService.getMoimPost(userMoim, moimId, postId));
     }
 
     @Operation(summary = "모임 게시글 작성 API", description = "모임 게시글을 작성 합니다. _by 제이미_")
@@ -237,8 +237,7 @@ public class MoimPostController {
     public BaseResponse<MoimPostDetailDTO> getIntroductionPost(@AuthUser User user, @PathVariable Long postId) {
         Post post = postQueryService.getIntroductionPost( postId);
         Boolean postLike = postQueryService.isPostLike(user.getId(), postId);
-        Optional<UserMoim> userMoim =  userMoimRepository.findByPost(post);
-        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike, userMoim));
+        return BaseResponse.onSuccess(MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike));
     }
 
     @Operation(summary = "게시물 읽을 사람 (아직 안읽은사람) API", description = "아직 해당 공지사항을 안 읽은 사람을 리턴합니다.. _by 제이미_")

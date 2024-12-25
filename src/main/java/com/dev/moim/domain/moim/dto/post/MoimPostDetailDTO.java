@@ -1,6 +1,5 @@
 package com.dev.moim.domain.moim.dto.post;
 
-import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.PostImage;
 import com.dev.moim.domain.moim.entity.UserMoim;
@@ -8,7 +7,6 @@ import com.dev.moim.domain.moim.entity.enums.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public record MoimPostDetailDTO(
         Long moimPostId,
@@ -25,17 +23,18 @@ public record MoimPostDetailDTO(
         LocalDateTime updateAt,
         LocalDateTime createAt
 ) {
-    public static MoimPostDetailDTO toMoimPostDetailDTO(Post post, Boolean postLike, Optional<UserMoim> userMoim) {
+    public static MoimPostDetailDTO toMoimPostDetailDTO(Post post, Boolean postLike) {
 
         List<String> imageKeyNames = post.getPostImageList().stream().map(PostImage::getImageKeyName).toList();
+        UserMoim userMoim = post.getUserMoim();
 
         return new MoimPostDetailDTO(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
-                userMoim.isEmpty() ? null : userMoim.get().getUserProfile().getId(),
-                userMoim.isEmpty() ? null : userMoim.get().getImageUrl(),
-                userMoim.isEmpty() ? null : userMoim.get().getNickname(),
+                userMoim == null ? null : userMoim.getUserProfile().getId(),
+                userMoim == null ? null : userMoim.getImageUrl(),
+                userMoim == null ? null : userMoim.getNickname(),
                 post.getCommentList().size(),
                 post.getPostLikeList().size(),
                 postLike,

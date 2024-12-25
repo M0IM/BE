@@ -4,6 +4,7 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.Post;
+import com.dev.moim.domain.moim.entity.UserMoim;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface PostQueryService {
     MoimPostPreviewListDTO getMoimPostList(User user, Long moimId, PostRequestType postRequestType, Long cursor, Integer take);
 
-    MoimPostDetailDTO getMoimPost(User user, Long moimId, Long postId);
+    MoimPostDetailDTO getMoimPost(UserMoim userMoim, Long moimId, Long postId);
 
     Boolean isCommentLike(Long userId, Long commentId);
 

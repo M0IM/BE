@@ -2,9 +2,7 @@ package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
 
-import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.controller.enums.PostRequestType;
-import com.dev.moim.domain.moim.converter.PostConverter;
 import com.dev.moim.domain.moim.dto.post.*;
 import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.enums.PostType;
@@ -15,16 +13,16 @@ import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
 import com.dev.moim.global.error.handler.PostException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -46,48 +44,35 @@ public class PostQueryServiceImpl implements PostQueryService {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<Post> postSlices;
+        Slice<Post> postSlice;
         if (postRequestType.equals(PostRequestType.ALL)) {
-            postSlices = postRepository.findByMoimAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(moim, cursor, user, PageRequest.of(0, take));
+            postSlice = postRepository.findByMoimAndIdLessThanAndUserPostBlocksNotInOrderByIdDescWithUserMoim(moim, cursor, user, PageRequest.of(0, take));
         } else {
             PostType postType = PostType.valueOf(postRequestType.toString());
-            postSlices = postRepository.findByMoimAndPostTypeAndIdLessThanAndUserPostBlocksNotInOrderByIdDesc(moim, postType, cursor, user, PageRequest.of(0, take));
+            postSlice = postRepository.findByMoimAndPostTypeAndIdLessThanAndUserPostBlocksNotInOrderByIdDescWithUserMoim(moim, postType, cursor, user, PageRequest.of(0, take));
         }
 
-        List<MoimPostPreviewDTO> moimPostPreviewDTOList = postSlices.stream().map((p)->{
-            Optional<UserMoim> userMoim = userMoimRepository.findByPost(p);
-            return MoimPostPreviewDTO.toMoimPostPreviewDTO(p, userMoim);
-        }).toList();
+        Long nextCursor = postSlice.hasNext() && !postSlice.getContent().isEmpty()
+                ? postSlice.getContent().get(postSlice.getContent().size() - 1).getId()
+                : null;
 
-        Long nextCursor = null;
-        if (!postSlices.isLast()) {
-            nextCursor = postSlices.toList().get(postSlices.toList().size() - 1).getId();
-        }
-
-        return PostConverter.toMoimPostPreviewListDTO(moimPostPreviewDTOList, postSlices.hasNext(), nextCursor);
+        return MoimPostPreviewListDTO.from(postSlice, nextCursor);
     }
 
     @Override
-    public MoimPostDetailDTO getMoimPost(User user, Long moimId, Long postId) {
-        Moim moim = moimRepository.findById(moimId).orElseThrow(()-> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-
-        Optional<PostBlock> byUserIdAndPostId = postBlockRepository.findByUserIdAndPostId(user.getId(), postId);
+    public MoimPostDetailDTO getMoimPost(UserMoim userMoim, Long moimId, Long postId) {
+        Optional<PostBlock> byUserIdAndPostId = postBlockRepository.findByUserIdAndPostId(userMoim.getUser().getId(), postId);
 
         if (byUserIdAndPostId.isPresent()) {
             throw new PostException(ErrorStatus.BLOCK_POST);
         }
 
-        if(!userMoimRepository.existsByUserAndMoim(user, moim)) {
-           throw new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN);
-       }
+        Post post = postRepository.findByIdWithUserMoimAndPostIIAndPostImageList(postId)
+                .orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostException(ErrorStatus.POST_NOT_FOUND));
+        Boolean postLike = isPostLike(userMoim.getUser().getId(), postId);
 
-        Boolean postLike = isPostLike(user.getId(), postId);
-
-        Optional<UserMoim> userMoim = userMoimRepository.findByPost(post);
-
-        return MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike, userMoim);
+        return MoimPostDetailDTO.toMoimPostDetailDTO(post, postLike);
     }
 
     @Override
@@ -133,19 +118,13 @@ public class PostQueryServiceImpl implements PostQueryService {
             cursor = Long.MAX_VALUE;
         }
 
-        Slice<Post> postSlices = postRepository.findByPostTypeAndIdLessThanOrderByIdDesc(PostType.GLOBAL, cursor, PageRequest.of(0, take));
+        Slice<Post> postSlice = postRepository.findByPostTypeAndIdLessThanOrderByIdDescWithUserMoim(PostType.GLOBAL, cursor, PageRequest.of(0, take));
 
-        List<MoimPostPreviewDTO> moimPostPreviewDTOList = postSlices.stream().map((p)->{
-            Optional<UserMoim> userMoim = userMoimRepository.findByPost(p);
-            return MoimPostPreviewDTO.toMoimPostPreviewDTO(p, userMoim);
-        }).toList();
+        Long nextCursor = postSlice.hasNext() && !postSlice.getContent().isEmpty()
+                ? postSlice.getContent().get(postSlice.getContent().size() - 1).getId()
+                : null;
 
-        Long nextCursor = null;
-        if (!postSlices.isLast()) {
-            nextCursor = postSlices.toList().get(postSlices.toList().size() - 1).getId();
-        }
-
-        return PostConverter.toMoimPostPreviewListDTO(moimPostPreviewDTOList, postSlices.hasNext(), nextCursor);
+        return MoimPostPreviewListDTO.from(postSlice, nextCursor);
     }
 
     @Override
@@ -159,11 +138,10 @@ public class PostQueryServiceImpl implements PostQueryService {
         List<Moim> moimsByUser = moimRepository.findMoimsByUser(user);
 
         List<JoinMoimPostsResponseDTO> joinMoimPostsResponseDTOList = moimsByUser.stream().map((m) -> {
-            List<Post> postList = postRepository.findByNotPostTypeAndMoimOrderByCreatedAtDesc(PostType.GLOBAL ,m, PageRequest.of(0, 3));
-            List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream().map((p)->{
-                Optional<UserMoim> userMoim = userMoimRepository.findByPost(p);
-                return MoimPostPreviewDTO.toMoimPostPreviewDTO(p, userMoim);
-            }).toList();
+            List<Post> postList = postRepository.findByNotPostTypeAndMoimOrderByCreatedAtDescWithUserMoimAndMoim(PostType.GLOBAL ,m, PageRequest.of(0, 3));
+            List<MoimPostPreviewDTO> moimPostPreviewDTOStream = postList.stream()
+                    .map(MoimPostPreviewDTO::toMoimPostPreviewDTO)
+                    .toList();
 
             return JoinMoimPostsResponseDTO.toJoinMoimPostsResponseDTO(m.getId(), m.getName(), moimPostPreviewDTOStream);
         }).toList();
@@ -182,11 +160,8 @@ public class PostQueryServiceImpl implements PostQueryService {
     @Override
     public List<MoimPostPreviewDTO> findBlockPosts(User user) {
 
-        List<Post> postList = postRepository.findBlockPost(user);
+        List<Post> postList = postRepository.findBlockPostWithUserMoim(user);
 
-        return postList.stream().map((p)->{
-            Optional<UserMoim> userMoim = userMoimRepository.findByPost(p);
-            return MoimPostPreviewDTO.toMoimPostPreviewDTO(p, userMoim);
-        }).toList();
+        return postList.stream().map(MoimPostPreviewDTO::toMoimPostPreviewDTO).toList();
     }
 }
