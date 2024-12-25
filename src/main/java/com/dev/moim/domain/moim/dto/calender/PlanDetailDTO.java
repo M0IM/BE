@@ -30,7 +30,7 @@ public record PlanDetailDTO(
 
         return new PlanDetailDTO(
                 plan.getId(),
-                plan.getUserMoim().getId(),
+                plan.getUserMoim().getUser().getId(),
                 plan.getTitle(),
                 plan.getDate(),
                 plan.getLocation(),

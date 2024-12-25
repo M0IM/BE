@@ -3,7 +3,6 @@ package com.dev.moim.domain.moim.service.impl;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.AlarmDetailType;
 import com.dev.moim.domain.account.entity.enums.AlarmType;
-import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.moim.dto.calender.PlanCreateDTO;
 import com.dev.moim.domain.moim.entity.*;
@@ -33,7 +32,6 @@ public class CalenderCommandServiceImpl implements CalenderCommandService {
     private final UserPlanRepository userPlanRepository;
     private final AlarmService alarmService;
     private final FcmService fcmService;
-    private final UserProfileRepository userProfileRepository;
 
     @Override
     public Long createPlan(UserMoim userMoim, PlanCreateDTO request) {
