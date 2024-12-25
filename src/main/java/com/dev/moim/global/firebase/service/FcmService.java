@@ -7,7 +7,6 @@ import com.dev.moim.domain.account.service.AlarmService;
 import com.dev.moim.domain.user.dto.EventDTO;
 import com.dev.moim.domain.user.service.UserCommandService;
 import com.dev.moim.domain.user.service.UserQueryService;
-import com.dev.moim.global.error.ExceptionAdvice;
 import com.dev.moim.global.error.feign.dto.DiscordMessage;
 import com.dev.moim.global.error.feign.service.DiscordClient;
 import com.google.firebase.messaging.*;

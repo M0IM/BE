@@ -25,8 +25,8 @@ public class EmailUtil {
 
     private final JavaMailSender emailSender;
     private final RedisUtil redisUtil;
-    @Value("${spring.mail.auth-code-expiration-millis}")
-    private long authCodeExpirationMillis;
+    @Value("${spring.mail.auth-code-expiration-seconds}")
+    private long authCodeExpirationSeconds;
     @Value("${app.s3.logo-url}")
     private String logoUrl;
 
@@ -40,7 +40,7 @@ public class EmailUtil {
             throw new EmailException(EMAIL_SEND_FAIL);
         }
         emailSender.send(message);
-        redisUtil.setValue(receiver, code, this.authCodeExpirationMillis);
+        redisUtil.setValue(receiver, code, this.authCodeExpirationSeconds);
 
         return code;
     }

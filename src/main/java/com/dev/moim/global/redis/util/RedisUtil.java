@@ -13,9 +13,9 @@ public class RedisUtil {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void setValue(String key, String value, Long expireInMillis) {
+    public void setValue(String key, String value, Long expireInSeconds) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        values.set(key, value, Duration.ofMillis(expireInMillis));
+        values.set(key, value, Duration.ofSeconds(expireInSeconds));
     }
 
     public String getValue(String key) {
