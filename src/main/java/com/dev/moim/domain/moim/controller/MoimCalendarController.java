@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/moim")
+@RequestMapping("/api/v1/moims")
 @Tag(name = "모임 캘린더 관련 컨트롤러")
 public class MoimCalendarController {
 
