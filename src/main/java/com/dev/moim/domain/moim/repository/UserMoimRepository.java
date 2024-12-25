@@ -180,4 +180,16 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
             @Param("moimId") Long moimId,
             @Param("joinStatus") JoinStatus joinStatus,
             Pageable pageable);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "WHERE um.moimId = :moimId AND um.joinStatus = :joinStatus" +
+            " AND (:nickname IS NULL OR um.nickname LIKE %:nickname%)" +
+            " AND (:cursor IS NULL OR um.id > :cursor)" +
+            " ORDER BY um.id ASC")
+    Slice<UserMoim> findByMoimIdAndNickNameAndJoinStatusWithPageable(
+            @Param("moimId") Long moimId,
+            @Param("joinStatus") JoinStatus joinStatus,
+            @Param("nickname") String nickname,
+            @Param("cursor") Long cursor,
+            Pageable pageable);
 }

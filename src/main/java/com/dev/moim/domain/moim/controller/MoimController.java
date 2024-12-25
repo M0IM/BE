@@ -155,9 +155,12 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @GetMapping("/moims/{moimId}/members")
-    public BaseResponse<UserPreviewListDTO> getMoimMembers(@PathVariable @UserMoimValidaton Long moimId, @RequestParam(name = "cursor") Long cursor, @RequestParam(name = "take") Integer take, @RequestParam(name = "search") String search) {
-        UserPreviewListDTO userPreviewListDTO = moimQueryService.getMoimMembers(moimId, cursor, take, search);
-        return BaseResponse.onSuccess(userPreviewListDTO);
+    public BaseResponse<UserPreviewListDTO> getMoimMembers(
+            @PathVariable @UserMoimValidaton Long moimId,
+            @RequestParam(name = "cursor") Long cursor,
+            @RequestParam(name = "take") Integer take,
+            @RequestParam(name = "search", required = false) String search) {
+        return BaseResponse.onSuccess(moimQueryService.getMoimMembers(moimId, cursor, take, search));
     }
 
     @Operation(summary = "모임 멤버 API (모임장 제외)", description = "모임장을 제외한 모임 멤버들을 조회합니다.")
