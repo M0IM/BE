@@ -203,16 +203,13 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     }
 
     @Override
-    public ChangeAuthorityResponseDTO changeMemberAuthorities(User user, ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
-        User targetUser = userRepository.findById(changeAuthorityRequestDTO.userId()).orElseThrow(() -> {
-            throw new UserException(ErrorStatus.USER_NOT_FOUND);
-        });
-        Moim moim = moimRepository.findById(changeAuthorityRequestDTO.moimId()).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        UserMoim userMoim = userMoimRepository.findByUserIdAndMoimId(targetUser.getId(), moim.getId(), JoinStatus.COMPLETE).orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
+    public ChangeAuthorityResponseDTO changeMemberAuthorities(UserMoim userMoim, ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
+        UserMoim targetUserMoim = userMoimRepository.findByUserIdAndMoimIdWithUser(changeAuthorityRequestDTO.userId(), changeAuthorityRequestDTO.moimId(), JoinStatus.COMPLETE)
+                .orElseThrow(() -> new MoimException(ErrorStatus.USER_NOT_MOIM_JOIN));
 
-        userMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
+        targetUserMoim.changeStatus(changeAuthorityRequestDTO.moimRole());
 
-        return new ChangeAuthorityResponseDTO(targetUser.getId(), userMoim.getMoimRole());
+        return new ChangeAuthorityResponseDTO(targetUserMoim.getUser().getId(), targetUserMoim.getMoimRole());
     }
 
     @Override

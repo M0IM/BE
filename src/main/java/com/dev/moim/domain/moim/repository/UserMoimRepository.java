@@ -29,6 +29,11 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     @Query("select um from UserMoim um where um.user.id = :userId and um.moim.id = :moimId and um.joinStatus = :joinStatus")
     Optional<UserMoim> findByUserIdAndMoimId(Long userId, Long moimId, JoinStatus joinStatus);
 
+    @Query("select um from UserMoim um " +
+            "join fetch um.user " +
+            "where um.user.id = :userId and um.moim.id = :moimId and um.joinStatus = :joinStatus")
+    Optional<UserMoim> findByUserIdAndMoimIdWithUser(Long userId, Long moimId, JoinStatus joinStatus);
+
     @Query("select um from UserMoim um where um.moim.id = :moimId and um.joinStatus = :joinStatus")
     List<UserMoim> findByMoimId(Long moimId, JoinStatus joinStatus);
 

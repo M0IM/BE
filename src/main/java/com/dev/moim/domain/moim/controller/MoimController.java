@@ -237,9 +237,11 @@ public class MoimController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @PatchMapping("/moims/{moimId}/authorities")
-    public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(@AuthUser User user, @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
-        ChangeAuthorityResponseDTO changeAuthorityResponseDTO = moimCommandService.changeMemberAuthorities(user, changeAuthorityRequestDTO);
-        return BaseResponse.onSuccess(changeAuthorityResponseDTO);
+    public BaseResponse<ChangeAuthorityResponseDTO> changeMemberAuthorities(
+            @AuthUserMoimAdmin UserMoim userMoim,
+            @PathVariable("moimId") Long moimId,
+            @RequestBody @Valid ChangeAuthorityRequestDTO changeAuthorityRequestDTO) {
+        return BaseResponse.onSuccess(moimCommandService.changeMemberAuthorities(userMoim, changeAuthorityRequestDTO));
     }
 
     @Operation(summary = "가입 거절하기 API", description = "가입을 거절합니다. _by 제이미_")
