@@ -4,7 +4,6 @@ import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.entity.UserPlan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
 
-    Boolean existsByPlanIdAndUserId(Long planId, Long userId);
+    Boolean existsByPlanIdAndUserMoimId(Long planId, Long userMoimId);
 
     @Query("SELECT COUNT(DISTINCT u.id) " +
             "FROM User u " +
@@ -26,9 +25,10 @@ public interface UserPlanRepository extends JpaRepository<UserPlan, Long> {
             "(SELECT um.user.id FROM UserMoim um WHERE um.moim.id = :moimId)) " +
             "OR (ip.date BETWEEN :startDate AND :endDate AND u.id IN " +
             "(SELECT um.user.id FROM UserMoim um WHERE um.moim.id = :moimId))")
-    int countUsersWithPlansInDateRange(@Param("moimId") Long moimId,
-                                       @Param("startDate") LocalDateTime startDate,
-                                       @Param("endDate") LocalDateTime endDate);
+    int countUsersWithPlansInDateRange(
+            @Param("moimId") Long moimId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 
     long countByPlanId(Long planId);
 

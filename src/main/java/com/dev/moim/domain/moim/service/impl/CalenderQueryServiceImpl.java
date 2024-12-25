@@ -1,13 +1,11 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.User;
-import com.dev.moim.domain.account.entity.UserProfile;
 import com.dev.moim.domain.moim.dto.calender.*;
 import com.dev.moim.domain.moim.entity.Plan;
 import com.dev.moim.domain.moim.entity.Schedule;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.UserPlan;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.service.CalenderQueryService;
 import com.dev.moim.global.error.handler.MoimException;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +23,6 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.dev.moim.global.common.code.status.ErrorStatus.PLAN_NOT_FOUND;
@@ -41,7 +37,6 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
     private final PlanRepository planRepository;
     private final UserPlanRepository userPlanRepository;
     private final ScheduleRepository scheduleRepository;
-    private final UserMoimRepository userMoimRepository;
 
     @Override
     public PlanMonthListDTO<PlanDayListDTO> getMoimPlans(UserMoim userMoim, int year, int month) {
@@ -63,11 +58,11 @@ public class CalenderQueryServiceImpl implements CalenderQueryService {
             LocalDateTime dayStart = YearMonth.of(year, month).atDay(day).atStartOfDay();
             LocalDateTime dayEnd = dayStart.plusDays(1).minusNanos(1);
 
-            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(userMoim.getId(), dayStart, dayEnd);
+            int memberWithPlanCnt = userPlanRepository.countUsersWithPlansInDateRange(userMoim.getMoimId(), dayStart, dayEnd);
 
             List<MoimPlanDTO> planList = dayPlans.stream()
                     .filter(plan -> plan.getMoim().getId().equals(userMoim.getId()))
-                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserId(plan.getId(), userMoim.getUser().getId())))
+                    .map(plan -> MoimPlanDTO.from(plan, userPlanRepository.existsByPlanIdAndUserMoimId(plan.getId(), userMoim.getId())))
                     .collect(Collectors.toList());
 
             planDayListMap.put(day, new PlanDayListDTO(memberWithPlanCnt, planList));
