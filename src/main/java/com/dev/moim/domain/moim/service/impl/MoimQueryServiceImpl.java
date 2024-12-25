@@ -165,9 +165,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
     @Override
     public MoimIntroduceDTO getIntroduce(Long moimId) {
-        Moim moim = moimRepository.findById(moimId).orElseThrow(() -> new MoimException(ErrorStatus.MOIM_NOT_FOUND));
-        IntroduceVideoDTO introduceVideo = userMoimRepository.findIntroduceVideo(moimId).orElseThrow(() -> new MoimException(ErrorStatus.VIDEO_ERROR));
-        return MoimIntroduceDTO.toMoimIntroduceDTO(introduceVideo.getMoim(), introduceVideo.getUserProfile());
+        UserMoim userMoimOwner = userMoimRepository.findByMoimIdAndMoimRoleWithMoim(moimId, MoimRole.OWNER)
+                .orElseThrow(() -> new MoimException(MOIM_OWNER_NOT_FOUND));
+        return MoimIntroduceDTO.toMoimIntroduceDTO(userMoimOwner.getMoim(), userMoimOwner);
     }
 
     @Override

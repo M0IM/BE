@@ -37,9 +37,6 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     Boolean existsByUserAndMoim(User user, Moim moim);
 
-    @Query("select new com.dev.moim.domain.moim.service.impl.dto.IntroduceVideoDTO(m, up) from UserMoim um join um.userProfile up join um.moim m where um.moim.id = :moimId and um.moimRole = 'OWNER'")
-    Optional<IntroduceVideoDTO> findIntroduceVideo(Long moimId);
-
     List<UserMoim> findByUserId(Long userId);
 
     Optional<Long> findProfileIdByUserAndMoim(User user, Moim moim);
@@ -53,6 +50,14 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
 
     @Query("select new com.dev.moim.domain.moim.service.impl.dto.JoinRequestDTO(m, um) from UserMoim um join um.moim m where um.user = :user and um.confirm = false and um.id < :cursor order by um.id desc")
     Slice<JoinRequestDTO> findMyRequestMoims(User user, Long cursor, Pageable pageable);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "JOIN FETCH um.moim " +
+            "WHERE um.moimId = :moimId " +
+            "AND um.moimRole = :moimRole ")
+    Optional<UserMoim> findByMoimIdAndMoimRoleWithMoim(
+            @Param("moimId") Long moimId,
+            @Param("moimRole")  MoimRole moimRole);
 
     Optional<UserMoim> findByMoimIdAndMoimRole(Long moimId, MoimRole moimRole);
 
