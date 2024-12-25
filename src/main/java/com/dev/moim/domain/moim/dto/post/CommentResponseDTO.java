@@ -1,10 +1,8 @@
 package com.dev.moim.domain.moim.dto.post;
 
 import com.dev.moim.domain.moim.entity.Comment;
-import com.dev.moim.domain.moim.entity.Post;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.entity.enums.CommentStatus;
-import com.dev.moim.domain.moim.entity.enums.PostType;
 
 import java.time.LocalDateTime;
 import java.util.List;
