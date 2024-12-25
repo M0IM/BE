@@ -1,7 +1,6 @@
 package com.dev.moim.domain.moim.service.impl;
 
 import com.dev.moim.domain.account.entity.enums.Gender;
-import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestJoin;
 import com.dev.moim.domain.moim.controller.enums.MoimRequestRole;
 import com.dev.moim.domain.moim.dto.moim.*;
@@ -23,7 +22,6 @@ import com.dev.moim.domain.user.dto.UserPreviewDTO;
 import com.dev.moim.domain.user.dto.UserPreviewListDTO;
 import com.dev.moim.global.common.code.status.ErrorStatus;
 import com.dev.moim.global.error.handler.MoimException;
-import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -48,8 +46,6 @@ public class MoimQueryServiceImpl implements MoimQueryService {
     private final UserMoimRepository userMoimRepository;
     private final PostRepository postRepository;
     private final PlanRepository planRepository;
-    private final S3Service s3Service;
-    private final UserProfileRepository userProfileRepository;
 
     @Override
     public MoimPreviewListDTO getUserMoim(Long userId, Long cursor, Integer take, MoimRequestRole moimRequestRole) {

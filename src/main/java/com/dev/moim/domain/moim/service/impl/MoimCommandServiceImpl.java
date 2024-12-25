@@ -25,7 +25,6 @@ import com.dev.moim.global.error.handler.UserException;
 import com.dev.moim.global.firebase.service.FcmService;
 import com.dev.moim.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +45,6 @@ public class MoimCommandServiceImpl implements MoimCommandService {
     private final FcmService fcmService;
     private final AlarmService alarmService;
     private final PostRepository postRepository;
-    private final GroupedOpenApi user;
 
     @Override
     public Moim createMoim(User user, CreateMoimDTO createMoimDTO) {

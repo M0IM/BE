@@ -4,7 +4,6 @@ import com.dev.moim.domain.account.entity.Alarm;
 import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.account.entity.enums.Provider;
 import com.dev.moim.domain.account.repository.AlarmRepository;
-import com.dev.moim.domain.account.repository.UserProfileRepository;
 import com.dev.moim.domain.account.repository.UserRepository;
 import com.dev.moim.domain.moim.dto.calender.PlanMonthListDTO;
 import com.dev.moim.domain.moim.entity.*;
@@ -43,7 +42,6 @@ import static com.dev.moim.global.common.code.status.ErrorStatus.*;
 @Transactional(readOnly = true)
 public class UserQueryServiceImpl implements UserQueryService {
 
-    private final UserProfileRepository userProfileRepository;
     private final UserRepository userRepository;
     private final UserMoimRepository userMoimRepository;
     private final IndividualPlanRepository individualPlanRepository;

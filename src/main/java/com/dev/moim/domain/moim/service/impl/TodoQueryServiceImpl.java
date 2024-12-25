@@ -78,7 +78,7 @@ public class TodoQueryServiceImpl implements TodoQueryService {
         Long startCursor = (cursor == 1) ? 0L : cursor;
         Pageable pageable = PageRequest.of(0, take);
 
-        Slice<UserTodo> userTodoSlice = userTodoRepository.findAllWithUserMoimAndUserProfileByTodoIdAndCursor(todoId, startCursor, pageable);
+        Slice<UserTodo> userTodoSlice = userTodoRepository.findAllWithUserMoimByTodoIdAndCursor(todoId, startCursor, pageable);
 
         List<TodoAssigneeDetailDTO> todoAssigneeDetailDTOList = userTodoSlice.stream()
                 .map(TodoAssigneeDetailDTO::toTodoAssignee)
