@@ -54,10 +54,11 @@ public class MoimProfileController {
             @ApiResponse(responseCode = "COMMON200", description = "OK, 성공")
     })
     @PutMapping("")
-    public BaseResponse<Long> updateUserMoimProfile(
+    public BaseResponse<String> updateUserMoimProfile(
             @AuthUserMoim UserMoim userMoim,
             @PathVariable(name = "moimId") Long moimId,
             @RequestBody UpdateUserMoimProfileDTO request) {
-        return BaseResponse.onSuccess(userMoimCommandService.updateUserMoimProfile(userMoim, request));
+        userMoimCommandService.updateUserMoimProfile(userMoim, request);
+        return BaseResponse.onSuccess("모임 활동 프로필 수정에 성공했습니다.");
     }
 }

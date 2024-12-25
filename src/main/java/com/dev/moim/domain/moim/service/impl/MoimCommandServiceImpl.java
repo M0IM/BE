@@ -13,10 +13,7 @@ import com.dev.moim.domain.moim.entity.*;
 import com.dev.moim.domain.moim.entity.ExitReason;
 import com.dev.moim.domain.moim.entity.Moim;
 import com.dev.moim.domain.moim.entity.UserMoim;
-import com.dev.moim.domain.moim.entity.enums.JoinStatus;
-import com.dev.moim.domain.moim.entity.enums.MoimRole;
-import com.dev.moim.domain.moim.entity.enums.PostType;
-import com.dev.moim.domain.moim.entity.enums.ProfileStatus;
+import com.dev.moim.domain.moim.entity.enums.*;
 import com.dev.moim.domain.moim.repository.*;
 import com.dev.moim.domain.moim.repository.ExitReasonRepository;
 import com.dev.moim.domain.moim.repository.MoimRepository;
@@ -67,15 +64,20 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
 
-
         UserMoim userMoim = UserMoim.builder()
-                .moim(moim)
-                .user(user)
+                .nickname(user.getNickname())
+                .imageUrl(user.getImageUrl())
+                .introduction(user.getIntroduction())
                 .moimRole(MoimRole.OWNER)
                 .joinStatus(JoinStatus.COMPLETE)
-                .profileStatus(ProfileStatus.PRIVATE)
-                .userProfile(userProfile)
                 .confirm(true)
+                .profileStatus(ProfileStatus.PRIVATE)
+                .genderVisibility(VisibilityStatus.PRIVATE)
+                .residenceVisibility(VisibilityStatus.PRIVATE)
+                .birthVisibility(VisibilityStatus.PRIVATE)
+                .user(user)
+                .moim(moim)
+                .userProfile(userProfile)
                 .build();
 
         userMoimRepository.save(userMoim);
@@ -148,16 +150,19 @@ public class MoimCommandServiceImpl implements MoimCommandService {
 
         UserProfile userProfile = userProfileRepository.findByUserIdAndProfileType(user.getId(), ProfileType.MAIN).orElseThrow(()-> new MoimException(ErrorStatus.USER_PROFILE_NOT_FOUND_MAIN));
         UserMoim userMoim = UserMoim.builder()
-                .userProfile(userProfile)
-                .joinStatus(JoinStatus.LOADING)
-                .user(user)
-                .moimRole(MoimRole.MEMBER)
-                .moim(moim)
-                .profileStatus(ProfileStatus.PRIVATE)
-                .confirm(false)
                 .nickname(user.getNickname())
                 .imageUrl(user.getImageUrl())
                 .introduction(user.getIntroduction())
+                .moimRole(MoimRole.MEMBER)
+                .joinStatus(JoinStatus.LOADING)
+                .confirm(false)
+                .profileStatus(ProfileStatus.PRIVATE)
+                .genderVisibility(VisibilityStatus.PRIVATE)
+                .residenceVisibility(VisibilityStatus.PRIVATE)
+                .birthVisibility(VisibilityStatus.PRIVATE)
+                .user(user)
+                .moim(moim)
+                .userProfile(userProfile)
                 .build();
 
         Optional<UserMoim> owner = userRepository.findOwnerByMoim(moim);
