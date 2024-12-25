@@ -36,4 +36,13 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findAllByStatusAndDueDateBefore(TodoStatus todoStatus, LocalDateTime now);
 
     List<Todo> findAllByDueDateBetween(LocalDateTime tomorrow, LocalDateTime endOfTomorrow);
+
+    @Query("SELECT t FROM Todo t " +
+            "WHERE t.userMoim.id IN :userMoimIdList " +
+            "AND t.id < :cursor " +
+            "ORDER BY t.id DESC")
+    Slice<Todo> findByUserMoimIdInWithPageable(
+            @Param("userMoimIdList") List<Long> userMoimIdList,
+            @Param("cursor") Long cursor,
+            Pageable pageable);
 }

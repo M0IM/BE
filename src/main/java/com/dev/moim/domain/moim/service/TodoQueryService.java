@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoPageDTO;
 import com.dev.moim.domain.moim.entity.Todo;
@@ -25,7 +26,7 @@ public interface TodoQueryService {
 
     TodoPageDTO getAssignedTodoListForUserInSpecificMoim(UserMoim userMoim, Long moimId, Long cursor, Integer take);
 
-    TodoPageDTO getTodoListByMe(UserMoim userMoim, Long cursor, Integer take);
+    TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take);
 
     boolean existsByUserIdAndTodoId(Long userId, Long todoId);
 

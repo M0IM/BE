@@ -1,5 +1,6 @@
 package com.dev.moim.domain.moim.service.impl;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.TodoAssigneeDetailDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoDTO;
 import com.dev.moim.domain.moim.dto.todo.TodoDetailDTO;
@@ -161,12 +162,14 @@ public class TodoQueryServiceImpl implements TodoQueryService {
     }
 
     @Override
-    public TodoPageDTO getTodoListByMe(UserMoim userMoim, Long cursor, Integer take) {
+    public TodoPageDTO getTodoListByMe(User user, Long cursor, Integer take) {
 
         Long startCursor = (cursor == 1) ? Long.MAX_VALUE : cursor;
         Pageable pageable = PageRequest.of(0, take, Sort.by(Sort.Order.desc("id")));
 
-        Slice<Todo> todoSlice = todoRepository.findByUserMoimIdAndCursorLessThan(userMoim.getId(), startCursor, pageable);
+        List<Long> userMoimIdList = userMoimRepository.findAllUserMoimIdByUserIdAndJoinStatus(user.getId(), JoinStatus.COMPLETE);
+
+        Slice<Todo> todoSlice = todoRepository.findByUserMoimIdInWithPageable(userMoimIdList, startCursor, pageable);
 
         List<TodoDTO> todoDTOList = todoSlice.getContent().stream()
                 .map(TodoDTO::forSpecificAdmin)

@@ -160,4 +160,10 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
             @Param("moimId") Long moimId);
 
     int countByUserIdAndJoinStatusAndProfileStatus(Long userId, JoinStatus joinStatus, ProfileStatus profileStatus);
+
+    @Query("SELECT um.id FROM UserMoim um " +
+            "WHERE um.user.id = :userId AND um.joinStatus = :joinStatus")
+    List<Long> findAllUserMoimIdByUserIdAndJoinStatus(
+            @Param("userId") Long userId,
+            @Param("joinStatus") JoinStatus joinStatus);
 }

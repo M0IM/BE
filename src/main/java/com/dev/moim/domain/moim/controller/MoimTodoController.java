@@ -1,10 +1,12 @@
 package com.dev.moim.domain.moim.controller;
 
+import com.dev.moim.domain.account.entity.User;
 import com.dev.moim.domain.moim.dto.todo.*;
 import com.dev.moim.domain.moim.entity.UserMoim;
 import com.dev.moim.domain.moim.service.TodoCommandService;
 import com.dev.moim.domain.moim.service.TodoQueryService;
 import com.dev.moim.global.common.BaseResponse;
+import com.dev.moim.global.security.annotation.annotation.AuthUser;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoim;
 import com.dev.moim.global.security.annotation.annotation.AuthUserMoimAdmin;
 import com.dev.moim.global.validation.annotation.*;
@@ -159,17 +161,17 @@ public class MoimTodoController {
         return BaseResponse.onSuccess(todoQueryService.getAssignedTodoListForUserInSpecificMoim(userMoim, moimId, cursor, take));
     }
 
-    @Operation(summary = "자신이 부여한 todo 리스트 조회", description = "회원이 자신이 부여한 todo 리스트를 조회합니다.")
+    @Operation(summary = "자신이 부여한 todo 리스트 조회", description = "자신이 참여하는 모든 모임에서 자신이 부여한 todo 리스트를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "COMMON200", description = "성공입니다.")
     })
     @GetMapping("/todos/by-me")
     public BaseResponse<TodoPageDTO> getTodoListByMe(
-            @AuthUserMoimAdmin UserMoim userMoim,
+            @AuthUser User user,
             @RequestParam(name = "cursor", required = false) Long cursor,
             @RequestParam(name = "take") Integer take
     ) {
-        return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(userMoim, cursor, take));
+        return BaseResponse.onSuccess(todoQueryService.getTodoListByMe(user, cursor, take));
     }
 
     @Operation(summary = "부여된 todo 상태 업데이트", description = "회원이 자신에게 부여된 todo의 상태를 변경합니다.")
@@ -240,7 +242,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_008", description = "이미 todo를 할당받은 멤버를 지정했습니다.")
     })
-    @PutMapping("/moims/todos/admin/assignees/new")
+    @PutMapping("/moims/{moimId}/todos/admin/assignees/new")
     public BaseResponse<?> addAssignees(
             @AuthUserMoimAdmin UserMoim userMoim,
             @Valid @RequestBody AddTodoAssigneeDTO request
@@ -258,7 +260,7 @@ public class MoimTodoController {
             @ApiResponse(responseCode = "TODO_001", description = "Todo를 찾을 수 없습니다."),
             @ApiResponse(responseCode = "TODO_002", description = "해당 유저에게 부여된 todo가 아닙니다.")
     })
-    @PutMapping("/moims/todos/admin/assignees/current")
+    @PutMapping("/moims/{moimId}/todos/admin/assignees/current")
     public BaseResponse<?> deleteAssignees(
             @AuthUserMoimAdmin UserMoim userMoim,
             @Valid @RequestBody DeleteTodoAssigneeDTO request
