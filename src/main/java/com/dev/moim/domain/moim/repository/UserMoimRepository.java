@@ -166,4 +166,13 @@ public interface UserMoimRepository extends JpaRepository<UserMoim, Long> {
     List<Long> findAllUserMoimIdByUserIdAndJoinStatus(
             @Param("userId") Long userId,
             @Param("joinStatus") JoinStatus joinStatus);
+
+    @Query("SELECT um FROM UserMoim um " +
+            "WHERE um.moim.id = :moimId " +
+            "AND um.joinStatus = :joinStatus " +
+            "ORDER BY um.id DESC")
+    List<UserMoim> findByMoimIdAndJoinStatusOrderByIdDesc(
+            @Param("moimId") Long moimId,
+            @Param("joinStatus") JoinStatus joinStatus,
+            Pageable pageable);
 }

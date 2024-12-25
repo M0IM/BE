@@ -205,8 +205,9 @@ public class MoimQueryServiceImpl implements MoimQueryService {
         List<User> users = userRepository.findUserByMoim(moim, JoinStatus.COMPLETE);
         List<Plan> moims = planRepository.findByMoim(moim);
         JoinStatus joinStatus = userMoimRepository.findJoinStatusByUserAndMoim(user, moim);
-        List<UserProfileDTO> userProfileList = userProfileRepository.findRandomProfile(moim, JoinStatus.COMPLETE, PageRequest.of(0, 3));
-        List<UserPreviewDTO> userPreviewDTOList = userProfileList.stream().map(UserPreviewDTO::toUserPreviewDTO).toList();
+        List<UserPreviewDTO> userMoimList = userMoimRepository.findByMoimIdAndJoinStatusOrderByIdDesc(moimId, JoinStatus.COMPLETE, PageRequest.of(0, 3))
+                .stream().map(UserPreviewDTO::from)
+                .toList();
         Optional<MoimRole> moimRoleByUser = userMoimRepository.findMoimRoleByUserAndMoim(user, moim);
 
         Double totalAge = 0.0;
@@ -239,7 +240,7 @@ public class MoimQueryServiceImpl implements MoimQueryService {
 
         MoimRole moimRole = moimRoleByUser.orElse(null);
 
-        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userPreviewDTOList);
+        return MoimDetailDTO.toMoimDetailDTO(moim, moimRole, joinStatus, moim.getImageUrl(), averageAge, moims.size(), reviewCount, maleSize, femaleSize, nonSelectCount, users.size(), userMoimList);
     }
 
     @Override
